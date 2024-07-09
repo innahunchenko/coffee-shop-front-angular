@@ -1,0 +1,13 @@
+@CoffeeShop.Products.Api_HostAddress = http://localhost:5177
+
+GET {{CoffeeShop.Products.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+GET https://localhost:8081/products
+Accept: application/json
+
+###
+
+GET http://localhost:8080/swagger
