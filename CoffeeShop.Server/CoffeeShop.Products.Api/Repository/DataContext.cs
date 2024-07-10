@@ -1,11 +1,8 @@
-﻿using Azure.Core;
-using Azure.Identity;
-using CoffeeShop.Products.Api.Models;
+﻿using CoffeeShop.Products.Api.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
-namespace CoffeeShop.Products.Api.Storage
+namespace CoffeeShop.Products.Api.Repository
 {
     public class DataContext : DbContext
     {
@@ -22,34 +19,29 @@ namespace CoffeeShop.Products.Api.Storage
                 .Build();
 
             string connectionString = configuration.GetConnectionString("ProductsConnection");
-
+            
             try
             {
-               // var credential = new DefaultAzureCredential();
-               // var token = credential.GetToken(new TokenRequestContext(new[] { "https://database.windows.net/.default" }));
-
                 var connection = new SqlConnection(connectionString);
-
-                //connection.AccessToken = token.Token;
-
                 optionsBuilder.UseSqlServer(connection);
             }
-            catch (CredentialUnavailableException ex)
+            catch (SqlException ex)
             {
-                Console.WriteLine("ManagedIdentityCredential authentication unavailable. Details: " + ex.Message);
-                throw;
+                Console.WriteLine($"SQL Server connection error: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Incorrect operation: {ex.Message}");
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Incorrect argument: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
             }
         }
-
-        //private static string GetAccessTokenAsync(string clientId, string authority, string resource, string scope)
-        //{
-        //    var authContext = new AuthenticationContext(authority, TokenCache.DefaultShared);
-        //    var clientCred = new ClientCredential(clientId, clientSecret);
-        //    var token = authContext.AcquireTokenAsync(resource, clientCred).Result.AccessToken;
-
-
-        //    return token;
-        //}
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }

@@ -3,7 +3,7 @@ using CoffeeShop.Products.Api.Models;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 
-namespace CoffeeShop.Products.Api.Storage
+namespace CoffeeShop.Products.Api.Repository
 {
     public class ProductRepository : BaseRepository<Product>, IProductRepository
     {

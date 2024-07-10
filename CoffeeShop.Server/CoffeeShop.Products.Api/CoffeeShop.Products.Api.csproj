@@ -32,5 +32,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\CoffeeShop.DataAccess.Common\CoffeeShop.DataAccess.Common.csproj" />
+		<ProjectReference Include="..\CoffeeShop.Infrastructure\CoffeeShop.Infrastructure.csproj" />
 	</ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 ﻿using CoffeeShop.DataAccess.Common;
 using CoffeeShop.Products.Api.Models;
 
-namespace CoffeeShop.Products.Api.Storage
+namespace CoffeeShop.Products.Api.Repository
 {
     public interface IProductRepository : IBaseRepository<Product>
     {

@@ -1,8 +1,7 @@
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using CoffeeShop.Products.Api.Mapping;
-using CoffeeShop.Products.Api.Storage;
+using CoffeeShop.Products.Api.Repository;
 using Microsoft.EntityFrameworkCore;
+using CoffeeShop.Infrastructure;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,18 +30,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 
-builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
-builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
-{
-    var assembly = Assembly.GetAssembly(typeof(Program));
-    containerBuilder.RegisterAssemblyTypes(assembly)
-        .Where(t => t.Name.EndsWith("Service"))
-        .AsImplementedInterfaces();
-
-    containerBuilder.RegisterAssemblyTypes(assembly)
-        .Where(t => t.Name.EndsWith("Repository"))
-        .AsImplementedInterfaces();
-});
+builder.Host.ConfigureAutofac(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
 

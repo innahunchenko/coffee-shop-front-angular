@@ -11,17 +11,11 @@ const productsUrl = `${API_BASE_URL}/products`;
 
 @Injectable()
 export class Repository {
-  product: Product = new Product();
   products: Product[] = [];
   categories: Category[] = [];
   filter: Filter = new Filter();
   constructor(private http: HttpClient) {
     this.getCategories();
-  }
-
-  getProduct(id: number) {
-    this.http.get<Product>(`${productsUrl}/${id}`)
-      .subscribe(p => this.product = p);
   }
 
   getProducts(): void {

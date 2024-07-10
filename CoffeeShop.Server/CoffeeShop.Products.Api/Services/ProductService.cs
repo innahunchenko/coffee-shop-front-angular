@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using CoffeeShop.Products.Api.Models;
 using CoffeeShop.Products.Api.Models.Dto;
-using CoffeeShop.Products.Api.Storage;
+using CoffeeShop.Products.Api.Repository;
 
 namespace CoffeeShop.Products.Api.Services
 {
