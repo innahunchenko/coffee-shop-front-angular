@@ -1,6 +1,0 @@
-@CoffeeShop.Cart.Api_HostAddress = http://localhost:5195
-
-GET {{CoffeeShop.Cart.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
