@@ -1,14 +1,46 @@
-version: '3.8'
+version: '3.4'
 
 services:
-  coffeeshop.products.api:
+  cart-api:
+    image: ${DOCKER_REGISTRY-}coffeeshopcartapi
+    build:
+      context: .
+      dockerfile: CoffeeShop.ShoppingCart.Api/Dockerfile
+    ports:
+      - "5001:8080"
+      - "5002:8081"
+    environment:
+      - GRPCUI_SERVER=products-api:8080
+    container_name: cart-api
+    depends_on:
+      - products-api
+    networks:
+       - mynetwork
+
+  products-api:
+    image: ${DOCKER_REGISTRY-}coffeeshopproductsapi
     build:
       context: .
       dockerfile: CoffeeShop.Products.Api/Dockerfile
-    ports:
-      - "8080:8080"
-      - "8081:8081"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__ProductsConnection=Server=tcp:coffee-shop.database.windows.net,1433;Initial Catalog=CoffeeShop_Products;User ID=;Password=
-      
+    ports:  
+     - "8080:8080" 
+    container_name: products-api
+    networks:
+       - mynetwork
+
+  # cache-api:
+  #   image: ${DOCKER_REGISTRY-}coffeeshopcacheapi
+  #   build:
+  #     context: .
+  #     dockerfile: CoffeeShop.Cache.Api/Dockerfile
+  #   ports:
+  #     - "8084:8084"
+  #     - "8085:8085"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #   networks:
+  #     - mynetwork
+
+networks:
+    mynetwork:
+     driver: bridge

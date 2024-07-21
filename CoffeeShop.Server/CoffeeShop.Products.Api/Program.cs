@@ -1,58 +1,48 @@
 using CoffeeShop.Products.Api.Mapping;
 using CoffeeShop.Products.Api.Repository;
+using CoffeeShop.Products.Api.Services;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
-using CoffeeShop.Infrastructure;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddGrpc();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddAutoMapper(typeof(MappingProfile));
-
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>(), [typeof(Program).Assembly], ServiceLifetime.Singleton);
 builder.Services.AddDbContext<DataContext>();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowSpecificOrigin",
-        builder =>
-        {
-            builder.WithOrigins("http://localhost:4200")
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
-        });
-});
+var configuration = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables()
+    .Build();
 
-builder.Services.AddControllers();
+builder.Services.AddSingleton<IConfiguration>(configuration);
 
-builder.Host.ConfigureAutofac(Assembly.GetExecutingAssembly());
+//builder.Host.ConfigureAutofac(Assembly.GetExecutingAssembly());
+
+builder.Services.AddHttpClient();
+
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAll",
+//        builder =>
+//        {
+//            builder.AllowAnyOrigin()
+//                   .AllowAnyMethod()
+//                   .AllowAnyHeader();
+//        });
+//});
 
 var app = builder.Build();
 
+//app.UseCors("AllowAll");
+
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json",
-        "CoffeeShop API");
-    });
-}
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-app.UseCors("AllowSpecificOrigin");
+app.MapGrpcService<ProductGrpcService>();
 ApplyMigration(app);
-
 app.Run();
 
 void ApplyMigration(WebApplication app)

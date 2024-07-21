@@ -1,6 +1,9 @@
 ﻿using CoffeeShop.ShoppingCart.Api.Models;
 using CoffeeShop.ShoppingCart.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Google.Protobuf.WellKnownTypes;
+using static ProductsClient.ProductService;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CoffeeShop.ShoppingCart.Api.Controllers
 {
@@ -9,22 +12,38 @@ namespace CoffeeShop.ShoppingCart.Api.Controllers
     public class CartController : ControllerBase
     {
         private readonly ICartService cartService;
+        private readonly ProductServiceClient productsClient;
 
-        public CartController(ICartService cartService)
+        public CartController(/*ICartService cartService, */ProductServiceClient productServiceClient)
         {
-            this.cartService = cartService;
+            //this.cartService = cartService;
+            this.productsClient = productServiceClient;
         }
 
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetCart(int userId)
         {
-            var cart = await cartService.GetCartAsync(userId);
-            if (cart == null)
+            try
             {
-                return NotFound();
-            }
+                var emptyRequest = new Empty();
+                Console.WriteLine("Hello from GetCart");
+                var categories = await productsClient.GetCategoriesAsync(emptyRequest);
 
-            return Ok(cart);
+
+                //var cart = await cartService.GetCartAsync(userId);
+                //if (cart == null)
+                //{
+                //    return NotFound();
+                //}
+
+                return Ok(categories);
+            }
+            catch (Grpc.Core.RpcException ex)
+            {
+                Console.WriteLine($"gRPC ошибка: {ex.Status.Detail}");
+                Console.WriteLine($"Код статуса: {ex.StatusCode}");
+                return BadRequest(ex.Status.Detail);
+            }
         }
 
         [HttpPost]

@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeShop.Products.Api", "CoffeeShop.Products.Api\CoffeeShop.Products.Api.csproj", "{ABB77778-173D-4B94-A610-2F7D69FD774F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeShop.DataAccess.Common", "CoffeeShop.DataAccess.Common\CoffeeShop.DataAccess.Common.csproj", "{33C0A465-3AFF-4769-BE1D-A50CD25823D4}"
-EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{2772D9E6-6BAB-45C7-A410-902E0772A38F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeShop.Infrastructure", "CoffeeShop.Infrastructure\CoffeeShop.Infrastructure.csproj", "{ECEAB712-8E79-4620-ADB9-F1F545575099}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoffeeShop.ShoppingCart.Api", "CoffeeShop.ShoppingCart.Api\CoffeeShop.ShoppingCart.Api.csproj", "{5F967ED7-43BE-475C-ABB1-8CCF45C3C863}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeShop.ShoppingCart.Api", "CoffeeShop.ShoppingCart.Api\CoffeeShop.ShoppingCart.Api.csproj", "{5F967ED7-43BE-475C-ABB1-8CCF45C3C863}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoffeeShop.Products.Api", "CoffeeShop.Products.Api\CoffeeShop.Products.Api.csproj", "{3837E5ED-7EB5-40E0-9765-AC7842420628}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{56A2957A-7485-442A-B475-D99E6CBE3DD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,18 +19,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ABB77778-173D-4B94-A610-2F7D69FD774F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ABB77778-173D-4B94-A610-2F7D69FD774F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ABB77778-173D-4B94-A610-2F7D69FD774F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ABB77778-173D-4B94-A610-2F7D69FD774F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{33C0A465-3AFF-4769-BE1D-A50CD25823D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{33C0A465-3AFF-4769-BE1D-A50CD25823D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33C0A465-3AFF-4769-BE1D-A50CD25823D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33C0A465-3AFF-4769-BE1D-A50CD25823D4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2772D9E6-6BAB-45C7-A410-902E0772A38F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2772D9E6-6BAB-45C7-A410-902E0772A38F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2772D9E6-6BAB-45C7-A410-902E0772A38F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2772D9E6-6BAB-45C7-A410-902E0772A38F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ECEAB712-8E79-4620-ADB9-F1F545575099}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ECEAB712-8E79-4620-ADB9-F1F545575099}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECEAB712-8E79-4620-ADB9-F1F545575099}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +31,14 @@ Global
 		{5F967ED7-43BE-475C-ABB1-8CCF45C3C863}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F967ED7-43BE-475C-ABB1-8CCF45C3C863}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F967ED7-43BE-475C-ABB1-8CCF45C3C863}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3837E5ED-7EB5-40E0-9765-AC7842420628}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3837E5ED-7EB5-40E0-9765-AC7842420628}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3837E5ED-7EB5-40E0-9765-AC7842420628}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3837E5ED-7EB5-40E0-9765-AC7842420628}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56A2957A-7485-442A-B475-D99E6CBE3DD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56A2957A-7485-442A-B475-D99E6CBE3DD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56A2957A-7485-442A-B475-D99E6CBE3DD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56A2957A-7485-442A-B475-D99E6CBE3DD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

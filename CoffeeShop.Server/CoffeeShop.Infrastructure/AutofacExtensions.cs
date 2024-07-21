@@ -14,11 +14,22 @@
             {
                 containerBuilder.RegisterAssemblyTypes(assembly)
                     .Where(t => t.Name.EndsWith("Service"))
-                    .AsImplementedInterfaces();
+                    .AsImplementedInterfaces()
+                    .InstancePerLifetimeScope();
 
                 containerBuilder.RegisterAssemblyTypes(assembly)
                     .Where(t => t.Name.EndsWith("Repository"))
-                    .AsImplementedInterfaces();
+                    .AsImplementedInterfaces()
+                    .InstancePerLifetimeScope();
+
+                //containerBuilder.RegisterType<RedisCacheRepository>()
+                //    .As<IRedisCacheRepository>()
+                //    //.WithParameter(new TypedParameter(typeof(IConfiguration), configuration))
+                //    .SingleInstance();
+
+                //containerBuilder.RegisterType<RedisCacheService>()
+                //    .As<IRedisCacheService>()
+                //    .SingleInstance();
             });
         }
     }

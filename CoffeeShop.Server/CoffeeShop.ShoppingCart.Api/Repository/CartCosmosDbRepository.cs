@@ -17,7 +17,7 @@ namespace CoffeeShop.ShoppingCart.Api.Repository
             await _container.UpsertItemAsync(cart, new PartitionKey(cart.UserId));
         }
 
-        public async Task<Cart> GetCartAsync(int userId)
+        public async Task<Cart?> GetCartAsync(int userId)
         {
             var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId")
                 .WithParameter("@userId", userId);
@@ -26,7 +26,8 @@ namespace CoffeeShop.ShoppingCart.Api.Repository
             if (iterator.HasMoreResults)
             {
                 var result = await iterator.ReadNextAsync();
-                return result.FirstOrDefault();
+                var cart = result.FirstOrDefault();
+                return cart;
             }
 
             return null;

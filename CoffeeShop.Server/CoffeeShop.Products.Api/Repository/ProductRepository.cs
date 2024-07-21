@@ -2,17 +2,19 @@
 using CoffeeShop.Products.Api.Models;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace CoffeeShop.Products.Api.Repository
 {
     public class ProductRepository : BaseRepository<Product>, IProductRepository
     {
         private readonly DataContext context;
-        public ProductRepository(DataContext context) : base(context)
+
+        public ProductRepository(DataContext context)
+            : base(context)
         {
             this.context = context;
         }
-
         public async Task<List<Category>> GetMainCategoriesWithSubcategoriesAsync()
         {
             return await context.Categories
@@ -23,62 +25,38 @@ namespace CoffeeShop.Products.Api.Repository
 
         public async Task<List<Product>> GetProductsAsync(Filter filter)
         {
-            if (!string.IsNullOrEmpty(filter.Search))
-            {
-                return await GetProductsBySearchAsync(filter.Search);
-            }
-            
-            if (!string.IsNullOrEmpty(filter.Subcategory))
-            {
-                return await GetProductsBySubcategoryAsync(filter.Subcategory);
-            }
-            
-            if (!string.IsNullOrEmpty(filter.Category))
-            {
-                return await GetProductsByCategoryAsync(filter.Category);
-            }
-            
-            var query = "SELECT * FROM Products";
-            return await ExecuteQueryAsync(query, new DynamicParameters());
+            var query = GenerateQuery(filter, out var parameters);
+            var products = await ExecuteQueryAsync(query, parameters);
+            return products;
         }
 
         private const string CommonQueryPart = @"
-            SELECT p.*
-            FROM Categories as c
-            JOIN Categories as sbc ON sbc.ParentCategoryId = c.Id
-            JOIN Products as p ON p.CategoryId = sbc.Id";
+        SELECT p.*
+        FROM Categories as c
+        JOIN Categories as sbc ON sbc.ParentCategoryId = c.Id
+        JOIN Products as p ON p.CategoryId = sbc.Id";
 
-        public async Task<List<Product>> GetProductsByCategoryAsync(string category)
+        private string GenerateQuery(Filter filter, out DynamicParameters parameters)
         {
-            var query = CommonQueryPart + @"
-                WHERE LOWER(c.Name) = LOWER(@CategoryName)";
+            parameters = new DynamicParameters();
+            var queryBuilder = new StringBuilder(CommonQueryPart);
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@CategoryName", category);
-
-            return await ExecuteQueryAsync(query, parameters);
-        }
-
-        public async Task<List<Product>> GetProductsBySubcategoryAsync(string subcategoryName)
-        {
-            var query = CommonQueryPart + @"
-                WHERE LOWER(sbc.Name) = LOWER(@SubcategoryName)";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("@SubcategoryName", subcategoryName);
-
-            return await ExecuteQueryAsync(query, parameters);
-        }
-
-        public async Task<List<Product>> GetProductsBySearchAsync(string searchKeyword)
-        {
-            var query = CommonQueryPart + @"
-                WHERE p.Name LIKE @Search";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("@Search", $"%{searchKeyword.Replace("_", "[_]")}%");
-
-            return await ExecuteQueryAsync(query, parameters);
+            if (!string.IsNullOrEmpty(filter.Category))
+            {
+                queryBuilder.Append(" WHERE LOWER(c.Name) = LOWER(@CategoryName)");
+                parameters.Add("@CategoryName", filter.Category);
+            }
+            if (!string.IsNullOrEmpty(filter.Subcategory))
+            {
+                queryBuilder.Append(" AND LOWER(sbc.Name) = LOWER(@SubcategoryName)");
+                parameters.Add("@SubcategoryName", filter.Subcategory);
+            }
+            if (!string.IsNullOrEmpty(filter.Search))
+            {
+                queryBuilder.Append(" AND p.Name LIKE @Search");
+                parameters.Add("@Search", $"%{filter.Search.Replace("_", "[_]")}%");
+            }
+            return queryBuilder.ToString();
         }
 
         private async Task<List<Product>> ExecuteQueryAsync(string query, DynamicParameters parameters)
@@ -88,6 +66,28 @@ namespace CoffeeShop.Products.Api.Repository
                 await connection.OpenAsync();
                 var products = await connection.QueryAsync<Product>(query, parameters);
                 return products.ToList();
+            }
+        }
+
+        public async Task AddProductAsync(Product product)
+        {
+            context.Products.Add(product);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task UpdateProductAsync(Product product)
+        {
+            context.Products.Update(product);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task DeleteProductAsync(int productId)
+        {
+            var product = await context.Products.FindAsync(productId);
+            if (product != null)
+            {
+                context.Products.Remove(product);
+                await context.SaveChangesAsync();
             }
         }
     }

@@ -6,41 +6,46 @@ namespace CoffeeShop.ShoppingCart.Api.Services
     public class CartService : ICartService
     {
         private readonly ICartCosmosDbRepository cartCosmosDbRepository;
-        private readonly ICartRedisCacheRepository cartRedisCacheRepository;
+        private readonly HttpClient httpClient;
+        private readonly string? cacheApiUrl;
 
-        public CartService(ICartCosmosDbRepository cartCosmosDbRepository, ICartRedisCacheRepository cartRedisCacheRepository)
+        public CartService(ICartCosmosDbRepository cartCosmosDbRepository, HttpClient httpClient, IConfiguration configuration)
         {
             this.cartCosmosDbRepository = cartCosmosDbRepository;
-            this.cartRedisCacheRepository = cartRedisCacheRepository;
+            this.httpClient = httpClient;
+            this.cacheApiUrl = configuration.GetValue<string>("CacheApiUrl");
         }
 
-        public async Task<Cart> GetCartAsync(int userId)
+        public async Task<Cart?> GetCartAsync(int userId)
         {
-            var cart = await cartRedisCacheRepository.GetCartAsync(userId);
-            if (cart != null)
+            var cacheKey = $"cart:{userId}";
+
+            //var cart = await cacheService.GetCachedDataAsync<Cart>(cacheKey);
+            //if (cart != null)
+            //{
+             //   return cart;
+            //}
+
+            var cartFromDb = await cartCosmosDbRepository.GetCartAsync(userId);
+            if (cartFromDb != null)
             {
-                return cart;
+              //  await cacheService.SetCachedDataAsync(cacheKey, cartFromDb);
             }
 
-            cart = await cartCosmosDbRepository.GetCartAsync(userId);
-            if (cart != null)
-            {
-                await cartRedisCacheRepository.AddOrUpdateCartAsync(userId, cart);
-            }
-
-            return cart;
+            return cartFromDb;
         }
 
         public async Task AddOrUpdateCartAsync(Cart cart)
         {
             await cartCosmosDbRepository.AddOrUpdateCartAsync(cart);
-            await cartRedisCacheRepository.AddOrUpdateCartAsync(cart.UserId, cart);
+            var cacheKey = $"cart:{cart.UserId}";
+            //await cacheService.SetCachedDataAsync(cacheKey, cart);
         }
 
         public async Task RemoveCartAsync(int userId)
         {
-            await cartRedisCacheRepository.RemoveCartAsync(userId);
             await cartCosmosDbRepository.RemoveCartAsync(userId);
+            //await cacheService.InvalidateCacheAsync($"cart:{userId}");
         }
     }
 }

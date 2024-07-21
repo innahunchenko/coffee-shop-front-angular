@@ -1,6 +1,14 @@
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+RUN apt-get update && apt-get install -y curl
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends iputils-ping \
+    && rm -rf /var/lib/apt/lists/*
+RUN apt-get update \
+    && apt-get install -y net-tools \
+    && rm -rf /var/lib/apt/lists/*
+
 USER app
 WORKDIR /app
 EXPOSE 8080
@@ -23,3 +31,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "CoffeeShop.ShoppingCart.Api.dll"]
+EXPOSE 8080
+EXPOSE 8081
