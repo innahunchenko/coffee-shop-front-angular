@@ -5,16 +5,20 @@ namespace CoffeeShop.ShoppingCart.Api.Repository
 {
     public class CartCosmosDbRepository : ICartCosmosDbRepository
     {
-        private readonly Container _container;
+        private readonly Container container;
 
-        public CartCosmosDbRepository(CosmosClient client, string databaseName, string containerName)
+        public CartCosmosDbRepository(IConfiguration configuration)
         {
-            _container = client.GetContainer(databaseName, containerName);
+            var connectionString = configuration.GetValue<string>("CosmosDb:ConnectionString");
+            var databaseName = configuration.GetValue<string>("CosmosDb:DatabaseName");
+            var containerName = configuration.GetValue<string>("CosmosDb:ContainerName");
+            var client = new CosmosClient(connectionString);
+            container = client.GetContainer(databaseName, containerName);
         }
 
         public async Task AddOrUpdateCartAsync(Cart cart)
         {
-            await _container.UpsertItemAsync(cart, new PartitionKey(cart.UserId));
+            await container.UpsertItemAsync(cart, new PartitionKey(cart.UserId));
         }
 
         public async Task<Cart?> GetCartAsync(int userId)
@@ -22,7 +26,7 @@ namespace CoffeeShop.ShoppingCart.Api.Repository
             var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId")
                 .WithParameter("@userId", userId);
 
-            var iterator = _container.GetItemQueryIterator<Cart>(query);
+            var iterator = container.GetItemQueryIterator<Cart>(query);
             if (iterator.HasMoreResults)
             {
                 var result = await iterator.ReadNextAsync();
@@ -36,7 +40,7 @@ namespace CoffeeShop.ShoppingCart.Api.Repository
         public async Task RemoveCartAsync(int userId)
         {
             var partitionKey = new PartitionKey(userId);
-            await _container.DeleteItemAsync<Cart>(userId.ToString(), partitionKey);
+            await container.DeleteItemAsync<Cart>(userId.ToString(), partitionKey);
         }
     }
 }

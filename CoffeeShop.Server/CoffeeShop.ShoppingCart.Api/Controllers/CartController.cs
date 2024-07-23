@@ -2,8 +2,7 @@
 using CoffeeShop.ShoppingCart.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Google.Protobuf.WellKnownTypes;
-using static ProductsClient.ProductService;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static GrpcProductsClient.ProductsApi;
 
 namespace CoffeeShop.ShoppingCart.Api.Controllers
 {
@@ -12,9 +11,9 @@ namespace CoffeeShop.ShoppingCart.Api.Controllers
     public class CartController : ControllerBase
     {
         private readonly ICartService cartService;
-        private readonly ProductServiceClient productsClient;
+        private readonly ProductsApiClient productsClient;
 
-        public CartController(/*ICartService cartService, */ProductServiceClient productServiceClient)
+        public CartController(/*ICartService cartService, */ProductsApiClient productServiceClient)
         {
             //this.cartService = cartService;
             this.productsClient = productServiceClient;

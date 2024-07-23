@@ -1,11 +1,11 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using ProductGRPCService;
-using static ProductGRPCService.ProductService;
+using GrpcProducts;
+using static GrpcProducts.ProductsApi;
 
 namespace CoffeeShop.Products.Api.Services
 {
-    public class ProductGrpcService : ProductServiceBase
+    public class ProductGrpcService : ProductsApiBase
     {
         private readonly IProductService productService;
 

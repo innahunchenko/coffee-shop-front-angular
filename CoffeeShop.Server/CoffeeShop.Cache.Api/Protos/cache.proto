@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcCache";
+
+package cache;
+
+service CacheApi {
+  rpc GetCachedData (GetCachedDataRequest) returns (GetCachedDataResponse);
+  rpc SetCachedData (SetCachedDataRequest) returns (SetCachedDataResponse);
+  rpc SetCachedDataWithExpiry (SetCachedDataWithExpiryRequest) returns (SetCachedDataResponse);
+  rpc InvalidateCache (InvalidateCacheRequest) returns (InvalidateCacheResponse);
+  rpc AddToSet (AddToSetRequest) returns (AddToSetResponse);
+  rpc GetAllKeys (GetAllKeysRequest) returns (GetAllKeysResponse);
+  rpc GetAllCachedData (GetAllCachedDataRequest) returns (GetAllCachedDataResponse);
+}
+
+message GetCachedDataRequest {
+  string cacheKey = 1;
+}
+
+message GetCachedDataResponse {
+  string data = 1;
+}
+
+message SetCachedDataRequest {
+  string cacheKey = 1;
+  string data = 2;
+}
+
+message SetCachedDataWithExpiryRequest {
+  string cacheKey = 1;
+  string data = 2;
+  int64 expirySeconds = 3;
+}
+
+message SetCachedDataResponse {
+  bool success = 1;
+}
+
+message InvalidateCacheRequest {
+  string pattern = 1;
+}
+
+message InvalidateCacheResponse {
+  bool success = 1;
+}
+
+message AddToSetRequest {
+  string setKey = 1;
+  string value = 2;
+}
+
+message AddToSetResponse {
+  bool success = 1;
+}
+
+message GetAllKeysRequest {
+  string setKey = 1;
+}
+
+message GetAllKeysResponse {
+  repeated string keys = 1;
+}
+
+message GetAllCachedDataRequest {
+    string setKey = 1;
+}
+
+message GetAllCachedDataResponse {
+    repeated string data = 1;
+}

@@ -6,14 +6,12 @@ namespace CoffeeShop.ShoppingCart.Api.Services
     public class CartService : ICartService
     {
         private readonly ICartCosmosDbRepository cartCosmosDbRepository;
-        private readonly HttpClient httpClient;
-        private readonly string? cacheApiUrl;
+        //private readonly string? cacheApiUrl;
 
-        public CartService(ICartCosmosDbRepository cartCosmosDbRepository, HttpClient httpClient, IConfiguration configuration)
+        public CartService(ICartCosmosDbRepository cartCosmosDbRepository)
         {
             this.cartCosmosDbRepository = cartCosmosDbRepository;
-            this.httpClient = httpClient;
-            this.cacheApiUrl = configuration.GetValue<string>("CacheApiUrl");
+            //  this.cacheApiUrl = configuration.GetValue<string>("CacheApiUrl");
         }
 
         public async Task<Cart?> GetCartAsync(int userId)
@@ -23,13 +21,13 @@ namespace CoffeeShop.ShoppingCart.Api.Services
             //var cart = await cacheService.GetCachedDataAsync<Cart>(cacheKey);
             //if (cart != null)
             //{
-             //   return cart;
+            //   return cart;
             //}
 
             var cartFromDb = await cartCosmosDbRepository.GetCartAsync(userId);
             if (cartFromDb != null)
             {
-              //  await cacheService.SetCachedDataAsync(cacheKey, cartFromDb);
+                //  await cacheService.SetCachedDataAsync(cacheKey, cartFromDb);
             }
 
             return cartFromDb;

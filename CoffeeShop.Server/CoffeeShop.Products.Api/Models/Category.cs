@@ -1,6 +1,4 @@
-﻿using CoffeeShop.DataAccess.Common;
-
-namespace CoffeeShop.Products.Api.Models
+﻿namespace CoffeeShop.Products.Api.Models
 {
     public class Category : BaseEntity
     {

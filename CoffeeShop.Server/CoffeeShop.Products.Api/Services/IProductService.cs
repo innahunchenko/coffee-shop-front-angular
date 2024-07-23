@@ -1,7 +1,6 @@
-﻿using CoffeeShop.Products.Api.Models;
-using ProductGRPCService;
-using CategoryGrpc = ProductGRPCService.Category;
-using ProductGrpc = ProductGRPCService.Product;
+﻿using GrpcProducts;
+using CategoryGrpc = GrpcProducts.Category;
+using ProductGrpc = GrpcProducts.Product;
 
 namespace CoffeeShop.Products.Api.Services
 {

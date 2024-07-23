@@ -1,17 +1,15 @@
-﻿using CoffeeShop.DataAccess.Common;
-using CoffeeShop.Products.Api.Models;
+﻿using CoffeeShop.Products.Api.Models;
 using Dapper;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 namespace CoffeeShop.Products.Api.Repository
 {
-    public class ProductRepository : BaseRepository<Product>, IProductRepository
+    public class ProductRepository : IProductRepository
     {
         private readonly DataContext context;
 
         public ProductRepository(DataContext context)
-            : base(context)
         {
             this.context = context;
         }

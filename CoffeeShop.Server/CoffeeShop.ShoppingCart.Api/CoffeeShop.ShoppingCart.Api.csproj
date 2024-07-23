@@ -25,11 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CoffeeShop.DataAccess.Common\CoffeeShop.DataAccess.Common.csproj" />
-    <ProjectReference Include="..\CoffeeShop.Infrastructure\CoffeeShop.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Protobuf Include="Protos\products.proto" GrpcServices="Client" />
   </ItemGroup>
 

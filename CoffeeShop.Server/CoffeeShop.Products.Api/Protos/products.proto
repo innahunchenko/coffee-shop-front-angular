@@ -1,8 +1,7 @@
 syntax = "proto3";
 
-option csharp_namespace = "ProductGRPCService";
+option csharp_namespace = "GrpcProducts";
 
-import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 package product;
@@ -37,7 +36,7 @@ message FilterRequest {
     Filter filter = 1;
 }
 
-service ProductService {
+service ProductsApi {
     rpc GetCategories (google.protobuf.Empty) returns (CategoriesResponse);
     rpc GetProducts (FilterRequest) returns (ProductsResponse);
 }

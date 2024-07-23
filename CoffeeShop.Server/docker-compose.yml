@@ -14,8 +14,9 @@ services:
     container_name: cart-api
     depends_on:
       - products-api
+      - cache-api
     networks:
-       - mynetwork
+       - coffeeshopnetwork
 
   products-api:
     image: ${DOCKER_REGISTRY-}coffeeshopproductsapi
@@ -25,22 +26,32 @@ services:
     ports:  
      - "8080:8080" 
     container_name: products-api
+    depends_on:
+      - cache-api
     networks:
-       - mynetwork
+       - coffeeshopnetwork
 
-  # cache-api:
-  #   image: ${DOCKER_REGISTRY-}coffeeshopcacheapi
-  #   build:
-  #     context: .
-  #     dockerfile: CoffeeShop.Cache.Api/Dockerfile
-  #   ports:
-  #     - "8084:8084"
-  #     - "8085:8085"
-  #   environment:
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #   networks:
-  #     - mynetwork
+  cache-api:
+    image: ${DOCKER_REGISTRY-}coffeeshopcacheapi
+    build:
+      context: .
+      dockerfile: CoffeeShop.Cache.Api/Dockerfile
+    ports:
+      - "5003:8080"
+    container_name: cache-api
+    depends_on:
+      - redis
+    networks:
+      - coffeeshopnetwork
+  
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    container_name: redis
+    networks:
+      - coffeeshopnetwork
 
 networks:
-    mynetwork:
+    coffeeshopnetwork:
      driver: bridge

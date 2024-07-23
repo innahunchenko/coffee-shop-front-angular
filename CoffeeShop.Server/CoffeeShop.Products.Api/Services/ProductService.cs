@@ -2,11 +2,13 @@
 using CoffeeShop.Products.Api.Models.Dto;
 using CoffeeShop.Products.Api.Repository;
 using Newtonsoft.Json;
-using ProductGRPCService;
+using GrpcProducts;
 using System.Text;
-using CategoryGrpc = ProductGRPCService.Category;
-using ProductGrpc = ProductGRPCService.Product;
+using CategoryGrpc = GrpcProducts.Category;
+using ProductGrpc = GrpcProducts.Product;
 using Filter = CoffeeShop.Products.Api.Models.Filter;
+using static GrpcCacheClient.CacheApi;
+using GrpcCacheClient;
 
 namespace CoffeeShop.Products.Api.Services
 {
@@ -14,34 +16,105 @@ namespace CoffeeShop.Products.Api.Services
     {
         private readonly IProductRepository productRepository;
         private readonly IMapper mapper;
-        private readonly HttpClient httpClient;
+        private readonly CacheApiClient cacheApiClient;
         private readonly TimeSpan defaultExpiry;
-        private readonly string cacheApiUrl;
+     //   private readonly string cacheApiUrl;
+
+        const string CATEGORY_KEYS = "categoryKeys";
 
         public ProductService(IProductRepository productRepository,
                               IConfiguration configuration,
                               IMapper mapper,
-                              HttpClient httpClient)
+                              CacheApiClient cacheApiClient)
         {
             this.productRepository = productRepository;
             this.mapper = mapper;
-            this.httpClient = httpClient;
+            this.cacheApiClient = cacheApiClient;
             defaultExpiry = TimeSpan.FromMinutes(configuration.GetValue<int>("CacheSettings:DefaultCacheDurationMinutes"));
-            cacheApiUrl = configuration.GetValue<string>("CacheApiUrl");
+       //     cacheApiUrl = configuration.GetValue<string>("CacheApiUrl");
         }
 
         public async Task<List<CategoryGrpc>> GetCategoriesAsync()
         {
-            //var cacheKey = "categories";
-            //var cachedCategories = await GetCachedDataAsync<List<CategoryGrpc>>(cacheKey);
-            //if (cachedCategories != null)
-            //{
-            //    return cachedCategories;
-            //}
+            // Try to get cached categories
+            var cachedCategories = await GetCachedCategoriesAsync();
 
-            var categories = await productRepository.GetMainCategoriesWithSubcategoriesAsync();
-            //  await SetCachedDataAsync(cacheKey, categories, defaultExpiry);
-            return mapper.Map<List<CategoryGrpc>>(categories);
+            if (cachedCategories.Any())
+            {
+                return cachedCategories;
+            }
+
+            // If no cached categories, get categories from the database
+            var categoriesFromDb = await GetCategoriesFromDbAsync();
+
+            // Cache the fetched categories
+            await CacheCategoriesAsync(categoriesFromDb);
+
+            return categoriesFromDb;
+        }
+
+        private async Task<List<CategoryGrpc>> GetCachedCategoriesAsync()
+        {
+            var getAllCachedDataRequest = new GetAllCachedDataRequest { SetKey = CATEGORY_KEYS };
+            var cachedData = await cacheApiClient.GetAllCachedDataAsync(getAllCachedDataRequest);
+
+            Console.WriteLine($"Data to deserialize: {cachedData.Data}");
+            var cachedCategories = new List<CategoryGrpc>();
+
+            foreach (var data in cachedData.Data)
+            {
+                if (!string.IsNullOrEmpty(data))
+                {
+                    try
+                    {
+                        var dtoCategory = JsonConvert.DeserializeObject<CategoryDto>(data);
+                        var grpcCategory = mapper.Map<CategoryGrpc>(dtoCategory);
+                        cachedCategories.Add(grpcCategory);
+                    }
+                    catch (JsonSerializationException ex)
+                    {
+                        Console.WriteLine($"Deserialization error: {ex.Message}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                    }
+                }
+            }
+
+            return cachedCategories;
+        }
+
+        private async Task<List<CategoryGrpc>> GetCategoriesFromDbAsync()
+        {
+            var categoriesFromDb = await productRepository.GetMainCategoriesWithSubcategoriesAsync();
+            return mapper.Map<List<CategoryGrpc>>(categoriesFromDb);
+        }
+
+        private async Task CacheCategoriesAsync(List<CategoryGrpc> categories)
+        {
+            var tasks = new List<Task>();
+
+            foreach (var category in categories)
+            {
+                var cacheKey = $"category:{category.Name}";
+                var setCachedDataRequest = new SetCachedDataRequest
+                {
+                    CacheKey = cacheKey,
+                    Data = JsonConvert.SerializeObject(category)
+                };
+
+                var addToSetRequest = new AddToSetRequest
+                {
+                    SetKey = CATEGORY_KEYS,
+                    Value = cacheKey
+                };
+
+                tasks.Add(cacheApiClient.SetCachedDataAsync(setCachedDataRequest).ResponseAsync);
+                tasks.Add(cacheApiClient.AddToSetAsync(addToSetRequest).ResponseAsync);
+            }
+
+            await Task.WhenAll(tasks);
         }
 
         public async Task<List<ProductGrpc>> GetProductsAsync(FilterRequest filterRequest)
@@ -81,29 +154,29 @@ namespace CoffeeShop.Products.Api.Services
 
         private async Task<T> GetCachedDataAsync<T>(string cacheKey) where T : class
         {
-            var response = await httpClient.GetAsync($"{cacheApiUrl}/{cacheKey}");
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<T>(content);
-            }
+            //var response = httpClient.GetAsync($"{cacheApiUrl}/{cacheKey}");
+           // if (response.IsSuccessStatusCode)
+           // {
+             //   var content = await response.Content.ReadAsStringAsync();
+             //   return JsonConvert.DeserializeObject<T>(content);
+           // }
 
             return null;
         }
 
         private async Task SetCachedDataAsync<T>(string cacheKey, T data, TimeSpan expiry) where T : class
         {
-            if (expiry == TimeSpan.Zero)
-            {
-                expiry = defaultExpiry;
-            }
+          //  if (expiry == TimeSpan.Zero)
+          //  {
+          //      expiry = defaultExpiry;
+          //  }
 
-            await httpClient.PostAsJsonAsync($"{cacheApiUrl}/{cacheKey}/{expiry.TotalMinutes}", data);
+          //  await httpClient.PostAsJsonAsync($"{cacheApiUrl}/{cacheKey}/{expiry.TotalMinutes}", data);
         }
 
         private async Task InvalidateCacheAsync(string pattern)
         {
-            await httpClient.DeleteAsync($"{cacheApiUrl}/{pattern}");
+          //  await httpClient.DeleteAsync($"{cacheApiUrl}/{pattern}");
         }
 
         private string GenerateCacheKey(Filter filter)

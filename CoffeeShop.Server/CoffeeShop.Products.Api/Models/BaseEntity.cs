@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 
-namespace CoffeeShop.DataAccess.Common
+namespace CoffeeShop.Products.Api.Models
 {
     public class BaseEntity
     {
