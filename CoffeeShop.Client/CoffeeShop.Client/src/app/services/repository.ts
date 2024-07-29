@@ -5,7 +5,7 @@ import { catchError } from "rxjs";
 import { Category } from "../models/category.model";
 import { Filter } from "../models/filter.model";
 
-export const API_BASE_URL = 'https://localhost:8081/api';
+export const API_BASE_URL = 'http://localhost:5000/api';
 
 const productsUrl = `${API_BASE_URL}/products`;
 

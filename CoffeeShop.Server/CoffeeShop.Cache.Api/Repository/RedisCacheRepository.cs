@@ -4,68 +4,80 @@ namespace CoffeeShop.Cache.Api.Repository
 {
     public class RedisCacheRepository : IRedisCacheRepository
     {
-        private readonly IDatabase redisDatabase;
-        private readonly TimeSpan defaultExpiry;
+        private readonly IDatabase db;
+        private readonly IServer server;
+        private readonly TimeSpan expiration;
 
         public RedisCacheRepository(IConfiguration configuration)
         {
             string connectionString = configuration.GetValue<string>("CacheSettings:RedisConnectionString") ?? "";
-            int defaultCacheDurationMinutes = configuration.GetValue<int>("CacheSettings:DefaultCacheDurationMinutes");
-            defaultExpiry = TimeSpan.FromMinutes(defaultCacheDurationMinutes);
+            var defaultExpiry = configuration.GetValue<double>("CacheSettings:DefaultCacheDurationMinutes");
+            var expirationTime = DateTimeOffset.Now.AddMinutes(defaultExpiry);
+            expiration = expirationTime.DateTime.Subtract(DateTime.Now);
             var connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
-            redisDatabase = connectionMultiplexer.GetDatabase();
+            db = connectionMultiplexer.GetDatabase();
+            server = connectionMultiplexer.GetServer(connectionMultiplexer.Configuration);
         }
 
-        public async Task<string> GetCachedDataAsync(string cacheKey)
+        public async Task<IDictionary<string, string>> GetAllAsync(string hashKey)
         {
-            var redisValue = await redisDatabase.StringGetAsync(cacheKey);
-            return redisValue;
-            //T? result = JsonConvert.DeserializeObject<T>(json);
+            var values = await db.HashGetAllAsync(hashKey);
+            if (values.Length > 0)
+            {
+                return values.ToDictionary(e => (string)e.Name, e => (string)e.Value);
+            }
+
+            return new Dictionary<string, string>();
         }
 
-        public async Task SetCachedDataAsync(string cacheKey, string data)
+        public async Task<string> GetDataAsync(string key, string id)
         {
-            await SetCachedDataAsync(cacheKey, data, defaultExpiry);
+            var value = await db.HashGetAsync(key, id);
+            if (!value.IsNullOrEmpty)
+            {
+                return value;
+            }
+
+            return string.Empty;
         }
 
-        public async Task SetCachedDataAsync(string cacheKey, string data, TimeSpan expiry)
+        public async Task SetDataAsync(string key, string id, string data)
         {
-           // var json = JsonConvert.SerializeObject(data);
-            await redisDatabase.StringSetAsync(cacheKey, data, expiry);
-            await UpdateCacheMetadataAsync(cacheKey);
+            await db.HashSetAsync(key, [new HashEntry(id, data)]);
+            await db.KeyExpireAsync(key, expiration);
         }
 
-        private async Task UpdateCacheMetadataAsync(string cacheKey)
+        public async Task SetDataAsync(string key, IEnumerable<HashEntry> hashEntries)
         {
-            await redisDatabase.StringSetAsync($"metadata:{cacheKey}:lastUpdated", DateTime.UtcNow.ToString("o"));
+            await db.HashSetAsync(key, hashEntries.ToArray());
+            await db.KeyExpireAsync(key, expiration);
         }
 
-        public async Task AddToSetAsync(string setKey, string value)
+        public IEnumerable<string> GetHashKeys(string pattern)
         {
-            await redisDatabase.SetAddAsync(setKey, value);
-        }
-
-        public async Task<IEnumerable<string>> GetAllKeysAsync(string setKey)
-        {
-            var keys = await redisDatabase.SetMembersAsync(setKey);
+            var keys = server.Keys(pattern: pattern);
             return keys.Select(k => k.ToString());
         }
 
-        //public async Task<IEnumerable<string>> GetAllKeysAsync(string setKey)
-        //{
-        //    var server = redisDatabase.Multiplexer.GetServer(redisDatabase.Multiplexer.GetEndPoints().First());
-        //    return server.Keys(pattern: $"{setKey}*").Select(key => key.ToString());
-        //}
-
-        public async Task InvalidateCacheAsync(string pattern)
+        public async Task<bool> RemoveDataAsync(string key, string id)
         {
-            var endpoints = redisDatabase.Multiplexer.GetEndPoints();
-            foreach (var endpoint in endpoints)
-            {
-                var server = redisDatabase.Multiplexer.GetServer(endpoint);
-                var keys = server.Keys(pattern: pattern);
-                await redisDatabase.KeyDeleteAsync(keys.ToArray());
-            }
+            var isDeleted = await db.HashDeleteAsync(key, id);
+            return isDeleted;
+        }
+
+        public async Task<bool> RemoveHashAsync(string key)
+        {
+            return await db.KeyDeleteAsync(key);
+        }
+
+        public async Task SetAddAsync(string indexKey, string productKey)
+        {
+            await db.SetAddAsync(indexKey, productKey);
+        }
+
+        public async Task<RedisValue[]> SetMembersAsync(string setKey)
+        {
+            return await db.SetMembersAsync(setKey);
         }
     }
 }
