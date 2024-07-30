@@ -31,66 +31,86 @@ namespace CoffeeShop.Products.Api.Services
             var threadId = Thread.CurrentThread.ManagedThreadId;
             Console.WriteLine($"GetCategoriesAsync: Start (Thread {threadId})");
 
-            var result = new List<CategoryDto?>();
-            var cachedValues = await cacheClient.GetAllAsync(new GetAllRequest() { HashKey = CATEGORIES_KEY });
-            var cachedCategories = cachedValues.Entries.Select(entry => JsonConvert.DeserializeObject<CategoryDto>(entry.Data)).ToList();
-
+            var cachedCategories = await GetCachedCategoriesAsync();
             if (cachedCategories.Any())
             {
                 Console.WriteLine($"GetCategoriesAsync cache: End (Thread {threadId})");
                 return cachedCategories;
             }
 
-            var categoriesFromDb = mapper.Map<List<CategoryDto?>>(await productRepository.GetMainCategoriesWithSubcategoriesAsync());
-
+            var categoriesFromDb = await GetCategoriesFromDbAsync();
             if (categoriesFromDb.Any())
             {
-                var hashEntries = categoriesFromDb.Select(category => new KeyValuePair
-                {
-                    Id = category?.Name,
-                    Data = JsonConvert.SerializeObject(category)
-                }).ToList();
-
-                var request = new SetDataBatchRequest
-                {
-                    Key = CATEGORIES_KEY,
-                    Entries = { hashEntries }
-                };
-
-                await cacheClient.SetDataBatchAsync(request);
-                
+                await CacheCategoriesAsync(categoriesFromDb);
                 Console.WriteLine($"GetCategoriesAsync db: End (Thread {threadId})");
                 return categoriesFromDb;
             }
 
-            return result;
+            return new List<CategoryDto?>();
+        }
+
+        private async Task<List<CategoryDto?>> GetCachedCategoriesAsync()
+        {
+            var cachedValues = await cacheClient.GetAllAsync(new GetAllRequest { HashKey = CATEGORIES_KEY });
+            return cachedValues.Entries.Select(entry => JsonConvert.DeserializeObject<CategoryDto>(entry.Data)).ToList();
+        }
+
+        private async Task<List<CategoryDto?>> GetCategoriesFromDbAsync()
+        {
+            var categoriesFromDb = await productRepository.GetMainCategoriesWithSubcategoriesAsync();
+            return mapper.Map<List<CategoryDto?>>(categoriesFromDb);
+        }
+
+        private async Task CacheCategoriesAsync(List<CategoryDto?> categories)
+        {
+            var hashEntries = categories.Select(category => new KeyValuePair
+            {
+                Id = category?.Name,
+                Data = JsonConvert.SerializeObject(category)
+            }).ToList();
+
+            var request = new SetDataBatchRequest
+            {
+                Key = CATEGORIES_KEY,
+                Entries = { hashEntries }
+            };
+
+            await cacheClient.SetDataBatchAsync(request);
         }
 
         public async Task<IEnumerable<ProductDto?>> GetProductsAsync(Filter filter)
         {
             var threadId = Thread.CurrentThread.ManagedThreadId;
             Console.WriteLine($"GetProductsAsync: Start (Thread {threadId})");
-            var result = new List<ProductDto>();
 
-            var cahcedProducts = await SearchProductsAsync(filter);
-            if (cahcedProducts.Any())
+            var cachedProducts = await SearchProductsInCacheAsync(filter);
+            if (cachedProducts.Any())
             {
                 Console.WriteLine($"GetProductsAsync cache: End (Thread {threadId})");
-                return cahcedProducts;
+                return cachedProducts;
             }
 
-            var productsFromDb = await productRepository.GetProductsAsync(filter);
-            var dtoProducts = mapper.Map<List<ProductDto>>(productsFromDb);
-
-            if (dtoProducts.Any())
+            var productsFromDb = await GetProductsFromDbAsync(filter);
+            if (productsFromDb.Any())
             {
-                var tasks = dtoProducts.Select(product => AddProductAsync(product, filter));
-                await Task.WhenAll(tasks);
+                await CacheProductsAsync(productsFromDb, filter);
                 Console.WriteLine($"GetProductsAsync db: End (Thread {threadId})");
-                return dtoProducts;
+                return productsFromDb;
             }
 
-            return result;
+            return Enumerable.Empty<ProductDto?>();
+        }
+
+        private async Task<List<ProductDto?>> GetProductsFromDbAsync(Filter filter)
+        {
+            var productsFromDb = await productRepository.GetProductsAsync(filter);
+            return mapper.Map<List<ProductDto?>>(productsFromDb);
+        }
+
+        private async Task CacheProductsAsync(List<ProductDto> products, Filter filter)
+        {
+            var tasks = products.Select(product => AddProductAsync(product, filter));
+            await Task.WhenAll(tasks);
         }
 
         public async Task AddProductAsync(ProductDto product, Filter filter)
@@ -100,34 +120,12 @@ namespace CoffeeShop.Products.Api.Services
                 var entries = mapper.Map<IEnumerable<KeyValuePair>>(product);
                 var request = new SetDataBatchRequest
                 {
-                    Key = $"product:{product.Id}"
+                    Key = $"product:{product.Id}",
+                    Entries = { entries }
                 };
 
-                request.Entries.AddRange(entries);
                 await cacheClient.SetDataBatchAsync(request);
-
-                switch (filter)
-                {
-                    case { Search: { Length: > 0 } }:
-                        await cacheClient.SetAddAsync(new SetAddRequest() { IndexKey = $"index:product:name:{product.Name.ToLower()}", ProductKey = $"product:{product.Id}" });
-                        break;
-
-                    case { Subcategory: { Length: > 0 } }:
-                        await cacheClient.SetAddAsync(new SetAddRequest() { IndexKey = $"index:product:subcategory:{product.SubcategoryName.ToLower()}", ProductKey = $"product:{product.Id}" });
-                        break;
-
-                    case { Category: { Length: > 0 } }:
-                        await cacheClient.SetAddAsync(new SetAddRequest() { IndexKey = $"index:product:category:{product.CategoryName.ToLower()}", ProductKey = $"product:{product.Id}" });
-                        break;
-
-                    default:
-                        await cacheClient.SetAddAsync(new SetAddRequest
-                        {
-                            IndexKey = "index:product:all",
-                            ProductKey = $"product:{product.Id}"
-                        });
-                        break;
-                }
+                await AddProductToIndexAsync(product, filter);
             }
             catch (Exception ex)
             {
@@ -135,51 +133,66 @@ namespace CoffeeShop.Products.Api.Services
             }
         }
 
-        public async Task<List<ProductDto?>> SearchProductsAsync(Filter filter)
+        private async Task AddProductToIndexAsync(ProductDto product, Filter filter)
+        {
+            var indexKey = filter switch
+            {
+                { Search: { Length: > 0 } } => $"index:product:name:{product.Name.ToLower()}",
+                { Subcategory: { Length: > 0 } } => $"index:product:subcategory:{product.SubcategoryName.ToLower()}",
+                { Category: { Length: > 0 } } => $"index:product:category:{product.CategoryName.ToLower()}",
+                _ => "index:product:all"
+            };
+
+            await cacheClient.SetAddAsync(new SetAddRequest
+            {
+                IndexKey = indexKey,
+                ProductKey = $"product:{product.Id}"
+            });
+        }
+
+        public async Task<List<ProductDto?>> SearchProductsInCacheAsync(Filter filter)
         {
             var productKeys = new HashSet<string>();
 
             switch (filter)
             {
                 case { Search: { Length: > 0 } }:
-                    var searchKeys = await cacheClient.GetSetMembersAsync(new GetSetMembersRequest
-                    {
-                        SetKey = $"index:product:name:{filter.Search.ToLower()}"
-                    });
-                    productKeys.UnionWith(searchKeys.Members);
+                    var searchKeys = await GetProductKeysAsync($"index:product:name:{filter.Search.ToLower()}");
+                    productKeys.UnionWith(searchKeys);
                     break;
 
                 case { Subcategory: { Length: > 0 } }:
-                    var subcategoryKeys = await cacheClient.GetSetMembersAsync(new GetSetMembersRequest
-                    {
-                        SetKey = $"index:product:subcategory:{filter.Subcategory.ToLower()}"
-                    });
-                    productKeys.UnionWith(subcategoryKeys.Members);
+                    var subcategoryKeys = await GetProductKeysAsync($"index:product:subcategory:{filter.Subcategory.ToLower()}");
+                    productKeys.UnionWith(subcategoryKeys);
                     break;
 
                 case { Category: { Length: > 0 } }:
-                    var categoryOnlyKeys = await cacheClient.GetSetMembersAsync(new GetSetMembersRequest
-                    {
-                        SetKey = $"index:product:category:{filter.Category.ToLower()}"
-                    });
-                    productKeys.UnionWith(categoryOnlyKeys.Members);
+                    var categoryKeys = await GetProductKeysAsync($"index:product:category:{filter.Category.ToLower()}");
+                    productKeys.UnionWith(categoryKeys);
                     break;
 
                 default:
-                    var allKeys = await cacheClient.GetHashKeysAsync(new GetHashKeysRequest
-                    {
-                        Key = "product:*"
-                    });
-                    productKeys.UnionWith(allKeys.Keys);
+                    var allKeys = await GetProductKeysAsync("product:*");
+                    productKeys.UnionWith(allKeys);
                     break;
             }
 
+            return await GetProductsFromCacheAsync(productKeys);
+        }
+
+        private async Task<HashSet<string>> GetProductKeysAsync(string setKey)
+        {
+            var response = await cacheClient.GetSetMembersAsync(new GetSetMembersRequest { SetKey = setKey });
+            return response.Members.ToHashSet();
+        }
+
+        private async Task<List<ProductDto?>> GetProductsFromCacheAsync(HashSet<string> productKeys)
+        {
             var products = new List<ProductDto?>();
 
             foreach (var key in productKeys)
             {
                 var entryDictionary = await cacheClient.GetAllAsync(new GetAllRequest { HashKey = key });
-
                 if (entryDictionary != null && entryDictionary.Entries.Count > 0)
                 {
                     var productDto = mapper.Map<ProductDto>(entryDictionary.Entries);

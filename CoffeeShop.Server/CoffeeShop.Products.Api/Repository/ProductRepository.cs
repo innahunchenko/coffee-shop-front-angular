@@ -80,27 +80,5 @@ namespace CoffeeShop.Products.Api.Repository
             var products = await connection.QueryAsync<Product>(query, parameters);
             return products.ToList();
         }
-
-        public async Task AddProductAsync(Product product)
-        {
-            context.Products.Add(product);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task UpdateProductAsync(Product product)
-        {
-            context.Products.Update(product);
-            await context.SaveChangesAsync();
-        }
-
-        public async Task DeleteProductAsync(int productId)
-        {
-            var product = await context.Products.FindAsync(productId);
-            if (product != null)
-            {
-                context.Products.Remove(product);
-                await context.SaveChangesAsync();
-            }
-        }
     }
 }

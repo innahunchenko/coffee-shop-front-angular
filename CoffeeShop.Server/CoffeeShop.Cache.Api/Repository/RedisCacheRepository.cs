@@ -10,7 +10,7 @@ namespace CoffeeShop.Cache.Api.Repository
 
         public RedisCacheRepository(IConfiguration configuration)
         {
-            string connectionString = configuration.GetValue<string>("CacheSettings:RedisConnectionString") ?? "";
+            string connectionString = configuration.GetValue<string>("CacheSettings:RedisConnectionString");
             var defaultExpiry = configuration.GetValue<double>("CacheSettings:DefaultCacheDurationMinutes");
             var expirationTime = DateTimeOffset.Now.AddMinutes(defaultExpiry);
             expiration = expirationTime.DateTime.Subtract(DateTime.Now);
@@ -30,7 +30,7 @@ namespace CoffeeShop.Cache.Api.Repository
             return new Dictionary<string, string>();
         }
 
-        public async Task<string> GetDataAsync(string key, string id)
+        public async Task<string?> GetDataAsync(string key, string id)
         {
             var value = await db.HashGetAsync(key, id);
             if (!value.IsNullOrEmpty)
