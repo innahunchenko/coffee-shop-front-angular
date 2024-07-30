@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using GrpcCache;
+using StackExchange.Redis;
 
 namespace CoffeeShop.Cache.Api.Repository
 {
@@ -13,6 +14,10 @@ namespace CoffeeShop.Cache.Api.Repository
         IEnumerable<string> GetHashKeys(string key);
         Task SetAddAsync(string indexKey, string productKey);
         Task<RedisValue[]> SetMembersAsync(string setKey);
+        void CreateIndex(string indexName, IEnumerable<Property> properties);
+        void AddDocument(string indexName, string id, IEnumerable<Property> properties);
+        Task<SearchResponse> SearchAsync(SearchRequest request);
+        IndexExistsResponse IndexExists(IndexExistsRequest request);
 
         //Task<string> GetCachedDataAsync(string cacheKey);
         //Task SetCachedDataAsync(string cacheKey, string data);

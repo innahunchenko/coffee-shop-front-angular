@@ -1,4 +1,6 @@
-﻿using StackExchange.Redis;
+﻿using GrpcCache;
+using NRediSearch;
+using StackExchange.Redis;
 
 namespace CoffeeShop.Cache.Api.Repository
 {
@@ -78,6 +80,73 @@ namespace CoffeeShop.Cache.Api.Repository
         public async Task<RedisValue[]> SetMembersAsync(string setKey)
         {
             return await db.SetMembersAsync(setKey);
+        }
+
+        public async Task<SearchResponse> SearchAsync(SearchRequest request)
+        {
+            var rediSearchClient = new Client(request.IndexName, db);
+
+            var query = new Query(request.Query).Limit(0, request.Limit);
+
+            var searchResult = await Task.Run(() => rediSearchClient.Search(query));
+
+            var response = new SearchResponse();
+
+            foreach (var doc in searchResult.Documents)
+            {
+                var document = new SearchDocument
+                {
+                    Id = doc.Id
+                };
+
+                var properties = doc.GetProperties();
+
+                foreach (var property in properties)
+                {
+                    var key = property.Key;
+                    var value = doc[key];
+
+                    document.Fields.Add(key, value.ToString());
+                }
+
+                response.Documents.Add(document);
+            }
+
+            return response;
+        }
+
+        public IndexExistsResponse IndexExists(IndexExistsRequest request)
+        {
+            var result = server.Execute("FT._LIST");
+            var indexNames = (RedisResult[])result;
+            var indexExists = indexNames.Any(index => index.ToString() == request.IndexName);
+            return new IndexExistsResponse { Exists = indexExists };
+        }
+
+        public void CreateIndex(string indexName, IEnumerable<Property> properties)
+        {
+            var client = new Client(indexName, db);
+            var schema = new Schema();
+
+            foreach (var property in properties)
+            {
+                schema.AddTextField(property.Name, 1.0);
+            }
+
+            client.CreateIndex(schema, new Client.ConfiguredIndexOptions());
+        }
+
+        public void AddDocument(string indexName, string id, IEnumerable<Property> properties)
+        {
+            var client = new Client(indexName, db);
+            var doc = new Document(id);
+
+            foreach (var property in properties)
+            {
+                doc.Set(property.Name, property.Value);
+            }
+
+            client.AddDocument(doc);
         }
     }
 }

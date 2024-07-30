@@ -1,9 +1,11 @@
+using Autofac.Core;
 using CoffeeShop.Products.Api.Mapping;
 using CoffeeShop.Products.Api.Repository;
 using CoffeeShop.Products.Api.Services;
 using Grpc.Net.Client;
 using GrpcCacheClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -37,6 +39,7 @@ builder.Services.AddSingleton(sp =>
     var channel = GrpcChannel.ForAddress("http://cache-api:8080");
     return new CacheService.CacheServiceClient(channel);
 });
+
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
