@@ -14,8 +14,6 @@ namespace CoffeeShop.Products.Api.Services
         private readonly IProductRepository productRepository;
         private readonly IMapper mapper;
         private readonly CacheServiceClient cacheClient;
-        private static readonly SemaphoreSlim categorySemaphore = new SemaphoreSlim(1, 1);
-        private static readonly SemaphoreSlim productSemaphore = new SemaphoreSlim(1, 1);
 
         const string CATEGORIES_KEY = "categoriesKey";
 
@@ -33,7 +31,7 @@ namespace CoffeeShop.Products.Api.Services
             var threadId = Thread.CurrentThread.ManagedThreadId;
             Console.WriteLine($"GetCategoriesAsync: Start (Thread {threadId})");
 
-            var result = new List<CategoryDto>();
+            var result = new List<CategoryDto?>();
             var cachedValues = await cacheClient.GetAllAsync(new GetAllRequest() { HashKey = CATEGORIES_KEY });
             var cachedCategories = cachedValues.Entries.Select(entry => JsonConvert.DeserializeObject<CategoryDto>(entry.Data)).ToList();
 
@@ -43,35 +41,26 @@ namespace CoffeeShop.Products.Api.Services
                 return cachedCategories;
             }
 
-            var categoriesFromDb = mapper.Map<List<CategoryDto>>(await productRepository.GetMainCategoriesWithSubcategoriesAsync());
+            var categoriesFromDb = mapper.Map<List<CategoryDto?>>(await productRepository.GetMainCategoriesWithSubcategoriesAsync());
 
             if (categoriesFromDb.Any())
             {
-                await categorySemaphore.WaitAsync();
-                try
+                var hashEntries = categoriesFromDb.Select(category => new KeyValuePair
                 {
-                    var hashEntries = categoriesFromDb.Select(category => new KeyValuePair
-                    {
-                        Id = category.Name,
-                        Data = JsonConvert.SerializeObject(category)
-                    }).ToList();
+                    Id = category?.Name,
+                    Data = JsonConvert.SerializeObject(category)
+                }).ToList();
 
-                    var request = new SetDataBatchRequest
-                    {
-                        Key = CATEGORIES_KEY,
-                        Entries = { hashEntries }
-                    };
-
-                    await cacheClient.SetDataBatchAsync(request);
-                }
-                finally
+                var request = new SetDataBatchRequest
                 {
-                    categorySemaphore.Release();
-                }
+                    Key = CATEGORIES_KEY,
+                    Entries = { hashEntries }
+                };
 
+                await cacheClient.SetDataBatchAsync(request);
+                
                 Console.WriteLine($"GetCategoriesAsync db: End (Thread {threadId})");
                 return categoriesFromDb;
-
             }
 
             return result;
@@ -95,30 +84,16 @@ namespace CoffeeShop.Products.Api.Services
 
             if (dtoProducts.Any())
             {
-                await productSemaphore.WaitAsync();
-                try
-                {
-                    var tasks = dtoProducts.Select(AddProductAsync);
-                    await Task.WhenAll(tasks);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
-                finally
-                {
-                    productSemaphore.Release();
-                }
-
+                var tasks = dtoProducts.Select(product => AddProductAsync(product, filter));
+                await Task.WhenAll(tasks);
                 Console.WriteLine($"GetProductsAsync db: End (Thread {threadId})");
-
                 return dtoProducts;
             }
 
             return result;
         }
 
-        public async Task AddProductAsync(ProductDto product)
+        public async Task AddProductAsync(ProductDto product, Filter filter)
         {
             try
             {
@@ -130,9 +105,29 @@ namespace CoffeeShop.Products.Api.Services
 
                 request.Entries.AddRange(entries);
                 await cacheClient.SetDataBatchAsync(request);
-                await cacheClient.SetAddAsync(new SetAddRequest() { IndexKey = $"index:product:name:{product.Name.ToLower()}", ProductKey = $"product:{product.Id}" });
-                await cacheClient.SetAddAsync(new SetAddRequest() { IndexKey = $"index:product:category:{product.CategoryName.ToLower()}", ProductKey = $"product:{product.Id}" });
-                await cacheClient.SetAddAsync(new SetAddRequest() { IndexKey = $"index:product:subcategory:{product.SubcategoryName.ToLower()}", ProductKey = $"product:{product.Id}" });
+
+                switch (filter)
+                {
+                    case { Search: { Length: > 0 } }:
+                        await cacheClient.SetAddAsync(new SetAddRequest() { IndexKey = $"index:product:name:{product.Name.ToLower()}", ProductKey = $"product:{product.Id}" });
+                        break;
+
+                    case { Subcategory: { Length: > 0 } }:
+                        await cacheClient.SetAddAsync(new SetAddRequest() { IndexKey = $"index:product:subcategory:{product.SubcategoryName.ToLower()}", ProductKey = $"product:{product.Id}" });
+                        break;
+
+                    case { Category: { Length: > 0 } }:
+                        await cacheClient.SetAddAsync(new SetAddRequest() { IndexKey = $"index:product:category:{product.CategoryName.ToLower()}", ProductKey = $"product:{product.Id}" });
+                        break;
+
+                    default:
+                        await cacheClient.SetAddAsync(new SetAddRequest
+                        {
+                            IndexKey = "index:product:all",
+                            ProductKey = $"product:{product.Id}"
+                        });
+                        break;
+                }
             }
             catch (Exception ex)
             {
@@ -144,55 +139,43 @@ namespace CoffeeShop.Products.Api.Services
         {
             var productKeys = new HashSet<string>();
 
-            // Если выбран фильтр по поисковому слову
-            if (!string.IsNullOrEmpty(filter.Search))
+            switch (filter)
             {
-                var searchKeys = await cacheClient.GetSetMembersAsync(new GetSetMembersRequest
-                {
-                    SetKey = $"index:product:name:{filter.Search.ToLower()}"
-                });
-                productKeys.UnionWith(searchKeys.Members);
-            }
-            else
-            {
-                // Собираем ключи для подкатегории
-                if (!string.IsNullOrEmpty(filter.Subcategory))
-                {
+                case { Search: { Length: > 0 } }:
+                    var searchKeys = await cacheClient.GetSetMembersAsync(new GetSetMembersRequest
+                    {
+                        SetKey = $"index:product:name:{filter.Search.ToLower()}"
+                    });
+                    productKeys.UnionWith(searchKeys.Members);
+                    break;
+
+                case { Subcategory: { Length: > 0 } }:
                     var subcategoryKeys = await cacheClient.GetSetMembersAsync(new GetSetMembersRequest
                     {
                         SetKey = $"index:product:subcategory:{filter.Subcategory.ToLower()}"
                     });
                     productKeys.UnionWith(subcategoryKeys.Members);
-                }
+                    break;
 
-                // Собираем ключи для категории
-                if (!string.IsNullOrEmpty(filter.Category))
-                {
-                    var categoryKeys = await cacheClient.GetSetMembersAsync(new GetSetMembersRequest
+                case { Category: { Length: > 0 } }:
+                    var categoryOnlyKeys = await cacheClient.GetSetMembersAsync(new GetSetMembersRequest
                     {
                         SetKey = $"index:product:category:{filter.Category.ToLower()}"
                     });
+                    productKeys.UnionWith(categoryOnlyKeys.Members);
+                    break;
 
-                    // Для выбора данных только из выбранной категории
-                    // Понимаем, что если мы ищем по категории, то нам могут быть интересны только те, которые есть в фильтре категории
-                    // Убираем возможные дубликаты и берем только те ключи, которые совпадают с категорией
-                    productKeys.UnionWith(categoryKeys.Members);
-                }
-
-                // Если ни подкатегория, ни категория не указаны, собираем все данные
-                if (string.IsNullOrEmpty(filter.Subcategory) && string.IsNullOrEmpty(filter.Category))
-                {
+                default:
                     var allKeys = await cacheClient.GetHashKeysAsync(new GetHashKeysRequest
                     {
                         Key = "product:*"
                     });
                     productKeys.UnionWith(allKeys.Keys);
-                }
+                    break;
             }
 
             var products = new List<ProductDto?>();
 
-            // Извлекаем данные из кэша и при необходимости из базы данных
             foreach (var key in productKeys)
             {
                 var entryDictionary = await cacheClient.GetAllAsync(new GetAllRequest { HashKey = key });
