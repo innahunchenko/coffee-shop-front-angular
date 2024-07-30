@@ -44,7 +44,7 @@ services:
       - coffeeshopnetwork
   
   redis:
-    image: redislabs/redisearch:latest
+    image: redis:latest
     ports:
       - "6379:6379"
     container_name: redis

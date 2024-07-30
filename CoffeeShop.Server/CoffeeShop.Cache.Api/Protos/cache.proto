@@ -14,10 +14,6 @@ service CacheService {
     rpc GetHashKeys (GetHashKeysRequest) returns (GetHashKeysResponse);
     rpc SetAdd (SetAddRequest) returns (SetAddResponse);
     rpc GetSetMembers (GetSetMembersRequest) returns (GetSetMembersResponse);
-    rpc CreateIndex (CreateIndexRequest) returns (CreateIndexResponse);
-    rpc AddDocument (AddDocumentRequest) returns (AddDocumentResponse);
-    rpc Search (SearchRequest) returns (SearchResponse);
-    rpc IndexExists (IndexExistsRequest) returns (IndexExistsResponse);
 }
 
 message GetAllRequest {
@@ -101,51 +97,4 @@ message GetSetMembersRequest {
 
 message GetSetMembersResponse {
     repeated string members = 1;
-}
-
-message CreateIndexRequest {
-    string indexName = 1;
-    repeated Property properties = 2;
-}
-
-message CreateIndexResponse {
-    string message = 1;
-}
-
-message AddDocumentRequest {
-    string indexName = 1;
-    string id = 2;
-    repeated Property properties = 3;
-}
-
-message AddDocumentResponse {
-    string message = 1;
-}
-
-message Property {
-    string name = 1;
-    string value = 2;
-}
-
-message SearchRequest {
-    string indexName = 1;
-    string query = 2;
-    int32 limit = 3;
-}
-
-message SearchResponse {
-    repeated SearchDocument documents = 1;
-}
-
-message SearchDocument {
-    string id = 1;
-    map<string, string> fields = 2;
-}
-
-message IndexExistsRequest {
-    string index_name = 1;
-}
-
-message IndexExistsResponse {
-    bool exists = 1;
 }
