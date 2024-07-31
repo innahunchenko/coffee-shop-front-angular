@@ -97,41 +97,41 @@ namespace CoffeeShop.Products.Api.Services
 
         public async Task<List<ProductDto?>> SearchProductsInCacheAsync(Filter filter)
         {
-            var productKeys = new HashSet<string>();
+            var productKeys = new List<string>();
 
             switch (filter)
             {
                 case { Search: { Length: > 0 } }:
                     var searchKeys = await GetProductKeysAsync($"index:product:name:{filter.Search.ToLower()}");
-                    productKeys.UnionWith(searchKeys);
+                    productKeys.AddRange(searchKeys);
                     break;
 
                 case { Subcategory: { Length: > 0 } }:
                     var subcategoryKeys = await GetProductKeysAsync($"index:product:subcategory:{filter.Subcategory.ToLower()}");
-                    productKeys.UnionWith(subcategoryKeys);
+                    productKeys.AddRange(subcategoryKeys);
                     break;
 
                 case { Category: { Length: > 0 } }:
                     var categoryKeys = await GetProductKeysAsync($"index:product:category:{filter.Category.ToLower()}");
-                    productKeys.UnionWith(categoryKeys);
+                    productKeys.AddRange(categoryKeys);
                     break;
 
                 default:
                     var allKeys = await GetProductKeysAsync("index:product:all");
-                    productKeys.UnionWith(allKeys);
+                    productKeys.AddRange(allKeys);
                     break;
             }
 
             return await GetProductsFromCacheAsync(productKeys);
         }
 
-        private async Task<HashSet<string>> GetProductKeysAsync(string setKey)
+        private async Task<IEnumerable<string>> GetProductKeysAsync(string setKey)
         {
             var response = await cacheClient.GetIndexMembersAsync(new GetIndexMembersRequest { IndexKey = setKey });
-            return response.Members.ToHashSet();
+            return response.Members.ToList();
         }
 
-        private async Task<List<ProductDto?>> GetProductsFromCacheAsync(HashSet<string> productKeys)
+        private async Task<List<ProductDto?>> GetProductsFromCacheAsync(IEnumerable<string> productKeys)
         {
             var products = new List<ProductDto?>();
 
@@ -182,19 +182,35 @@ namespace CoffeeShop.Products.Api.Services
 
         private async Task AddProductToIndexAsync(ProductDto product, Filter filter)
         {
-            var indexKey = filter switch
-            {
-                { Search: { Length: > 0 } } => $"index:product:name:{product.Name.ToLower()}",
-                { Subcategory: { Length: > 0 } } => $"index:product:subcategory:{product.SubcategoryName.ToLower()}",
-                { Category: { Length: > 0 } } => $"index:product:category:{product.CategoryName.ToLower()}",
-                _ => "index:product:all"
-            };
+            var productKey = $"product:{product.Id}";
+            var indexKeys = new List<string> { $"index:product:name:{product.Name.ToLower()}" };
 
-            await cacheClient.SetAddAsync(new SetAddRequest
+            switch (filter)
             {
-                IndexKey = indexKey,
-                ItemKey = $"product:{product.Id}"
+                case { Subcategory: { Length: > 0 } subcategory }:
+                    indexKeys.Add($"index:product:subcategory:{subcategory.ToLower()}");
+                    break;
+
+                case { Category: { Length: > 0 } category }:
+                    indexKeys.Add($"index:product:category:{category.ToLower()}");
+                    break;
+                default:
+                    indexKeys.Add($"index:product:all");
+                    break;
+            }
+
+            var tasks = indexKeys.Select(indexKey =>
+            {
+                var setAddRequest = new SetAddRequest
+                {
+                    IndexKey = indexKey,
+                    ItemKey = productKey
+                };
+
+                return cacheClient.SetAddAsync(setAddRequest).ResponseAsync;
             });
+
+            await Task.WhenAll(tasks);
         }
     }
 }
