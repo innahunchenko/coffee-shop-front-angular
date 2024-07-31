@@ -28,13 +28,10 @@ namespace CoffeeShop.Products.Api.Services
 
         public async Task<List<CategoryDto?>> GetCategoriesAsync()
         {
-            var threadId = Thread.CurrentThread.ManagedThreadId;
-            Console.WriteLine($"GetCategoriesAsync: Start (Thread {threadId})");
-
             var cachedCategories = await GetCachedCategoriesAsync();
             if (cachedCategories.Any())
             {
-                Console.WriteLine($"GetCategoriesAsync cache: End (Thread {threadId})");
+                Console.WriteLine($"Get categories from cache: End");
                 return cachedCategories;
             }
 
@@ -42,7 +39,7 @@ namespace CoffeeShop.Products.Api.Services
             if (categoriesFromDb.Any())
             {
                 await CacheCategoriesAsync(categoriesFromDb);
-                Console.WriteLine($"GetCategoriesAsync db: End (Thread {threadId})");
+                Console.WriteLine($"Get categories from db: End");
                 return categoriesFromDb;
             }
 
@@ -80,13 +77,10 @@ namespace CoffeeShop.Products.Api.Services
 
         public async Task<IEnumerable<ProductDto?>> GetProductsAsync(Filter filter)
         {
-            var threadId = Thread.CurrentThread.ManagedThreadId;
-            Console.WriteLine($"GetProductsAsync: Start (Thread {threadId})");
-
             var cachedProducts = await SearchProductsInCacheAsync(filter);
             if (cachedProducts.Any())
             {
-                Console.WriteLine($"GetProductsAsync cache: End (Thread {threadId})");
+                Console.WriteLine($"Get products from cache: End");
                 return cachedProducts;
             }
 
@@ -94,7 +88,7 @@ namespace CoffeeShop.Products.Api.Services
             if (productsFromDb.Any())
             {
                 await CacheProductsAsync(productsFromDb, filter);
-                Console.WriteLine($"GetProductsAsync db: End (Thread {threadId})");
+                Console.WriteLine($"Get products from db: End");
                 return productsFromDb;
             }
 
