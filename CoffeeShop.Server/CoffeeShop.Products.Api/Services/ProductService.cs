@@ -15,7 +15,7 @@ namespace CoffeeShop.Products.Api.Services
         private readonly IMapper mapper;
         private readonly CacheServiceClient cacheClient;
 
-        const string CATEGORIES_KEY = "categoriesKey";
+        const string CATEGORIES_KEY = "KEY:CATEGORIES";
 
         public ProductService(IProductRepository productRepository,
                               IMapper mapper,
@@ -101,6 +101,59 @@ namespace CoffeeShop.Products.Api.Services
             return Enumerable.Empty<ProductDto?>();
         }
 
+        public async Task<List<ProductDto?>> SearchProductsInCacheAsync(Filter filter)
+        {
+            var productKeys = new HashSet<string>();
+
+            switch (filter)
+            {
+                case { Search: { Length: > 0 } }:
+                    var searchKeys = await GetProductKeysAsync($"index:product:name:{filter.Search.ToLower()}");
+                    productKeys.UnionWith(searchKeys);
+                    break;
+
+                case { Subcategory: { Length: > 0 } }:
+                    var subcategoryKeys = await GetProductKeysAsync($"index:product:subcategory:{filter.Subcategory.ToLower()}");
+                    productKeys.UnionWith(subcategoryKeys);
+                    break;
+
+                case { Category: { Length: > 0 } }:
+                    var categoryKeys = await GetProductKeysAsync($"index:product:category:{filter.Category.ToLower()}");
+                    productKeys.UnionWith(categoryKeys);
+                    break;
+
+                default:
+                    var allKeys = await GetProductKeysAsync("index:product:all");
+                    productKeys.UnionWith(allKeys);
+                    break;
+            }
+
+            return await GetProductsFromCacheAsync(productKeys);
+        }
+
+        private async Task<HashSet<string>> GetProductKeysAsync(string setKey)
+        {
+            var response = await cacheClient.GetIndexMembersAsync(new GetIndexMembersRequest { IndexKey = setKey });
+            return response.Members.ToHashSet();
+        }
+
+        private async Task<List<ProductDto?>> GetProductsFromCacheAsync(HashSet<string> productKeys)
+        {
+            var products = new List<ProductDto?>();
+
+            foreach (var key in productKeys)
+            {
+                var entryDictionary = await cacheClient.GetAllAsync(new GetAllRequest { HashKey = key });
+                if (entryDictionary != null && entryDictionary.Entries.Count > 0)
+                {
+                    var productDto = mapper.Map<ProductDto>(entryDictionary.Entries);
+                    products.Add(productDto);
+                }
+            }
+
+            return products;
+        }
+
         private async Task<List<ProductDto?>> GetProductsFromDbAsync(Filter filter)
         {
             var productsFromDb = await productRepository.GetProductsAsync(filter);
@@ -146,61 +199,8 @@ namespace CoffeeShop.Products.Api.Services
             await cacheClient.SetAddAsync(new SetAddRequest
             {
                 IndexKey = indexKey,
-                ProductKey = $"product:{product.Id}"
+                ItemKey = $"product:{product.Id}"
             });
-        }
-
-        public async Task<List<ProductDto?>> SearchProductsInCacheAsync(Filter filter)
-        {
-            var productKeys = new HashSet<string>();
-
-            switch (filter)
-            {
-                case { Search: { Length: > 0 } }:
-                    var searchKeys = await GetProductKeysAsync($"index:product:name:{filter.Search.ToLower()}");
-                    productKeys.UnionWith(searchKeys);
-                    break;
-
-                case { Subcategory: { Length: > 0 } }:
-                    var subcategoryKeys = await GetProductKeysAsync($"index:product:subcategory:{filter.Subcategory.ToLower()}");
-                    productKeys.UnionWith(subcategoryKeys);
-                    break;
-
-                case { Category: { Length: > 0 } }:
-                    var categoryKeys = await GetProductKeysAsync($"index:product:category:{filter.Category.ToLower()}");
-                    productKeys.UnionWith(categoryKeys);
-                    break;
-
-                default:
-                    var allKeys = await GetProductKeysAsync("product:*");
-                    productKeys.UnionWith(allKeys);
-                    break;
-            }
-
-            return await GetProductsFromCacheAsync(productKeys);
-        }
-
-        private async Task<HashSet<string>> GetProductKeysAsync(string setKey)
-        {
-            var response = await cacheClient.GetSetMembersAsync(new GetSetMembersRequest { SetKey = setKey });
-            return response.Members.ToHashSet();
-        }
-
-        private async Task<List<ProductDto?>> GetProductsFromCacheAsync(HashSet<string> productKeys)
-        {
-            var products = new List<ProductDto?>();
-
-            foreach (var key in productKeys)
-            {
-                var entryDictionary = await cacheClient.GetAllAsync(new GetAllRequest { HashKey = key });
-                if (entryDictionary != null && entryDictionary.Entries.Count > 0)
-                {
-                    var productDto = mapper.Map<ProductDto>(entryDictionary.Entries);
-                    products.Add(productDto);
-                }
-            }
-
-            return products;
         }
     }
 }

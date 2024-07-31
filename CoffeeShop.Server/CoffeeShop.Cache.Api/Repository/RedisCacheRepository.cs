@@ -70,14 +70,14 @@ namespace CoffeeShop.Cache.Api.Repository
             return await db.KeyDeleteAsync(key);
         }
 
-        public async Task SetAddAsync(string indexKey, string productKey)
+        public async Task SetIndexAsync(string indexKey, string productKey)
         {
             await db.SetAddAsync(indexKey, productKey);
         }
 
-        public async Task<RedisValue[]> SetMembersAsync(string setKey)
+        public async Task<RedisValue[]> GetIndexMembers(string indexKey)
         {
-            return await db.SetMembersAsync(setKey);
+            return await db.SetMembersAsync(indexKey);
         }
     }
 }

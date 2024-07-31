@@ -13,7 +13,7 @@ service CacheService {
     rpc RemoveHash (RemoveHashRequest) returns (RemoveHashResponse);
     rpc GetHashKeys (GetHashKeysRequest) returns (GetHashKeysResponse);
     rpc SetAdd (SetAddRequest) returns (SetAddResponse);
-    rpc GetSetMembers (GetSetMembersRequest) returns (GetSetMembersResponse);
+    rpc GetIndexMembers (GetIndexMembersRequest) returns (GetIndexMembersResponse);
 }
 
 message GetAllRequest {
@@ -84,17 +84,17 @@ message GetHashKeysResponse {
 
 message SetAddRequest {
     string indexKey = 1;
-    string productKey = 2;
+    string itemKey = 2;
 }
 
 message SetAddResponse {
     bool success = 1;
 }
 
-message GetSetMembersRequest {
-    string setKey = 1;
+message GetIndexMembersRequest {
+    string indexKey = 1;
 }
 
-message GetSetMembersResponse {
+message GetIndexMembersResponse {
     repeated string members = 1;
 }

@@ -56,14 +56,14 @@ public class CacheService : CacheServiceBase
 
     public override async Task<SetAddResponse> SetAdd(SetAddRequest request, ServerCallContext context)
     {
-        await redisCacheRepository.SetAddAsync(request.IndexKey, request.ProductKey);
+        await redisCacheRepository.SetIndexAsync(request.IndexKey, request.ItemKey);
         return new SetAddResponse { Success = true };
     }
 
-    public override async Task<GetSetMembersResponse> GetSetMembers(GetSetMembersRequest request, ServerCallContext context)
+    public override async Task<GetIndexMembersResponse> GetIndexMembers(GetIndexMembersRequest request, ServerCallContext context)
     {
-        var members = await redisCacheRepository.SetMembersAsync(request.SetKey);
-        var response = new GetSetMembersResponse();
+        var members = await redisCacheRepository.GetIndexMembers(request.IndexKey);
+        var response = new GetIndexMembersResponse();
         response.Members.AddRange(members.Select(m => m.ToString()));
         return response;
     }
