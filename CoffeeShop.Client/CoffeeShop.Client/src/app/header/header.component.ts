@@ -8,18 +8,16 @@ import { NavigationService } from '../services/navigation.service';
   templateUrl: './header.component.html'
 })
 export class HeaderComponent {
-  selectedCategory: string;
-  selectedSubcategory: string = "";
   categories: Category[] = [];
+  count: number = 0;
 
   constructor(public repository: Repository, private navigation: NavigationService) {
-    this.selectedCategory = this.navigation.currentCategory === "" ? "All categories" : this.navigation.currentCategory;
   }
 
   setCurrentCategory(category: string, subcategory: string | ""): void {
-    this.selectedCategory = category === "All categories" ? "" : category;
-    this.selectedSubcategory = subcategory;
-    this.navigation.currentCategory = this.selectedCategory;
-    this.navigation.currentSubcategory = subcategory;
+    console.log(category);
+    this.repository.filter.category = category;
+    this.repository.filter.subcategory = subcategory;
+    this.repository.getProducts();
   }
 }

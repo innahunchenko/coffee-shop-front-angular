@@ -4,6 +4,7 @@ using CoffeeShop.Products.Api.Models.Dto;
 using CoffeeShop.Products.Api.Repository;
 using GrpcCacheClient;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using static GrpcCacheClient.CacheService;
 using KeyValuePair = GrpcCacheClient.KeyValuePair;
 
@@ -87,7 +88,7 @@ namespace CoffeeShop.Products.Api.Services
             var productsFromDb = await GetProductsFromDbAsync(filter);
             if (productsFromDb.Any())
             {
-                await CacheProductsAsync(productsFromDb, filter);
+               await CacheProductsAsync(productsFromDb, filter);
                 Console.WriteLine($"Get products from db: End");
                 return productsFromDb;
             }
@@ -156,22 +157,33 @@ namespace CoffeeShop.Products.Api.Services
 
         private async Task CacheProductsAsync(List<ProductDto> products, Filter filter)
         {
-            var tasks = products.Select(product => AddProductAsync(product, filter));
+            var tasks = products.Select(product => AddProductToCacheAsync(product, filter));
             await Task.WhenAll(tasks);
         }
 
-        public async Task AddProductAsync(ProductDto product, Filter filter)
+        public async Task AddProductToCacheAsync(ProductDto product, Filter filter)
         {
+            var productKey = $"product:{product.Id}";
             try
             {
                 var entries = mapper.Map<IEnumerable<KeyValuePair>>(product);
-                var request = new SetDataBatchRequest
-                {
-                    Key = $"product:{product.Id}",
-                    Entries = { entries }
-                };
 
-                await cacheClient.SetDataBatchAsync(request);
+                // Check if the product already exists in the cache
+                var productInCache = await cacheClient.GetAllAsync(new GetAllRequest { HashKey = productKey });
+
+                // If the product does not exist in the cache, add it
+                if (productInCache?.Entries == null || !productInCache.Entries.Any())
+                {
+                    var request = new SetDataBatchRequest
+                    {
+                        Key = productKey,
+                        Entries = { entries }
+                    };
+
+                    await cacheClient.SetDataBatchAsync(request);
+                }
+
+                // Add the product to the relevant indexes based on the filter
                 await AddProductToIndexAsync(product, filter);
             }
             catch (Exception ex)
@@ -185,6 +197,7 @@ namespace CoffeeShop.Products.Api.Services
             var productKey = $"product:{product.Id}";
             var indexKeys = new List<string> { $"index:product:name:{product.Name.ToLower()}" };
 
+            // Add indexes based on the filter
             switch (filter)
             {
                 case { Subcategory: { Length: > 0 } subcategory }:
@@ -195,11 +208,12 @@ namespace CoffeeShop.Products.Api.Services
                     indexKeys.Add($"index:product:category:{category.ToLower()}");
                     break;
                 default:
-                    indexKeys.Add($"index:product:all");
+                    indexKeys.Add("index:product:all");
                     break;
             }
 
-            var tasks = indexKeys.Select(indexKey =>
+            // Add the product to the corresponding indexes
+            var tasks = indexKeys.Select(async indexKey =>
             {
                 var setAddRequest = new SetAddRequest
                 {
@@ -207,7 +221,7 @@ namespace CoffeeShop.Products.Api.Services
                     ItemKey = productKey
                 };
 
-                return cacheClient.SetAddAsync(setAddRequest).ResponseAsync;
+                await cacheClient.SetAddAsync(setAddRequest).ResponseAsync;
             });
 
             await Task.WhenAll(tasks);

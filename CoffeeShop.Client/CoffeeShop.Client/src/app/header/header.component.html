@@ -59,28 +59,33 @@
                 </div>
 
                 <div class="offcanvas-body">
+                  <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex gap-md-2 mt-0">
+                    <!-- First menu -->
+                    <li class="nav-item dropdown">
+                      <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Categories</button>
+                      <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+                        <li>
+                          <button class="dropdown-item btn-link" (click)="setCurrentCategory('', '')">All categories</button>
+                        </li>
+                        <li *ngFor="let category of repository.categories">
+                          <button class="dropdown-item btn btn-link" (click)="setCurrentCategory(category.name, '')">{{ category.name }}</button>
+                        </li>
+                      </ul>
+                    </li>
 
-                  <select class="filter-categories border-0 mb-0 me-5" [(ngModel)]="selectedCategory" (change)="setCurrentCategory(selectedCategory, '')">
-                    <option>All categories</option>
-                    <option *ngFor="let category of repository.categories" [value]="category.name">
-                      {{ category.name }}
-                    </option>
-                  </select>
-
-                  <div class="offcanvas-body">
-                    <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex gap-md-3 mb-0">
-                      <li *ngFor="let category of repository.categories" class="nav-item" [class.dropdown]="category.subcategories">
-                        <button *ngIf="!category.subcategories" (click)="setCurrentCategory(category.name, '')" class="nav-link btn btn-link">{{ category.name }}</button>
-                        <button *ngIf="category.subcategories" class="nav-link dropdown-toggle btn btn-link" role="button" id="subcategories" data-bs-toggle="dropdown" aria-expanded="false">{{ category.name }}</button>
-                        <ul *ngIf="category.subcategories" class="dropdown-menu" aria-labelledby="subcategories">
-                          <li *ngFor="let subcategory of category.subcategories">
-                            <button (click)="setCurrentCategory(category.name, subcategory)" class="dropdown-item btn btn-link">{{ subcategory }}</button>
-                          </li>
-                        </ul>
-                      </li>
-                    </ul>
-                  </div>
+                    <!-- Second menu -->
+                    <li *ngFor="let category of repository.categories" class="nav-item" [class.dropdown]="category.subcategories">
+                      <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ category.name }}</button>
+                      <ul *ngIf="category.subcategories" class="dropdown-menu" aria-labelledby="subcategories">
+                        <li *ngFor="let subcategory of category.subcategories">
+                          <button (click)="setCurrentCategory(category.name, subcategory)" class="dropdown-item btn btn-link">{{ subcategory }}</button>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
                 </div>
+
+
               </div>
             </nav>
           </div>
