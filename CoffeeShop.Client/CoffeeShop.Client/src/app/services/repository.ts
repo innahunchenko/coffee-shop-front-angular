@@ -4,6 +4,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { catchError } from "rxjs";
 import { Category } from "../models/category.model";
 import { Filter } from "../models/filter.model";
+import { PaginatedList } from "../models/paginatedList.model";
 
 export const API_BASE_URL = 'http://localhost:5000/api';
 
@@ -11,14 +12,16 @@ const productsUrl = `${API_BASE_URL}/products`;
 
 @Injectable()
 export class Repository {
-  products: Product[] = [];
+  products: PaginatedList<Product> = new PaginatedList();
   categories: Category[] = [];
   filter: Filter = new Filter();
+  pageNumber: number = 1;
+  pageSize: number = 10;
   constructor(private http: HttpClient) {
     this.getCategories();
   }
 
-  getProducts(): void {
+  getProducts(pageNumber: number = this.pageNumber, pageSize: number = this.pageSize): void {
     let params = new HttpParams();
 
     if (this.filter) {
@@ -30,7 +33,10 @@ export class Repository {
       });
     }
 
-    this.http.get<Product[]>(productsUrl, { params }).pipe(
+    params = params.set('pageNumber', pageNumber.toString());
+    params = params.set('pageSize', pageSize.toString());
+
+    this.http.get<PaginatedList<Product>>(productsUrl, { params }).pipe(
       catchError(error => {
         console.error('Error loading products:', error);
         throw error;
@@ -38,7 +44,11 @@ export class Repository {
     ).subscribe(
       products => {
         this.products = products;
-        console.log('Products loaded:', this.products);
+        this.products.totalPages = products.totalPages;
+        this.products.totalItems = products.totalItems;
+        this.products.pageIndex = products.pageIndex;
+        console.log('Products loaded:', this.products, 'total products: ', this.products.totalItems);
+        console.log('total pages: ', this.products.totalPages);
       },
       error => {
         console.error('Error loading products:', error);

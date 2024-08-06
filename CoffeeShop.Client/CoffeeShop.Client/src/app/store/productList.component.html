@@ -1,12 +1,23 @@
 <section class="py-5">
   <div class="container-fluid">
+
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+      <div class="mb-4">
+        <button class="btn" (click)="previousPage()" [disabled]="pageNumber === 1">❮</button>
+        <ng-container *ngFor="let page of getPageNumbers()">
+          <button class="btn" (click)="goToPage(page)" [class.active]="page === pageNumber">{{ page }}</button>
+        </ng-container>
+        <button class="btn" (click)="nextPage()" [disabled]="pageNumber === repo.products.totalPages">❯</button>
+      </div>
+    </div>
+
     <div class="row">
       <div class="col-md-12">
-        <div class="bootstrap-tabs product-tabs">
+        <div class="bootstrap-tabs">
           <div class="tab-content" id="nav-tabContent">
             <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
-              <div *ngIf="repo.products && repo.products.length > 0; else nodata" class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-                <div *ngFor="let product of repo.products" class="col mb-4">
+              <div *ngIf="repo.products.items && repo.products.items.length > 0; else nodata" class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+                <div *ngFor="let product of repo.products.items" class="col mb-4">
                   <div class="product-item">
                     <figure>
                       <img src="/assets/images/unknown.png" class="tab-image">
