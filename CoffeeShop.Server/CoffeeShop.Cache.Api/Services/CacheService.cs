@@ -14,11 +14,11 @@ public class CacheService : CacheServiceBase
         this.redisCacheRepository = redisCacheRepository;
     }
 
-    public override async Task<GetAllResponse> GetAll(GetAllRequest request, ServerCallContext context)
+    public override async Task<GetHashAllResponse> GetHashAll(GetHashAllRequest request, ServerCallContext context)
     {
-        var values = await redisCacheRepository.GetAllAsync(request.HashKey);
+        var values = await redisCacheRepository.GetHashAllAsync(request.HashKey);
 
-        var response = new GetAllResponse();
+        var response = new GetHashAllResponse();
         foreach (var kvp in values)
         {
             response.Entries.Add(new KeyValuePair { Id = kvp.Key, Data = kvp.Value });
@@ -27,23 +27,23 @@ public class CacheService : CacheServiceBase
         return response;
     }
 
-    public override async Task<GetDataResponse> GetData(GetDataRequest request, ServerCallContext context)
+    public override async Task<GetHashDataResponse> GetHashData(GetHashDataRequest request, ServerCallContext context)
     {
-        var data = await redisCacheRepository.GetDataAsync(request.Key, request.Id);
-        return new GetDataResponse { Data = data };
+        var data = await redisCacheRepository.GetHashDataAsync(request.Key, request.Id);
+        return new GetHashDataResponse { Data = data };
     }
 
-    public override async Task<SetDataResponse> SetData(SetDataRequest request, ServerCallContext context)
+    public override async Task<SetHashDataResponse> SetHashData(SetHashDataRequest request, ServerCallContext context)
     {
-        await redisCacheRepository.SetDataAsync(request.Key, request.Id, request.Data);
-        return new SetDataResponse { Success = true };
+        await redisCacheRepository.HashSetDataAsync(request.Key, request.Id, request.Data);
+        return new SetHashDataResponse { Success = true };
     }
 
-    public override async Task<SetDataBatchResponse> SetDataBatch(SetDataBatchRequest request, ServerCallContext context)
+    public override async Task<SetHashDataBatchResponse> SetHashDataBatch(SetHashDataBatchRequest request, ServerCallContext context)
     {
         var hashEntries = request.Entries.Select(entry => new HashEntry(entry.Id, entry.Data));
-        await redisCacheRepository.SetDataAsync(request.Key, hashEntries);
-        return new SetDataBatchResponse { Success = true };
+        await redisCacheRepository.HashSetDataAsync(request.Key, hashEntries);
+        return new SetHashDataBatchResponse { Success = true };
     }
 
     public override async Task<GetHashKeysResponse> GetHashKeys(GetHashKeysRequest request, ServerCallContext context)
@@ -68,15 +68,42 @@ public class CacheService : CacheServiceBase
         return response;
     }
 
-    public override async Task<RemoveDataResponse> RemoveData(RemoveDataRequest request, ServerCallContext context)
+    public override async Task<RemoveHashDataResponse> RemoveHashData(RemoveHashDataRequest request, ServerCallContext context)
     {
-        var success = await redisCacheRepository.RemoveDataAsync(request.Key, request.Id);
-        return new RemoveDataResponse { Success = success };
+        var success = await redisCacheRepository.RemoveHashDataAsync(request.Key, request.Id);
+        return new RemoveHashDataResponse { Success = success };
     }
 
-    public override async Task<RemoveHashResponse> RemoveHash(RemoveHashRequest request, ServerCallContext context)
+    public override async Task<RemoveHashKeyResponse> RemoveHashKey(RemoveHashKeyRequest request, ServerCallContext context)
     {
-        var success = await redisCacheRepository.RemoveHashAsync(request.Key);
-        return new RemoveHashResponse { Success = success };
+        var success = await redisCacheRepository.RemoveHashKeyAsync(request.Key);
+        return new RemoveHashKeyResponse { Success = success };
+    }
+
+    public override async Task<SetValueResponse> SetValue(SetValueRequest request, ServerCallContext context)
+    {
+        var success = await redisCacheRepository.SetValueAsync(request.Key, request.Value);
+
+        return new SetValueResponse
+        {
+            Success = success
+        };
+    }
+
+    public override async Task<GetValueResponse> GetValue(GetValueRequest request, ServerCallContext context)
+    {
+        try
+        {
+
+            var value = await redisCacheRepository.GetValueAsync(request.Key);
+            return new GetValueResponse
+            {
+                Value = value
+            };
+        }
+        catch (Exception ex) 
+        { Console.WriteLine(ex); }
+
+        return null;
     }
 }

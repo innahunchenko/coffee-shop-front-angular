@@ -12,14 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>(), [typeof(Program).Assembly], ServiceLifetime.Singleton);
 builder.Services.AddDbContext<DataContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("ProductsConnection"),
-        sqlServerOptions =>
-        {
-            sqlServerOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(30),
-                errorNumbersToAdd: null);
-        });
+    option.UseSqlServer(builder.Configuration.GetConnectionString("ProductsConnection"));
 });
 
 builder.Services.AddCors(options =>
@@ -38,6 +31,7 @@ builder.Services.AddSingleton(sp =>
     return new CacheService.CacheServiceClient(channel);
 });
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 
 var app = builder.Build();
