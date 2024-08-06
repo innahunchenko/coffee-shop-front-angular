@@ -3,11 +3,11 @@
 
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
       <div class="mb-4">
-        <button class="btn" (click)="previousPage()" [disabled]="pageNumber === 1">❮</button>
+        <button class="btn" (click)="previousPage()" [disabled]="currentRangeStart === 1">❮</button>
         <ng-container *ngFor="let page of getPageNumbers()">
           <button class="btn" (click)="goToPage(page)" [class.active]="page === pageNumber">{{ page }}</button>
         </ng-container>
-        <button class="btn" (click)="nextPage()" [disabled]="pageNumber === repo.products.totalPages">❯</button>
+        <button class="btn" (click)="nextPage()" [disabled]="currentRangeStart + maxPagesToShow > repo.products.totalPages">❯</button>
       </div>
     </div>
 

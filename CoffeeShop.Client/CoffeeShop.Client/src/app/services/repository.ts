@@ -6,9 +6,9 @@ import { Category } from "../models/category.model";
 import { Filter } from "../models/filter.model";
 import { PaginatedList } from "../models/paginatedList.model";
 
-export const API_BASE_URL = 'http://localhost:5000/api';
-
+const API_BASE_URL = 'http://localhost:5000/api';
 const productsUrl = `${API_BASE_URL}/products`;
+const categoriesUrl = `${API_BASE_URL}/categories`;
 
 @Injectable()
 export class Repository {
@@ -57,7 +57,7 @@ export class Repository {
   }
   
   getCategories() {
-    console.log(`${productsUrl}/categories`);
-    this.http.get<Category[]>(`${productsUrl}/categories`).subscribe(categories => this.categories = categories);
+    console.log(`${categoriesUrl}`);
+    this.http.get<Category[]>(`${categoriesUrl}`).subscribe(categories => this.categories = categories);
   }
 }
