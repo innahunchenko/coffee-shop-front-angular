@@ -6,11 +6,11 @@ import { Repository } from "../services/repository";
 })
 export class ProductListComponent {
   pageNumber = 1;
-  totalPages = 20; // Задайте общее количество страниц
-  maxPagesToShow = 3; // Максимальное количество страниц в одном наборе
-  pagesPerBatch = 3; // Количество страниц, отображаемых в каждом наборе (батче)
-  currentPageBatch = 0; // Индекс текущего набора страниц
-  maxPageBatches: number; // Общее количество наборов страниц
+  totalPages = 20; 
+  maxPagesToShow = 3; 
+  pagesPerBatch = 3; 
+  currentPageBatch = 0; 
+  maxPageBatches: number; 
 
   constructor(public repo: Repository) {
     this.maxPageBatches = Math.ceil(this.totalPages / (this.maxPagesToShow * this.pagesPerBatch));
@@ -19,10 +19,10 @@ export class ProductListComponent {
   getPageNumbers(): number[] {
     const pages = [];
     const totalPages = this.repo.products.totalPages;
-    const pagesPerGroup = this.maxPagesToShow; // Количество страниц, которые нужно показать в одной группе
-    const currentGroup = Math.floor((this.pageNumber - 1) / pagesPerGroup); // Определение текущей группы страниц
-    const startPage = currentGroup * pagesPerGroup + 1; // Начальная страница в текущей группе
-    const endPage = Math.min(totalPages, startPage + pagesPerGroup - 1); // Конечная страница в текущей группе
+    const pagesPerGroup = this.maxPagesToShow;
+    const currentGroup = Math.floor((this.pageNumber - 1) / pagesPerGroup); 
+    const startPage = currentGroup * pagesPerGroup + 1; 
+    const endPage = Math.min(totalPages, startPage + pagesPerGroup - 1);
 
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
