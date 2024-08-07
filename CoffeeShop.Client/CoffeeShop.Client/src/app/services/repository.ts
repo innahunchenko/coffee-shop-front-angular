@@ -1,7 +1,8 @@
 import { Product } from "../models/product.model";
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { catchError } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
+import { catchError } from "rxjs/operators";
 import { Category } from "../models/category.model";
 import { Filter } from "../models/filter.model";
 import { PaginatedList } from "../models/paginatedList.model";
@@ -12,16 +13,18 @@ const categoriesUrl = `${API_BASE_URL}/categories`;
 
 @Injectable()
 export class Repository {
-  products: PaginatedList<Product> = new PaginatedList();
+  private productsSubject = new BehaviorSubject<PaginatedList<Product>>(new PaginatedList());
+  products$: Observable<PaginatedList<Product>> = this.productsSubject.asObservable();
+
   categories: Category[] = [];
   filter: Filter = new Filter();
   pageNumber: number = 1;
   pageSize: number = 10;
+
   constructor(private http: HttpClient) {
-    this.getCategories();
   }
 
-  getProducts(pageNumber: number = this.pageNumber, pageSize: number = this.pageSize): void {
+  getProducts(): void {
     let params = new HttpParams();
 
     if (this.filter) {
@@ -33,8 +36,8 @@ export class Repository {
       });
     }
 
-    params = params.set('pageNumber', pageNumber.toString());
-    params = params.set('pageSize', pageSize.toString());
+    params = params.set('pageNumber', this.pageNumber.toString());
+    params = params.set('pageSize', this.pageSize.toString());
 
     this.http.get<PaginatedList<Product>>(productsUrl, { params }).pipe(
       catchError(error => {
@@ -43,19 +46,26 @@ export class Repository {
       })
     ).subscribe(
       products => {
-        this.products = products;
-        this.products.totalPages = products.totalPages;
-        this.products.totalItems = products.totalItems;
-        this.products.pageIndex = products.pageIndex;
-        console.log('Products loaded:', this.products, 'total products: ', this.products.totalItems);
-        console.log('total pages: ', this.products.totalPages);
+        this.productsSubject.next(products); 
+        console.log('Products loaded:', products, 'total products: ', products.totalItems);
+        console.log('total pages: ', products.totalPages);
       },
       error => {
         console.error('Error loading products:', error);
       }
     );
   }
-  
+
+  setFilter(filter: Filter) {
+    this.filter = filter;
+    this.getProducts(); 
+  }
+
+  setPageNumber(pageNumber: number) {
+    this.pageNumber = pageNumber;
+    this.getProducts(); 
+  }
+
   getCategories() {
     console.log(`${categoriesUrl}`);
     this.http.get<Category[]>(`${categoriesUrl}`).subscribe(categories => this.categories = categories);
