@@ -98,7 +98,7 @@ public class CacheService : CacheServiceBase
             var value = await redisCacheRepository.GetValueAsync(request.Key);
             return new GetValueResponse
             {
-                Value = value
+                Value = value ?? "0"
             };
         }
         catch (Exception ex) 

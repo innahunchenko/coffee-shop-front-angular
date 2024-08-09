@@ -4,8 +4,13 @@ namespace CoffeeShop.Products.Api.Repository
 {
     public interface IProductRepository
     {
-        Task<List<Category>> GetMainCategoriesWithSubcategoriesAsync();
-        Task<IEnumerable<Product>> GetProductsAsync(Filter filter, int pageNumber, int pageSize);
-        Task<int> GetTotalProductsAsync(Filter filter);
+        Task<IEnumerable<Product>> GetProductsByCategoryAsync(string category, int pageNumber, int pageSize);
+        Task<IEnumerable<Product>> GetProductsBySubcategoryAsync(string subcategory, int pageNumber, int pageSize);
+        Task<IEnumerable<Product>> GetProductsByProductNameAsync(string productName, int pageNumber, int pageSize);
+        Task<IEnumerable<Product>> GetAllProductsAsync(int pageNumber, int pageSize);
+        Task<int> GetAllProductsTotalCountAsync();
+        Task<int> GetCategoryProductsTotalCountAsync(string category);
+        Task<int> GetSubcategoryProductsTotalCountAsync(string subcategory);
+        Task<int> GetProductNameTotalCountAsync(string productName);
     }
 }

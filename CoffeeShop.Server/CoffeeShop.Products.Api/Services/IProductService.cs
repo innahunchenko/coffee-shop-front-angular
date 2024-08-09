@@ -5,6 +5,9 @@ namespace CoffeeShop.Products.Api.Services
 {
     public interface IProductService
     {
-        Task<PaginatedList<ProductDto?>> GetProductsAsync(Filter filter, int pageNumber, int pageSize);
+        Task<PaginatedList<ProductDto?>?> GetProductsByCategoryAsync(string category, int pageNumber, int pageSize);
+        Task<PaginatedList<ProductDto?>?> GetProductsBySubcategoryAsync(string subcategory, int pageNumber, int pageSize);
+        Task<PaginatedList<ProductDto?>?> GetProductsByNameAsync(string name, int pageNumber, int pageSize);
+        Task<PaginatedList<ProductDto?>?> GetAllProductsAsync(int pageNumber, int pageSize);
     }
 }

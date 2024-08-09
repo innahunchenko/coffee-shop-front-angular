@@ -8,7 +8,7 @@ namespace CoffeeShop.Products.Api.Models
         public int? CategoryId { get; set; }
         [Column(TypeName = "decimal(8, 2)")]
         public decimal Price { get; set; }
-        public virtual Category Category { get; set; }
+        public virtual Category? Category { get; set; }
     }
 }
 

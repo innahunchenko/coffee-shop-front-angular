@@ -1,12 +1,10 @@
 ﻿using CoffeeShop.Products.Api.Services;
 using Microsoft.AspNetCore.Mvc;
-using CoffeeShop.Products.Api.Models;
 
 namespace CoffeeShop.Products.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-  //  [EnableCors("AllowSpecificOrigin")]
     public class ProductsController : Controller
     {
         private readonly IProductService productService;
@@ -16,12 +14,54 @@ namespace CoffeeShop.Products.Api.Controllers
             this.productService = productService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetProducts([FromQuery] Filter filter, [FromQuery]int pageNumber, [FromQuery]int pageSize)
+        [HttpGet("category")]
+        public async Task<IActionResult> GetProductsByCategory([FromQuery] string category, [FromQuery]int pageNumber, [FromQuery]int pageSize)
         {
             try
             {
-                var products = await productService.GetProductsAsync(filter, pageNumber, pageSize);
+                var products = await productService.GetProductsByCategoryAsync(category, pageNumber, pageSize);
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("subcategory")]
+        public async Task<IActionResult> GetProductsBySubcategory([FromQuery] string subcategory, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            try
+            {
+                var products = await productService.GetProductsBySubcategoryAsync(subcategory, pageNumber, pageSize);
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("productName")]
+        public async Task<IActionResult> GetProductsByNameAsync([FromQuery] string productName, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            try
+            {
+                var products = await productService.GetProductsByNameAsync(productName, pageNumber, pageSize);
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllProductsAsync([FromQuery] int pageNumber, [FromQuery] int pageSize)
+        {
+            try
+            {
+                var products = await productService.GetAllProductsAsync(pageNumber, pageSize);
                 return Ok(products);
             }
             catch (Exception ex)

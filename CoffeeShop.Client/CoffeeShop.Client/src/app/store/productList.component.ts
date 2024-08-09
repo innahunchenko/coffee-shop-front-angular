@@ -16,21 +16,28 @@ export class ProductListComponent implements OnInit, OnDestroy {
   productsSubscription!: Subscription;
 
   constructor(public repo: Repository) {
-    this.repo.getProducts();
+    this.repo.loadProducts();
   }
 
   ngOnInit() {
     this.productsSubscription = this.repo.products$.subscribe(products => {
       if (products) {
         this.products = products;
-        
-        if (this.totalPages !== this.products.totalPages) {
+
+        if (this.totalPages !== this.products.totalPages && this.totalPages !== 0) {
           this.pageNumber = 1;
           this.currentRangeStart = 1;
-          this.totalPages = this.products.totalPages;
+          this.repo.setPageNumber(this.pageNumber);
+          this.repo.loadProducts();
         }
 
         this.totalPages = products.totalPages;
+      }
+      else {
+        this.pageNumber = 1;
+        this.currentRangeStart = 1;
+        this.repo.setPageNumber(this.pageNumber);
+        this.repo.loadProducts();
       }
     });
   }
@@ -44,6 +51,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
   goToPage(page: number) {
     if (page >= 1 && page <= this.products.totalPages) {
       this.pageNumber = page;
+      this.repo.setPageNumber(this.pageNumber);
+      this.repo.loadProducts();
     }
   }
 
@@ -52,6 +61,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
       // Move to the previous range of pages, ensuring it does not go below 1
       this.currentRangeStart = Math.max(this.currentRangeStart - this.maxPagesToShow, 1);
       this.pageNumber = this.currentRangeStart + this.maxPagesToShow - 1;
+      this.repo.setPageNumber(this.pageNumber);
+      this.repo.loadProducts();
     }
   }
 
@@ -70,6 +81,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
       }
 
       this.pageNumber = this.currentRangeStart;
+      this.repo.setPageNumber(this.pageNumber);
+      this.repo.loadProducts();
     }
   }
 

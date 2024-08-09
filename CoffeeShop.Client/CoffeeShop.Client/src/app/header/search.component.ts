@@ -54,7 +54,11 @@ export class SearchComponent implements AfterViewInit, OnInit {
   }
 
   onSubmit() {
-    this.repository.filter.search = this.searchStateService.getSearchTerm();
-     this.repository.getProducts();
+    var productName = this.searchStateService.getSearchTerm();
+    if (!productName || productName.trim() === '') {
+      this.repository.getAllProducts();
+    } else {
+      this.repository.getProductsByName(productName);
+    }
   }
 }

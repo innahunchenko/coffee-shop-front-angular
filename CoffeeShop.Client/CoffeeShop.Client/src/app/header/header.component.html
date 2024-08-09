@@ -65,10 +65,10 @@
                       <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Categories</button>
                       <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
                         <li>
-                          <button class="dropdown-item btn-link" (click)="setCurrentCategory('', '')">All categories</button>
+                          <button class="dropdown-item btn-link" (click)="setAllCategories()">All categories</button>
                         </li>
                         <li *ngFor="let category of repository.categories">
-                          <button class="dropdown-item btn btn-link" (click)="setCurrentCategory(category.name, '')">{{ category.name }}</button>
+                          <button class="dropdown-item btn btn-link" (click)="setCurrentCategory(category.name)">{{ category.name }}</button>
                         </li>
                       </ul>
                     </li>
@@ -78,7 +78,7 @@
                       <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ category.name }}</button>
                       <ul *ngIf="category.subcategories" class="dropdown-menu" aria-labelledby="subcategories">
                         <li *ngFor="let subcategory of category.subcategories">
-                          <button (click)="setCurrentCategory(category.name, subcategory)" class="dropdown-item btn btn-link">{{ subcategory }}</button>
+                          <button (click)="setCurrentSubcategory(subcategory)" class="dropdown-item btn btn-link">{{ subcategory }}</button>
                         </li>
                       </ul>
                     </li>

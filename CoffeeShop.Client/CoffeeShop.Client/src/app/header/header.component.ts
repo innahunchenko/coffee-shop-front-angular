@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { Repository } from '../services/repository';
 import { Category } from '../models/category.model';
-import { Filter } from '../models/filter.model';
 
 @Component({
   selector: 'app-header',
@@ -15,10 +14,15 @@ export class HeaderComponent {
     this.repository.getCategories();
   }
 
-  setCurrentCategory(category: string, subcategory: string | ""): void {
-    const newFilter = new Filter();
-    newFilter.category = category;
-    newFilter.subcategory = subcategory;
-    this.repository.setFilter(newFilter);
+  setCurrentCategory(category: string): void {
+    this.repository.getProductsByCategory(category);
+  }
+
+  setCurrentSubcategory(subcategory: string): void {
+    this.repository.getProductsBySubcategory(subcategory);
+  }
+
+  setAllCategories(): void {
+    this.repository.getAllProducts();
   }
 }

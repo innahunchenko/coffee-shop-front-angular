@@ -31,6 +31,7 @@ builder.Services.AddSingleton(sp =>
     return new CacheService.CacheServiceClient(channel);
 });
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 

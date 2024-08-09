@@ -1,12 +1,10 @@
 ﻿using CoffeeShop.Products.Api.Services;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoffeeShop.Products.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-  //  [EnableCors("AllowSpecificOrigin")]
     public class CategoriesController : Controller
     {
         private readonly ICategoryService categoryService;

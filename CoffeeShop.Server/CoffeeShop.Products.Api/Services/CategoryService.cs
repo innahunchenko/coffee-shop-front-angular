@@ -10,17 +10,17 @@ namespace CoffeeShop.Products.Api.Services
 {
     public class CategoryService : ICategoryService
     {
-        private readonly IProductRepository productRepository;
+        private readonly ICategoryRepository categoryRepository;
         private readonly IMapper mapper;
         private readonly CacheServiceClient cacheClient;
 
         private static readonly string CATEGORIES_KEY = "KEY:CATEGORIES";
 
-        public CategoryService(IProductRepository productRepository,
+        public CategoryService(ICategoryRepository categoryRepository,
                               IMapper mapper,
                               CacheServiceClient cacheClient)
         {
-            this.productRepository = productRepository;
+            this.categoryRepository = categoryRepository;
             this.mapper = mapper;
             this.cacheClient = cacheClient;
         }
@@ -53,7 +53,7 @@ namespace CoffeeShop.Products.Api.Services
 
         private async Task<List<CategoryDto?>> GetCategoriesFromDbAsync()
         {
-            var categoriesFromDb = await productRepository.GetMainCategoriesWithSubcategoriesAsync();
+            var categoriesFromDb = await categoryRepository.GetMainCategoriesWithSubcategoriesAsync();
             return mapper.Map<List<CategoryDto?>>(categoriesFromDb);
         }
 

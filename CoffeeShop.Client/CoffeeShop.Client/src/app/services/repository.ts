@@ -4,66 +4,79 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { BehaviorSubject, Observable } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { Category } from "../models/category.model";
-import { Filter } from "../models/filter.model";
 import { PaginatedList } from "../models/paginatedList.model";
 
 const API_BASE_URL = 'http://localhost:5000/api';
 const productsUrl = `${API_BASE_URL}/products`;
 const categoriesUrl = `${API_BASE_URL}/categories`;
+const byCategory = 'category';
+const bySubcategory = 'subcategory';
+const byName = 'productName';
 
 @Injectable()
 export class Repository {
   private productsSubject = new BehaviorSubject<PaginatedList<Product>>(new PaginatedList());
   products$: Observable<PaginatedList<Product>> = this.productsSubject.asObservable();
-
   categories: Category[] = [];
-  filter: Filter = new Filter();
   pageNumber: number = 1;
   pageSize: number = 10;
+  filterValue: string = "";
+  filterType: string = "";
 
   constructor(private http: HttpClient) {
   }
 
-  getProducts(): void {
-    let params = new HttpParams();
+  public loadProducts(): void {
+    let params = new HttpParams()
+      .set('pageNumber', this.pageNumber.toString())
+      .set('pageSize', this.pageSize.toString());
 
-    if (this.filter) {
-      Object.keys(this.filter).forEach(key => {
-        const value = this.filter[key];
-        if (value !== undefined && value !== null && value !== '') {
-          params = params.set(key, value);
-        }
-      });
+    params = params.set(this.filterType, this.filterValue);
+
+    let url = productsUrl;
+    if (this.filterType) {
+      url += `/${this.filterType}`;
     }
 
-    params = params.set('pageNumber', this.pageNumber.toString());
-    params = params.set('pageSize', this.pageSize.toString());
-
-    this.http.get<PaginatedList<Product>>(productsUrl, { params }).pipe(
+    this.http.get<PaginatedList<Product>>(url, { params }).pipe(
       catchError(error => {
-        console.error('Error loading products:', error);
+        console.error(`Error loading products by ${this.filterType || 'all'}:`, error);
         throw error;
       })
     ).subscribe(
       products => {
-        this.productsSubject.next(products); 
-        console.log('Products loaded:', products, 'total products: ', products.totalItems);
-        console.log('total pages: ', products.totalPages);
-      },
-      error => {
-        console.error('Error loading products:', error);
+        this.productsSubject.next(products);
+        console.log(`Products loaded by ${this.filterType || 'all'}:`, products);
       }
     );
   }
 
-  setFilter(filter: Filter) {
-    this.filter = filter;
-    this.getProducts(); 
-  }
-
   setPageNumber(pageNumber: number) {
     this.pageNumber = pageNumber;
-    this.getProducts(); 
+  }
+
+  getProductsByCategory(category: string): void {
+    this.filterType = byCategory;
+    this.filterValue = category;
+    this.loadProducts();
+  }
+
+  getProductsBySubcategory(subcategory: string): void {
+    this.filterType = bySubcategory;
+    this.filterValue = subcategory;
+    this.loadProducts();
+  }
+
+  getProductsByName(name: string): void {
+    this.filterType = byName;
+    this.filterValue = name;
+    this.loadProducts();
+  }
+
+  getAllProducts(): void {
+    this.filterType = "";
+    this.filterValue = "";
+    this.loadProducts();
   }
 
   getCategories() {
