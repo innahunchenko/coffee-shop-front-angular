@@ -13,7 +13,7 @@ namespace CoffeeShop.Cache.Api.Repository
         IEnumerable<string> GetHashKeys(string key);
         Task SetIndexAsync(string indexKey, string itemKey);
         Task<RedisValue[]> GetIndexMembers(string indexKey);
-        Task<bool> SetValueAsync(string key, string value);
+        Task SetValueAsync(string key, string value);
         Task<string?> GetValueAsync(string key);
     }
 }

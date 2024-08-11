@@ -8,7 +8,6 @@ import { Subscription } from "rxjs";
   templateUrl: "productList.component.html"
 })
 export class ProductListComponent implements OnInit, OnDestroy {
-  pageNumber = 1;
   maxPagesToShow = 3;
   currentRangeStart: number = 1;
   totalPages = 0;
@@ -20,23 +19,21 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
     this.productsSubscription = this.repo.products$.subscribe(products => {
       if (products) {
         this.products = products;
 
         if (this.totalPages !== this.products.totalPages && this.totalPages !== 0) {
-          this.pageNumber = 1;
           this.currentRangeStart = 1;
-          this.repo.setPageNumber(this.pageNumber);
-          this.repo.loadProducts();
+          this.repo.pageNumber = 1;
         }
 
         this.totalPages = products.totalPages;
       }
       else {
-        this.pageNumber = 1;
+        this.repo.pageNumber = 1;
         this.currentRangeStart = 1;
-        this.repo.setPageNumber(this.pageNumber);
         this.repo.loadProducts();
       }
     });
@@ -50,8 +47,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   goToPage(page: number) {
     if (page >= 1 && page <= this.products.totalPages) {
-      this.pageNumber = page;
-      this.repo.setPageNumber(this.pageNumber);
+      this.repo.pageNumber = page;
       this.repo.loadProducts();
     }
   }
@@ -60,8 +56,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     if (this.currentRangeStart > 1) {
       // Move to the previous range of pages, ensuring it does not go below 1
       this.currentRangeStart = Math.max(this.currentRangeStart - this.maxPagesToShow, 1);
-      this.pageNumber = this.currentRangeStart + this.maxPagesToShow - 1;
-      this.repo.setPageNumber(this.pageNumber);
+      this.repo.pageNumber = this.currentRangeStart + this.maxPagesToShow - 1;
       this.repo.loadProducts();
     }
   }
@@ -80,8 +75,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
         this.currentRangeStart = newRangeStart;
       }
 
-      this.pageNumber = this.currentRangeStart;
-      this.repo.setPageNumber(this.pageNumber);
+      this.repo.pageNumber = this.currentRangeStart;
       this.repo.loadProducts();
     }
   }

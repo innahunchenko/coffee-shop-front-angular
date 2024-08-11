@@ -7,7 +7,7 @@
 
         <ng-container *ngIf="products && totalPages > 0">
           <ng-container *ngFor="let page of getPageNumbers()">
-            <button class="btn" (click)="goToPage(page)" [class.active]="page === pageNumber">{{ page }}</button>
+            <button class="btn" (click)="goToPage(page)" [class.active]="page === repo.pageNumber">{{ page }}</button>
           </ng-container>
         </ng-container>
 

@@ -1,5 +1,6 @@
-﻿using GrpcCache;
-using StackExchange.Redis;
+﻿using StackExchange.Redis;
+using RedLockNet.SERedis;
+using RedLockNet.SERedis.Configuration;
 
 namespace CoffeeShop.Cache.Api.Repository
 {
@@ -8,6 +9,7 @@ namespace CoffeeShop.Cache.Api.Repository
         private readonly IDatabase db;
         private readonly IServer server;
         private readonly TimeSpan expiration;
+        private readonly RedLockFactory redLockFactory;
 
         public RedisCacheRepository(IConfiguration configuration)
         {
@@ -18,73 +20,183 @@ namespace CoffeeShop.Cache.Api.Repository
             var connectionMultiplexer = ConnectionMultiplexer.Connect(connectionString);
             db = connectionMultiplexer.GetDatabase();
             server = connectionMultiplexer.GetServer(connectionMultiplexer.Configuration);
+            redLockFactory = RedLockFactory.Create(new List<RedLockMultiplexer> { connectionMultiplexer });
         }
 
         public async Task<IDictionary<string, string>> GetHashAllAsync(string hashKey)
         {
-            var values = await db.HashGetAllAsync(hashKey);
-            if (values.Length > 0)
+            try
             {
-                return values.ToDictionary(e => (string)e.Name, e => (string)e.Value);
+                var values = await db.HashGetAllAsync(hashKey);
+                if (values.Length > 0)
+                {
+                    return values.ToDictionary(e => (string)e.Name, e => (string)e.Value);
+                }
+                return new Dictionary<string, string>();
             }
-
-            return new Dictionary<string, string>();
+            catch (RedisException ex)
+            {
+                Console.WriteLine($"Error getting all hash values for key {hashKey}: {ex.Message}");
+                return new Dictionary<string, string>();
+            }
         }
 
         public async Task<string?> GetHashDataAsync(string key, string id)
         {
-            var value = await db.HashGetAsync(key, id);
-            if (!value.IsNullOrEmpty)
+            try
             {
-                return value;
+                var value = await db.HashGetAsync(key, id);
+                return value.HasValue ? value.ToString() : null;
             }
-
-            return string.Empty;
+            catch (RedisException ex)
+            {
+                Console.WriteLine($"Error getting hash data for key {key} and id {id}: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task HashSetDataAsync(string key, string id, string data)
         {
-            await db.HashSetAsync(key, [new HashEntry(id, data)]);
-            await db.KeyExpireAsync(key, expiration);
+            try
+            {
+                await using (var redLock = await redLockFactory.CreateLockAsync(key, expiration))
+                {
+                    if (redLock.IsAcquired)
+                    {
+                        await db.HashSetAsync(key, new[] { new HashEntry(id, data) });
+                        await db.KeyExpireAsync(key, expiration);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Could not acquire lock for key {key}.");
+                    }
+                }
+            }
+            catch (RedisException ex)
+            {
+                Console.WriteLine($"Error setting hash data for key {key} and id {id}: {ex.Message}");
+            }
         }
 
         public async Task HashSetDataAsync(string key, IEnumerable<HashEntry> hashEntries)
         {
-            await db.HashSetAsync(key, hashEntries.ToArray());
-            await db.KeyExpireAsync(key, expiration);
+            try
+            {
+                await using (var redLock = await redLockFactory.CreateLockAsync(key, expiration))
+                {
+                    if (redLock.IsAcquired)
+                    {
+                        await db.HashSetAsync(key, hashEntries.ToArray());
+                        await db.KeyExpireAsync(key, expiration);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Could not acquire lock for key {key}.");
+                    }
+                }
+            }
+            catch (RedisException ex)
+            {
+                Console.WriteLine($"Error setting hash data for key {key}: {ex.Message}");
+            }
         }
 
         public IEnumerable<string> GetHashKeys(string pattern)
         {
-            var keys = server.Keys(pattern: pattern);
-            return keys.Select(k => k.ToString());
+            try
+            {
+                var keys = server.Keys(pattern: pattern);
+                return keys.Select(k => k.ToString());
+            }
+            catch (RedisException ex)
+            {
+                Console.WriteLine($"Error getting keys with pattern {pattern}: {ex.Message}");
+                return Enumerable.Empty<string>();
+            }
         }
 
         public async Task<bool> RemoveHashDataAsync(string key, string id)
         {
-            var isDeleted = await db.HashDeleteAsync(key, id);
-            return isDeleted;
+            try
+            {
+                await using (var redLock = await redLockFactory.CreateLockAsync(key, expiration))
+                {
+                    if (redLock.IsAcquired)
+                    {
+                        var isDeleted = await db.HashDeleteAsync(key, id);
+                        return isDeleted;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Could not acquire lock for key {key}.");
+                        return false;
+                    }
+                }
+            }
+            catch (RedisException ex)
+            {
+                Console.WriteLine($"Error removing hash data for key {key} and id {id}: {ex.Message}");
+                return false;
+            }
         }
 
         public async Task<bool> RemoveHashKeyAsync(string key)
         {
-            return await db.KeyDeleteAsync(key);
+            try
+            {
+                await using (var redLock = await redLockFactory.CreateLockAsync(key, expiration))
+                {
+                    if (redLock.IsAcquired)
+                    {
+                        return await db.KeyDeleteAsync(key);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Could not acquire lock for key {key}.");
+                        return false;
+                    }
+                }
+            }
+            catch (RedisException ex)
+            {
+                Console.WriteLine($"Error removing hash key {key}: {ex.Message}");
+                return false;
+            }
         }
 
         public async Task SetIndexAsync(string indexKey, string productKey)
         {
-            await db.SetAddAsync(indexKey, productKey);
+            try
+            {
+                await using (var redLock = await redLockFactory.CreateLockAsync(indexKey, expiration))
+                {
+                    if (redLock.IsAcquired)
+                    {
+                        await db.SetAddAsync(indexKey, productKey);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Could not acquire lock for indexKey {indexKey}.");
+                    }
+                }
+            }
+            catch (RedisException ex)
+            {
+                Console.WriteLine($"Error adding product key {productKey} to index {indexKey}: {ex.Message}");
+            }
         }
 
         public async Task<RedisValue[]> GetIndexMembers(string indexKey)
         {
-            return await db.SetMembersAsync(indexKey);
-        }
-
-        public Task<bool> SetValueAsync(string key, string value)
-        {
-            db.StringSet(key, value);
-            return Task.FromResult(true);
+            try
+            {
+                return await db.SetMembersAsync(indexKey);
+            }
+            catch (RedisException ex)
+            {
+                Console.WriteLine($"Error getting members of index {indexKey}: {ex.Message}");
+                return Array.Empty<RedisValue>();
+            }
         }
 
         public async Task<string?> GetValueAsync(string key)
@@ -93,11 +205,33 @@ namespace CoffeeShop.Cache.Api.Repository
             {
                 return await db.StringGetAsync(key);
             }
-            catch (Exception ex) 
+            catch (RedisException ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine($"Error getting value for key {key}: {ex.Message}");
+                return null;
             }
-            return null;
+        }
+
+        public async Task SetValueAsync(string key, string value)
+        {
+            try
+            {
+                await using (var redLock = await redLockFactory.CreateLockAsync(key, expiration))
+                {
+                    if (redLock.IsAcquired)
+                    {
+                        await db.StringSetAsync(key, value, expiration);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Could not acquire lock for key {key}.");
+                    }
+                }
+            }
+            catch (RedisException ex)
+            {
+                Console.WriteLine($"Error setting value for key {key}: {ex.Message}");
+            }
         }
     }
 }

@@ -82,11 +82,11 @@ public class CacheService : CacheServiceBase
 
     public override async Task<SetValueResponse> SetValue(SetValueRequest request, ServerCallContext context)
     {
-        var success = await redisCacheRepository.SetValueAsync(request.Key, request.Value);
+        await redisCacheRepository.SetValueAsync(request.Key, request.Value);
 
         return new SetValueResponse
         {
-            Success = success
+            Success = true
         };
     }
 
@@ -98,7 +98,7 @@ public class CacheService : CacheServiceBase
             var value = await redisCacheRepository.GetValueAsync(request.Key);
             return new GetValueResponse
             {
-                Value = value ?? "0"
+                Value = string.IsNullOrEmpty(value) ? "0" : value 
             };
         }
         catch (Exception ex) 

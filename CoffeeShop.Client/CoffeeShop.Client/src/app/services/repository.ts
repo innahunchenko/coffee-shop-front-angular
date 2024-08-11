@@ -18,17 +18,17 @@ export class Repository {
   private productsSubject = new BehaviorSubject<PaginatedList<Product>>(new PaginatedList());
   products$: Observable<PaginatedList<Product>> = this.productsSubject.asObservable();
   categories: Category[] = [];
-  pageNumber: number = 1;
   pageSize: number = 10;
   filterValue: string = "";
   filterType: string = "";
+  private _pageNumber: number = 1;
 
   constructor(private http: HttpClient) {
   }
 
   public loadProducts(): void {
     let params = new HttpParams()
-      .set('pageNumber', this.pageNumber.toString())
+      .set('pageNumber', this._pageNumber.toString())
       .set('pageSize', this.pageSize.toString());
 
     params = params.set(this.filterType, this.filterValue);
@@ -51,31 +51,43 @@ export class Repository {
     );
   }
 
-  setPageNumber(pageNumber: number) {
-    this.pageNumber = pageNumber;
+  get pageNumber(): number {
+    return this._pageNumber;
+  }
+
+  set pageNumber(value: number) {
+    if (value >= 1) { 
+      this._pageNumber = value;
+    } else {
+      console.error("Page number must be greater than or equal to 1.");
+    }
   }
 
   getProductsByCategory(category: string): void {
     this.filterType = byCategory;
     this.filterValue = category;
+    this.pageNumber = 1;
     this.loadProducts();
   }
 
   getProductsBySubcategory(subcategory: string): void {
     this.filterType = bySubcategory;
     this.filterValue = subcategory;
+    this.pageNumber = 1;
     this.loadProducts();
   }
 
   getProductsByName(name: string): void {
     this.filterType = byName;
     this.filterValue = name;
+    this.pageNumber = 1;
     this.loadProducts();
   }
 
   getAllProducts(): void {
     this.filterType = "";
     this.filterValue = "";
+    this.pageNumber = 1;
     this.loadProducts();
   }
 
