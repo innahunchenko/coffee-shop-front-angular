@@ -1,48 +1,54 @@
-<section class="py-5">
-  <div class="container-fluid">
+<div *ngIf="isLoading" class="preloader-wrapper">
+  <div class="preloader"></div>
+</div>
 
-    <div class="nav nav-tabs" id="nav-tab" role="tablist">
-      <div class="mb-4">
-        <button class="btn" (click)="previousSetOfPages()" [disabled]="currentRangeStart === 1">❮❮❮</button>
+<div *ngIf="!isLoading">
+  <section class="py-5">
+    <div class="container-fluid">
 
-        <ng-container *ngIf="products && totalPages > 0">
-          <ng-container *ngFor="let page of getPageNumbers()">
-            <button class="btn" (click)="goToPage(page)" [class.active]="page === repo.pageNumber">{{ page }}</button>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <div class="mb-4">
+          <button class="btn" (click)="previousSetOfPages()" [disabled]="currentRangeStart === 1">❮❮❮</button>
+
+          <ng-container *ngIf="products && totalPages > 0">
+            <ng-container *ngFor="let page of getPageNumbers()">
+              <button class="btn" (click)="goToPage(page)" [class.active]="page === repo.pageNumber">{{ page }}</button>
+            </ng-container>
           </ng-container>
-        </ng-container>
 
-        <button class="btn" (click)="nextSetOfPages()" [disabled]="currentRangeStart + maxPagesToShow > totalPages">❯❯❯</button>
+          <button class="btn" (click)="nextSetOfPages()" [disabled]="currentRangeStart + maxPagesToShow > totalPages">❯❯❯</button>
+        </div>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="col-md-12">
-        <div class="bootstrap-tabs">
-          <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
-              <div *ngIf="products.items && products.items.length > 0; else nodata" class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-                <div *ngFor="let product of products.items" class="col mb-4">
-                  <div class="product-item">
-                    <figure>
-                      <img src="/assets/images/unknown.png" class="tab-image">
-                    </figure>
-                    <h5>{{product.name}}</h5>
-                    <span class="price">${{product.price}}</span>
-                    <div class="d-flex align-items-center justify-content-between">
-                      <div class="input-group product-qty">
-                        <span class="input-group-btn">
-                          <button type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus">
-                            <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
-                          </button>
-                        </span>
-                        <input type="text" id="quantity" name="quantity" class="form-control input-number" value="1">
-                        <span class="input-group-btn">
-                          <button type="button" class="quantity-right-plus btn btn-success btn-number" data-type="plus">
-                            <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
-                          </button>
-                        </span>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="bootstrap-tabs">
+            <div class="tab-content" id="nav-tabContent">
+              <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
+                <div *ngIf="products.items && products.items.length > 0; else nodata" class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+                  <div *ngFor="let product of products.items" class="col mb-4">
+                    <div class="product-item">
+                      <figure>
+                        <img src="/assets/images/unknown.png" class="tab-image">
+                      </figure>
+                      <h5>{{ product.name }}</h5>
+                      <span class="price">${{ product.price }}</span>
+                      <div class="d-flex align-items-center justify-content-between">
+                        <div class="input-group product-qty">
+                          <span class="input-group-btn">
+                            <button type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus">
+                              <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
+                            </button>
+                          </span>
+                          <input type="text" id="quantity" name="quantity" class="form-control input-number" value="1">
+                          <span class="input-group-btn">
+                            <button type="button" class="quantity-right-plus btn btn-success btn-number" data-type="plus">
+                              <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
+                            </button>
+                          </span>
+                        </div>
+                        <a href="#" class="nav-link">Add to Cart</a>
                       </div>
-                      <a href="#" class="nav-link">Add to Cart</a>
                     </div>
                   </div>
                 </div>
@@ -52,9 +58,11 @@
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
+</div>
 
 <ng-template #nodata>
-  <h4 class="m-2">Waiting for data...</h4>
+  <div class="preloader-wrapper">
+    <div class="preloader"></div>
+  </div>
 </ng-template>

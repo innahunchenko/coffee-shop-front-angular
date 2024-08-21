@@ -13,25 +13,31 @@ export class ProductListComponent implements OnInit, OnDestroy {
   totalPages = 0;
   products: PaginatedList<Product> = new PaginatedList<Product>();
   productsSubscription!: Subscription;
+  loadingSubscription!: Subscription;
+  isLoading = true;
 
   constructor(public repo: Repository) {
     this.repo.loadProducts();
   }
 
   ngOnInit() {
+    this.loadingSubscription = this.repo.loading$.subscribe(loading => {
+      this.isLoading = loading;
+    });
 
     this.productsSubscription = this.repo.products$.subscribe(products => {
       if (products) {
         this.products = products;
+        this.isLoading = false;
 
-        if (this.totalPages !== this.products.totalPages && this.totalPages !== 0) {
+        if (this.repo.pageNumber === 1) {
           this.currentRangeStart = 1;
-          this.repo.pageNumber = 1;
         }
 
         this.totalPages = products.totalPages;
-      }
-      else {
+
+      } else {
+        this.isLoading = false;
         this.repo.pageNumber = 1;
         this.currentRangeStart = 1;
         this.repo.loadProducts();
@@ -42,6 +48,9 @@ export class ProductListComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.productsSubscription) {
       this.productsSubscription.unsubscribe();
+    }
+    if (this.loadingSubscription) {
+      this.loadingSubscription.unsubscribe();
     }
   }
 
@@ -54,7 +63,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   previousSetOfPages() {
     if (this.currentRangeStart > 1) {
-      // Move to the previous range of pages, ensuring it does not go below 1
       this.currentRangeStart = Math.max(this.currentRangeStart - this.maxPagesToShow, 1);
       this.repo.pageNumber = this.currentRangeStart + this.maxPagesToShow - 1;
       this.repo.loadProducts();
@@ -62,13 +70,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
   }
 
   nextSetOfPages() {
-    // Calculate the last page in the current range
     const lastPageInRange = this.currentRangeStart + this.maxPagesToShow - 1;
 
     if (lastPageInRange < this.products.totalPages) {
       const newRangeStart = lastPageInRange + 1;
-
-      // Ensure the new range does not exceed total pages
       this.currentRangeStart = Math.min(newRangeStart, this.products.totalPages - this.maxPagesToShow + 1);
 
       if (this.currentRangeStart < lastPageInRange) {

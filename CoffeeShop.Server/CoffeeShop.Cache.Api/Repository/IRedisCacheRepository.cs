@@ -10,7 +10,7 @@ namespace CoffeeShop.Cache.Api.Repository
         Task HashSetDataAsync(string key, IEnumerable<HashEntry> hashEntries);
         Task<bool> RemoveHashDataAsync(string key, string id);
         Task<bool> RemoveHashKeyAsync(string key);
-        IEnumerable<string> GetHashKeys(string key);
+        Task<IEnumerable<string>> GetHashKeysAsync(string pattern);
         Task SetIndexAsync(string indexKey, string itemKey);
         Task<RedisValue[]> GetIndexMembers(string indexKey);
         Task SetValueAsync(string key, string value);

@@ -47,7 +47,7 @@ namespace CoffeeShop.Products.Api.Services
         {
             return await GetProductsAsync(
                 async () =>
-                { 
+                {
                     var products = await productRepository.GetProductsByCategoryAsync(category, pageNumber, pageSize);
                     return mapper.Map<IEnumerable<ProductDto?>>(products);
                 },
@@ -113,8 +113,8 @@ namespace CoffeeShop.Products.Api.Services
             }
 
             int totalProducts = await getTotalProductsCountFunc();
-
-            await CacheProductsAsync(productsFromDb, index, totalKey, totalProducts);
+            var products = productsFromDb.ToList();
+            await CacheProductsAsync(products, index, totalKey, totalProducts);
 
             return new PaginatedList<ProductDto?>(mapper.Map<List<ProductDto?>>(productsFromDb), totalProducts, pageNumber, pageSize);
         }
@@ -157,13 +157,6 @@ namespace CoffeeShop.Products.Api.Services
             return string.IsNullOrEmpty(cachedTotalProducts.Value) ? 0 : int.Parse(cachedTotalProducts.Value);
         }
 
-        private async Task CacheProductsAsync(IEnumerable<ProductDto?> products, string index, string totalKey, int totalProducts)
-        {
-            await CacheProductsAsync(products.ToList(), index);
-            await cacheClient.SetValueAsync(new SetValueRequest { Key = totalKey, Value = totalProducts.ToString() });
-            Console.WriteLine($"products cached, total {totalProducts}");
-        }
-
         public async Task<List<ProductDto?>> SearchProductsInCacheAsync(string index)
         {
             var keys = await GetProductKeysAsync(index);
@@ -193,10 +186,50 @@ namespace CoffeeShop.Products.Api.Services
             return products;
         }
 
-        private async Task CacheProductsAsync(List<ProductDto?> products, string index)
+        private async Task CacheProductsAsync(List<ProductDto?> products, string index, string totalKey, int totalProducts)
         {
-            var tasks = products.Select(product => AddProductToCacheAsync(product, index));
-            await Task.WhenAll(tasks);
+            await ClearCacheForIndexAsync(index);
+
+            var productTasks = products.Select(async product =>
+            {
+                try
+                {
+                    await AddProductToCacheAsync(product, index);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to cache product with ID: {product?.Id}. Exception: {ex.Message}");
+                }
+            });
+
+            var taskArray = productTasks.ToArray();
+            try
+            {
+                await Task.WhenAll(taskArray);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"One or more product caching operations failed: {ex.Message}");
+            }
+
+            if (taskArray.Any(t => t.IsFaulted))
+            {
+                Console.WriteLine("One or more tasks failed during product caching.");
+            }
+
+            var cachedProducts = await cacheClient.GetIndexMembersAsync(new GetIndexMembersRequest() { IndexKey = index });
+            Console.WriteLine($"Cached products: {cachedProducts.Members.Count()}");
+            cachedProducts.Members.ToList().ForEach(cp => Console.WriteLine($"Cached product key: {cp}"));
+
+            await cacheClient.SetValueAsync(new SetValueRequest { Key = totalKey, Value = totalProducts.ToString() });
+            Console.WriteLine($"Products cached, total {totalProducts}");
+        }
+
+        private async Task ClearCacheForIndexAsync(string index)
+        {
+            var keysToRemove = await GetProductKeysAsync(index);
+            var removeTasks = keysToRemove.Select(async key => await cacheClient.RemoveHashKeyAsync(new RemoveHashKeyRequest { Key = key }));
+            await Task.WhenAll(removeTasks);
         }
 
         public async Task AddProductToCacheAsync(ProductDto? product, string index)
@@ -231,10 +264,10 @@ namespace CoffeeShop.Products.Api.Services
         {
             var productKey = $"product:{product?.Id}";
             var indexKeys = new List<string>
-        {
-            string.Format(ProductNameIndexTemplate, product?.Name.ToLower()),
-            index
-        };
+            {
+                string.Format(ProductNameIndexTemplate, product?.Name.ToLower()),
+                index
+            };
 
             var tasks = indexKeys.Select(async indexKey =>
             {
@@ -244,7 +277,7 @@ namespace CoffeeShop.Products.Api.Services
                     ItemKey = productKey
                 };
 
-                await cacheClient.SetAddAsync(setAddRequest).ResponseAsync;
+                await cacheClient.SetAddAsync(setAddRequest);
 
                 var totalKey = $"{indexKey}:total";
                 var currentTotalResponse = await cacheClient.GetValueAsync(new GetValueRequest { Key = totalKey });

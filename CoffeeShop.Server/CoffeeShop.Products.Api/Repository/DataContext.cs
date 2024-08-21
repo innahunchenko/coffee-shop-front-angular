@@ -123,7 +123,6 @@ namespace CoffeeShop.Products.Api.Repository
                 { 19, "Subscriptions" }
             };
 
-            // Add products to each subcategory with different counts between 15 and 30
             for (int i = 5; i <= 19; i++)
             {
                 int productCount = random.Next(5, 11);

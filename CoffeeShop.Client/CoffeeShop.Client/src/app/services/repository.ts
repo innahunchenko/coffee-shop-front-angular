@@ -16,7 +16,9 @@ const byName = 'productName';
 @Injectable()
 export class Repository {
   private productsSubject = new BehaviorSubject<PaginatedList<Product>>(new PaginatedList());
+  private loadingSubject = new BehaviorSubject<boolean>(false);
   products$: Observable<PaginatedList<Product>> = this.productsSubject.asObservable();
+  loading$: Observable<boolean> = this.loadingSubject.asObservable();
   categories: Category[] = [];
   pageSize: number = 10;
   filterValue: string = "";
@@ -27,6 +29,8 @@ export class Repository {
   }
 
   public loadProducts(): void {
+    this.loadingSubject.next(true);
+
     let params = new HttpParams()
       .set('pageNumber', this._pageNumber.toString())
       .set('pageSize', this.pageSize.toString());
@@ -46,7 +50,11 @@ export class Repository {
     ).subscribe(
       products => {
         this.productsSubject.next(products);
+        this.loadingSubject.next(false);
         console.log(`Products loaded by ${this.filterType || 'all'}:`, products);
+      },
+      error => {
+        this.loadingSubject.next(false);
       }
     );
   }

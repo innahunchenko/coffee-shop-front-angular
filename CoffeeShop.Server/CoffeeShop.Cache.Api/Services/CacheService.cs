@@ -48,7 +48,7 @@ public class CacheService : CacheServiceBase
 
     public override async Task<GetHashKeysResponse> GetHashKeys(GetHashKeysRequest request, ServerCallContext context)
     {
-        var keys = redisCacheRepository.GetHashKeys(request.Key);
+        var keys = await redisCacheRepository.GetHashKeysAsync(request.Key);
         var response = new GetHashKeysResponse();
         response.Keys.AddRange(keys);
         return response;
@@ -94,15 +94,17 @@ public class CacheService : CacheServiceBase
     {
         try
         {
-
             var value = await redisCacheRepository.GetValueAsync(request.Key);
             return new GetValueResponse
             {
                 Value = string.IsNullOrEmpty(value) ? "0" : value 
             };
         }
+
         catch (Exception ex) 
-        { Console.WriteLine(ex); }
+        { 
+            Console.WriteLine(ex); 
+        }
 
         return null;
     }
