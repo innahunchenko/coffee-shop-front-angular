@@ -8,7 +8,7 @@
 
       <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <div class="mb-4">
-          <button class="btn" (click)="previousSetOfPages()" [disabled]="currentRangeStart === 1">❮❮❮</button>
+          <button class="btn" (click)="previousSetOfPages()" [disabled]="currentRangeStart === 1">❮❮</button>
 
           <ng-container *ngIf="products && totalPages > 0">
             <ng-container *ngFor="let page of getPageNumbers()">
@@ -16,7 +16,7 @@
             </ng-container>
           </ng-container>
 
-          <button class="btn" (click)="nextSetOfPages()" [disabled]="currentRangeStart + maxPagesToShow > totalPages">❯❯❯</button>
+          <button class="btn" (click)="nextSetOfPages()" [disabled]="currentRangeStart + maxPagesToShow > totalPages">❯❯</button>
         </div>
       </div>
 

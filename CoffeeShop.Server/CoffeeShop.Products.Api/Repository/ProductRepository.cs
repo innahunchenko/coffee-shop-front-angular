@@ -10,33 +10,44 @@ namespace CoffeeShop.Products.Api.Repository
     public class ProductRepository : IProductRepository
     {
         private readonly DataContext context;
-        private IDbConnection? connection;
 
-        private const string CommonQueryPart = @"
+        private const string BaseQuery = @"
             SELECT p.*
-            FROM Categories as c
-            JOIN Categories as sbc ON sbc.ParentCategoryId = c.Id
-            JOIN Products as p ON p.CategoryId = sbc.Id";
+            FROM Categories AS c
+            JOIN Categories AS sbc ON sbc.ParentCategoryId = c.Id
+            JOIN Products AS p ON p.CategoryId = sbc.Id
+            WHERE 1=1";
 
         public ProductRepository(DataContext context)
         {
             this.context = context;
         }
 
-        public IDbConnection GetConnection()
+        private string BuildQueryWithCondition(string? condition)
         {
-            if (connection == null || connection.State != ConnectionState.Open)
+            var query = new StringBuilder(BaseQuery);
+
+            if (!string.IsNullOrEmpty(condition))
             {
-                connection = new SqlConnection(context.Database.GetConnectionString());
-                connection.Open();
+                query.Append(" AND ").Append(condition);
             }
-            return connection;
+
+            return query.ToString();
+        }
+
+        private string BuildQueryWithPagination(string baseQuery, DynamicParameters parameters, int pageNumber, int pageSize)
+        {
+            var queryBuilder = new StringBuilder(baseQuery);
+            queryBuilder.Append(" ORDER BY p.Id OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY");
+            parameters.Add("@Offset", (pageNumber - 1) * pageSize);
+            parameters.Add("@PageSize", pageSize);
+            return queryBuilder.ToString();
         }
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync(int pageNumber, int pageSize)
         {
             var parameters = new DynamicParameters();
-            var baseQuery = new StringBuilder(CommonQueryPart).ToString();
+            var baseQuery = new StringBuilder(BaseQuery).ToString();
             var query = BuildQueryWithPagination(baseQuery, parameters, pageNumber, pageSize);
             return await ExecuteProductQueryAsync(query, parameters);
         }
@@ -44,56 +55,34 @@ namespace CoffeeShop.Products.Api.Repository
         public async Task<IEnumerable<Product>> GetProductsByCategoryAsync(string category, int pageNumber, int pageSize)
         {
             var parameters = new DynamicParameters();
-            var baseQuery = new StringBuilder(CommonQueryPart)
-                .Append(" WHERE LOWER(c.Name) = LOWER(@Category)")
-                .ToString();
             parameters.Add("@Category", category);
-
-            var query = BuildQueryWithPagination(baseQuery, parameters, pageNumber, pageSize);
+            var query = BuildQueryWithCondition("LOWER(c.Name) = LOWER(@Category)");
+            query = BuildQueryWithPagination(query, parameters, pageNumber, pageSize);
             return await ExecuteProductQueryAsync(query, parameters);
         }
 
         public async Task<IEnumerable<Product>> GetProductsBySubcategoryAsync(string subcategory, int pageNumber, int pageSize)
         {
             var parameters = new DynamicParameters();
-            var baseQuery = new StringBuilder(CommonQueryPart)
-                .Append(" WHERE LOWER(sbc.Name) = LOWER(@Subcategory)")
-                .ToString();
             parameters.Add("@Subcategory", subcategory);
-
-            var query = BuildQueryWithPagination(baseQuery, parameters, pageNumber, pageSize);
+            var query = BuildQueryWithCondition("LOWER(sbc.Name) = LOWER(@Subcategory)");
+            query = BuildQueryWithPagination(query, parameters, pageNumber, pageSize);
             return await ExecuteProductQueryAsync(query, parameters);
         }
 
         public async Task<IEnumerable<Product>> GetProductsByProductNameAsync(string productName, int pageNumber, int pageSize)
         {
             var parameters = new DynamicParameters();
-            var baseQuery = new StringBuilder(CommonQueryPart)
-                .Append(" WHERE p.Name LIKE @ProductName")
-                .ToString();
             parameters.Add("@ProductName", $"%{productName.Replace("_", "[_]")}%");
-
-            var query = BuildQueryWithPagination(baseQuery, parameters, pageNumber, pageSize);
-            return await ExecuteProductQueryAsync(query, parameters);
-        }
-
-        private string BuildQueryWithPagination(string baseQuery, DynamicParameters parameters, int? pageNumber, int? pageSize)
-        {
-            var queryBuilder = new StringBuilder(baseQuery);
-
-            if (pageNumber.HasValue && pageSize.HasValue)
-            {
-                queryBuilder.Append(" ORDER BY p.Id OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY");
-                parameters.Add("@Offset", (pageNumber.Value - 1) * pageSize.Value);
-                parameters.Add("@PageSize", pageSize.Value);
-            }
-
-            return queryBuilder.ToString();
+            var condition = "p.Name LIKE @ProductName";
+            var queryWithCondition = BuildQueryWithCondition(condition);
+            var queryWithPagination = BuildQueryWithPagination(queryWithCondition, parameters, pageNumber, pageSize);
+            return await ExecuteProductQueryAsync(queryWithPagination, parameters);
         }
 
         private async Task<IEnumerable<Product>> ExecuteProductQueryAsync(string query, DynamicParameters parameters)
         {
-            using (var connection = GetConnection())
+            using (var connection = new SqlConnection(context.Database.GetConnectionString()))
             {
                 var products = await ExecuteQueryAsync(connection, query, parameters);
 
@@ -108,7 +97,7 @@ namespace CoffeeShop.Products.Api.Repository
                     product.Category = categories.FirstOrDefault(c => c.Id == product.CategoryId);
                 }
 
-                return new List<Product>(products);
+                return products;
             }
         }
 
@@ -150,25 +139,15 @@ namespace CoffeeShop.Products.Api.Repository
 
         private string GenerateCountQuery(string? filterCondition = null)
         {
-            var queryBuilder = new StringBuilder("SELECT COUNT(*) FROM (");
-            queryBuilder.Append(CommonQueryPart);
-
-            if (!string.IsNullOrEmpty(filterCondition))
-            {
-                queryBuilder.Append(" WHERE ");
-                queryBuilder.Append(filterCondition);
-            }
-
-            queryBuilder.Append(") AS TotalCount");
-            return queryBuilder.ToString();
+            var queryWithCondition = BuildQueryWithCondition(filterCondition);
+            return $"SELECT COUNT(*) FROM ({queryWithCondition}) AS TotalCountQuery";
         }
 
         private async Task<int> ExecuteCountQueryAsync(string query, DynamicParameters? parameters)
         {
-            using (var connection = GetConnection())
+            using (var connection = new SqlConnection(context.Database.GetConnectionString()))
             {
-                var totalItems = await connection.ExecuteScalarAsync<int>(query, parameters);
-                return totalItems;
+                return await connection.ExecuteScalarAsync<int>(query, parameters);
             }
         }
     }

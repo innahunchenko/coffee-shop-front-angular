@@ -92,19 +92,33 @@ namespace CoffeeShop.Cache.Api.Repository
             }
         }
 
-        public Task HashSetDataAsync(string key, string id, string data)
+        public async Task HashSetDataAsync(string key, string id, string data)
         {
-            return AcquireLockAsync(key, async () =>
+            await AcquireLockAsync(key, async () =>
             {
+                var existingValue = await db.HashGetAsync(key, id);
+                if (existingValue.HasValue)
+                {
+                    Console.WriteLine($"Data already exists for key {key} and id {id}. Skipping update.");
+                    return;
+                }
+
                 await db.HashSetAsync(key, [new HashEntry(id, data)]);
                 await db.KeyExpireAsync(key, expiration);
             });
         }
 
-        public Task HashSetDataAsync(string key, IEnumerable<HashEntry> hashEntries)
+        public async Task HashSetDataAsync(string key, IEnumerable<HashEntry> hashEntries)
         {
-            return AcquireLockAsync(key, async () =>
+            await AcquireLockAsync(key, async () =>
             {
+                var existingEntries = await db.HashGetAllAsync(key);
+                if (existingEntries.Any())
+                {
+                    Console.WriteLine($"Data already exists for key {key}. Skipping update.");
+                    return;
+                }
+
                 await db.HashSetAsync(key, hashEntries.ToArray());
                 await db.KeyExpireAsync(key, expiration);
             });
@@ -134,11 +148,18 @@ namespace CoffeeShop.Cache.Api.Repository
             return AcquireLockAsync(key, async () => await db.KeyDeleteAsync(key));
         }
 
-        public Task SetIndexAsync(string indexKey, string productKey)
+        public async Task SetIndexAsync(string indexKey, string itemKey)
         {
-            return AcquireLockAsync(indexKey, async () =>
+            await AcquireLockAsync(indexKey, async () =>
             {
-                await db.SetAddAsync(indexKey, productKey);
+                var members = await db.SetMembersAsync(indexKey);
+                if (members.Contains(itemKey))
+                {
+                    Console.WriteLine($"Item {itemKey} already exists in index {indexKey}. Skipping update.");
+                    return;
+                }
+
+                await db.SetAddAsync(indexKey, itemKey);
             });
         }
 
@@ -168,12 +189,14 @@ namespace CoffeeShop.Cache.Api.Repository
             }
         }
 
-        public Task SetValueAsync(string key, string value)
+        public async Task SetValueAsync(string key, string value)
         {
-            return AcquireLockAsync(key, async () =>
+            await AcquireLockAsync(key, async () =>
             {
                 await db.StringSetAsync(key, value, expiration);
             });
         }
+
+
     }
 }

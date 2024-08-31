@@ -12,6 +12,7 @@
 		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="9.0.0" />
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
 		<PackageReference Include="Dapper" Version="2.1.35" />
+		<PackageReference Include="EntityFramework" Version="6.5.1" />
 		<PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
 		<PackageReference Include="Grpc.Tools" Version="2.65.0">
 			<PrivateAssets>all</PrivateAssets>

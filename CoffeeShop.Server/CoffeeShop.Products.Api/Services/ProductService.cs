@@ -114,7 +114,9 @@ namespace CoffeeShop.Products.Api.Services
 
             int totalProducts = await getTotalProductsCountFunc();
             var products = productsFromDb.ToList();
-            await CacheProductsAsync(products, index, totalKey, totalProducts);
+            await CacheProductsAsync(products, index);
+            await cacheClient.SetValueAsync(new SetValueRequest { Key = totalKey, Value = totalProducts.ToString() });
+            Console.WriteLine($"Products cached, total {totalProducts}");
 
             return new PaginatedList<ProductDto?>(mapper.Map<List<ProductDto?>>(productsFromDb), totalProducts, pageNumber, pageSize);
         }
@@ -186,10 +188,8 @@ namespace CoffeeShop.Products.Api.Services
             return products;
         }
 
-        private async Task CacheProductsAsync(List<ProductDto?> products, string index, string totalKey, int totalProducts)
+        private async Task CacheProductsAsync(List<ProductDto?> products, string index)
         {
-            await ClearCacheForIndexAsync(index);
-
             var productTasks = products.Select(async product =>
             {
                 try
@@ -216,20 +216,6 @@ namespace CoffeeShop.Products.Api.Services
             {
                 Console.WriteLine("One or more tasks failed during product caching.");
             }
-
-            var cachedProducts = await cacheClient.GetIndexMembersAsync(new GetIndexMembersRequest() { IndexKey = index });
-            Console.WriteLine($"Cached products: {cachedProducts.Members.Count()}");
-            cachedProducts.Members.ToList().ForEach(cp => Console.WriteLine($"Cached product key: {cp}"));
-
-            await cacheClient.SetValueAsync(new SetValueRequest { Key = totalKey, Value = totalProducts.ToString() });
-            Console.WriteLine($"Products cached, total {totalProducts}");
-        }
-
-        private async Task ClearCacheForIndexAsync(string index)
-        {
-            var keysToRemove = await GetProductKeysAsync(index);
-            var removeTasks = keysToRemove.Select(async key => await cacheClient.RemoveHashKeyAsync(new RemoveHashKeyRequest { Key = key }));
-            await Task.WhenAll(removeTasks);
         }
 
         public async Task AddProductToCacheAsync(ProductDto? product, string index)
@@ -263,9 +249,11 @@ namespace CoffeeShop.Products.Api.Services
         private async Task AddProductToIndexesAsync(ProductDto? product, string index)
         {
             var productKey = $"product:{product?.Id}";
+            var pageNumber = ExtractPageNumberFromIndex(index);
+
             var indexKeys = new List<string>
             {
-                string.Format(ProductNameIndexTemplate, product?.Name.ToLower()),
+                string.Format(ProductNameIndexTemplate + ":page:{1}", product?.Name.ToLower(), pageNumber),
                 index
             };
 
@@ -278,14 +266,22 @@ namespace CoffeeShop.Products.Api.Services
                 };
 
                 await cacheClient.SetAddAsync(setAddRequest);
-
-                var totalKey = $"{indexKey}:total";
-                var currentTotalResponse = await cacheClient.GetValueAsync(new GetValueRequest { Key = totalKey });
-                var newTotal = string.IsNullOrEmpty(currentTotalResponse.Value) ? 1 : int.Parse(currentTotalResponse.Value) + 1;
-                await cacheClient.SetValueAsync(new SetValueRequest { Key = totalKey, Value = newTotal.ToString() });
             });
 
             await Task.WhenAll(tasks);
+        }
+
+        private int ExtractPageNumberFromIndex(string index)
+        {
+            var segments = index.Split(':');
+            int pageIndex = Array.IndexOf(segments, "page");
+
+            if (pageIndex >= 0 && pageIndex < segments.Length - 1 && int.TryParse(segments[pageIndex + 1], out int pageNumber))
+            {
+                return pageNumber;
+            }
+
+            return 1;
         }
     }
 }
