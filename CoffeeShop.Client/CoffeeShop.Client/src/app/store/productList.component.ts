@@ -26,7 +26,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
 
     this.productsSubscription = this.repo.products$.subscribe(products => {
-      if (products) {
+      if (products && products.items.length > 0) {
         this.products = products;
         this.isLoading = false;
 
@@ -37,10 +37,11 @@ export class ProductListComponent implements OnInit, OnDestroy {
         this.totalPages = products.totalPages;
 
       } else {
-        this.isLoading = false;
+        this.products.items = [];
+        this.totalPages = 0;
         this.repo.pageNumber = 1;
         this.currentRangeStart = 1;
-        this.repo.loadProducts();
+        this.isLoading = false;
       }
     });
   }

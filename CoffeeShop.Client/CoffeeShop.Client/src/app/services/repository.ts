@@ -1,17 +1,17 @@
 import { Product } from "../models/product.model";
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { catchError } from "rxjs/operators";
 import { Category } from "../models/category.model";
 import { PaginatedList } from "../models/paginatedList.model";
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://localhost:7070/api';
 const productsUrl = `${API_BASE_URL}/products`;
 const categoriesUrl = `${API_BASE_URL}/categories`;
 const byCategory = 'category';
 const bySubcategory = 'subcategory';
-const byName = 'productName';
+const byName = 'name';
 
 @Injectable()
 export class Repository {
@@ -20,7 +20,7 @@ export class Repository {
   products$: Observable<PaginatedList<Product>> = this.productsSubject.asObservable();
   loading$: Observable<boolean> = this.loadingSubject.asObservable();
   categories: Category[] = [];
-  pageSize: number = 10;
+  pageSize: number = 8;
   filterValue: string = "";
   filterType: string = "";
   private _pageNumber: number = 1;
@@ -45,7 +45,8 @@ export class Repository {
     this.http.get<PaginatedList<Product>>(url, { params }).pipe(
       catchError(error => {
         console.error(`Error loading products by ${this.filterType || 'all'}:`, error);
-        throw error;
+        this.loadingSubject.next(false);
+        return of(new PaginatedList<Product>([], 0));
       })
     ).subscribe(
       products => {

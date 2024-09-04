@@ -25,7 +25,7 @@
           <div class="bootstrap-tabs">
             <div class="tab-content" id="nav-tabContent">
               <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
-                <div *ngIf="products.items && products.items.length > 0; else nodata" class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
+                <div *ngIf="products.items && products.items.length > 0; else nodata" class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-4">
                   <div *ngFor="let product of products.items" class="col mb-4">
                     <div class="product-item">
                       <figure>
@@ -62,7 +62,5 @@
 </div>
 
 <ng-template #nodata>
-  <div class="preloader-wrapper">
-    <div class="preloader"></div>
-  </div>
+  <p>No products found.</p>
 </ng-template>
