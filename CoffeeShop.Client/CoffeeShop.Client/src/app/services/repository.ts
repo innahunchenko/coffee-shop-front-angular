@@ -6,7 +6,7 @@ import { catchError } from "rxjs/operators";
 import { Category } from "../models/category.model";
 import { PaginatedList } from "../models/paginatedList.model";
 
-const API_BASE_URL = 'https://localhost:7070/api';
+const API_BASE_URL = 'https://localhost:7070';
 const productsUrl = `${API_BASE_URL}/products`;
 const categoriesUrl = `${API_BASE_URL}/categories`;
 const byCategory = 'category';
