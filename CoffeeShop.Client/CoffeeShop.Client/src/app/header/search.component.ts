@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
-import { Repository } from '../services/repository';
+import { CatalogRepository } from '../services/catalog/catalogRepository';
 import { SearchStateService } from '../services/searchState.service';
 
 @Component({
@@ -12,7 +12,7 @@ export class SearchComponent implements AfterViewInit, OnInit {
   @ViewChild('textInput', { static: false }) textInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('textInputOffcanvas', { static: false }) textInputOffcanvasRef!: ElementRef<HTMLInputElement>;
 
-  constructor(public repository: Repository, private searchStateService: SearchStateService) { }
+  constructor(public repository: CatalogRepository, private searchStateService: SearchStateService) { }
 
   ngOnInit(): void {
     this.setupOffcanvasListeners();

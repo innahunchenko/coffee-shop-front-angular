@@ -1,9 +1,9 @@
 import { RouterModule } from "@angular/router";
 import { NgModule } from "@angular/core";
 import { StoreComponent } from "./store.component";
-import { ProductListComponent } from "./productList.component";
 import { HeaderModule } from "../header/header.module";
 import { CommonModule } from "@angular/common";
+import { ProductListComponent } from "../catalog/productList.component";
 
 @NgModule({
   declarations: [

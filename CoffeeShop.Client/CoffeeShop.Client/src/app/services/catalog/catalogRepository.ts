@@ -1,10 +1,10 @@
-import { Product } from "../models/product.model";
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { catchError } from "rxjs/operators";
-import { Category } from "../models/category.model";
-import { PaginatedList } from "../models/paginatedList.model";
+import { PaginatedList } from "../../models/catalog/paginatedList.model";
+import { Product } from "../../models/catalog/product.model";
+import { Category } from "../../models/catalog/category.model";
 
 const API_BASE_URL = 'https://localhost:7070';
 const productsUrl = `${API_BASE_URL}/products`;
@@ -14,7 +14,7 @@ const bySubcategory = 'subcategory';
 const byName = 'name';
 
 @Injectable()
-export class Repository {
+export class CatalogRepository {
   private productsSubject = new BehaviorSubject<PaginatedList<Product>>(new PaginatedList());
   private loadingSubject = new BehaviorSubject<boolean>(false);
   products$: Observable<PaginatedList<Product>> = this.productsSubject.asObservable();
@@ -54,7 +54,7 @@ export class Repository {
         this.loadingSubject.next(false);
         console.log(`Products loaded by ${this.filterType || 'all'}:`, products);
       },
-      error => {
+      () => {
         this.loadingSubject.next(false);
       }
     );

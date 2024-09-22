@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { Repository } from '../services/repository';
-import { Category } from '../models/category.model';
+import { CatalogRepository } from '../services/catalog/catalogRepository';
+import { Category } from '../models/catalog/category.model';
 
 @Component({
   selector: 'app-header',
@@ -10,7 +10,7 @@ export class HeaderComponent {
   categories: Category[] = [];
   count: number = 0;
 
-  constructor(public repository: Repository) {
+  constructor(public repository: CatalogRepository) {
     this.repository.getCategories();
   }
 

@@ -1,9 +1,9 @@
 import { CommonModule } from "@angular/common";
 import { HeaderComponent } from "./header.component";
-import { CartComponent } from "./cart.component";
 import { SearchComponent } from "./search.component";
 import { NgModule } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { CartComponent } from "../cart/cart.component";
 
 @NgModule({
   declarations: [

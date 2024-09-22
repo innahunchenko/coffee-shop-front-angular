@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { Repository } from "../services/repository";
-import { PaginatedList } from "../models/paginatedList.model";
-import { Product } from "../models/product.model";
+import { CatalogRepository } from "../services/catalog/catalogRepository";
 import { Subscription } from "rxjs";
+import { PaginatedList } from "../models/catalog/paginatedList.model";
+import { Product } from "../models/catalog/product.model";
 @Component({
   selector: "product-list",
   templateUrl: "productList.component.html"
@@ -16,7 +16,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   loadingSubscription!: Subscription;
   isLoading = true;
 
-  constructor(public repo: Repository) {
+  constructor(public repo: CatalogRepository) {
     this.repo.loadProducts();
   }
 
