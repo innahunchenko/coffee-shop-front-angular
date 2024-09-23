@@ -4,10 +4,14 @@ import { StoreComponent } from "./store.component";
 import { HeaderModule } from "../header/header.module";
 import { CommonModule } from "@angular/common";
 import { ProductListComponent } from "../catalog/productList.component";
+import { CartComponent } from "../cart/cart.component";
+import { MenuComponent } from "../header/menu.component.ts";
 
 @NgModule({
   declarations: [
     StoreComponent,
+    CartComponent,
+    MenuComponent,
     ProductListComponent
   ],
   imports: [

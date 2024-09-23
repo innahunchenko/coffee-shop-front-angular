@@ -1,0 +1,48 @@
+<div class="container-fluid">
+  <div class="row py-3">
+    <div class="d-flex  justify-content-center align-items-center">
+      <nav class="main-menu d-flex navbar navbar-expand-lg">
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+
+          <div class="offcanvas-header justify-content-center">
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+
+          <div class="offcanvas-body">
+            <ul class="navbar-nav justify-content-end menu-list list-unstyled d-flex gap-md-2 mt-0">
+              <!-- First menu -->
+              <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Categories</button>
+                <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+                  <li>
+                    <button class="dropdown-item btn-link" (click)="setAllCategories()">All categories</button>
+                  </li>
+                  <li *ngFor="let category of repository.categories">
+                    <button class="dropdown-item btn btn-link" (click)="setCurrentCategory(category.name)">{{ category.name }}</button>
+                  </li>
+                </ul>
+              </li>
+
+              <!-- Second menu -->
+              <li *ngFor="let category of repository.categories" class="nav-item" [class.dropdown]="category.subcategories">
+                <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ category.name }}</button>
+                <ul *ngIf="category.subcategories" class="dropdown-menu" aria-labelledby="subcategories">
+                  <li *ngFor="let subcategory of category.subcategories">
+                    <button (click)="setCurrentSubcategory(subcategory)" class="dropdown-item btn btn-link">{{ subcategory }}</button>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+
+        </div>
+      </nav>
+    </div>
+  </div>
+</div>

@@ -1,9 +1,12 @@
-<div class="cart text-end d-none d-lg-block dropdown">
-  <button class="border-0 bg-transparent d-flex flex-column gap-2 lh-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" aria-controls="offcanvasCart">
+<!--<div class="cart text-end d-none d-lg-block dropdown">
+  <button class="btn btn-with-border bg-transparent d-flex flex-column gap-2 lh-1" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" aria-controls="offcanvasCart">
     <span class="fs-6 text-muted dropdown-toggle">Your Cart</span>
-    <span class="cart-total fs-5 fw-bold">$1290.00</span>
+    <span class="cart-total fs-5 fw-bold">
+      {{ getCartItemsCount() > 0 ? (getTotalPrice() | currency:"USD":"symbol") : (0 | currency:"USD":"symbol") }}
+    </span>
+
   </button>
-</div>
+</div>-->
 
 <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasCart" aria-labelledby="My Cart">
   <div class="offcanvas-header justify-content-center">
@@ -18,7 +21,7 @@
       <ul class="list-group mb-3">
         <li class="list-group-item d-flex justify-content-between lh-sm">
           <div>
-            <h6 class="my-0">Product 1</h6>
+            <h6 class="my-0">Product 1</h6> 
             <small class="text-body-secondary">Brief description</small>
           </div>
           <span class="text-body-secondary">$12</span>
@@ -39,7 +42,7 @@
         </li>
         <li class="list-group-item d-flex justify-content-between">
           <span>Total (USD)</span>
-          <strong>$20</strong>
+          <strong>{{ getTotalPrice() | currency:"USD":"symbol" }}</strong>
         </li>
       </ul>
 

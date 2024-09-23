@@ -1,16 +1,8 @@
-import { ProductSelection } from "../../models/cart/productSelection.model";
-import { CartRepository } from "../../services/cart/cartRepository";
+import { ProductSelection } from "./productSelection.model";
 
 export class Cart {
-  constructor(private repository: CartRepository) {
-    
-
-  }
-
-  selections: ProductSelection[] = [];
-  totalPrice: number = 0;
-
-  update() {
-    throw new Error("Method not implemented.");
-  }
+  constructor(
+    public selections: ProductSelection[] = [],
+    public totalPrice: number = 0
+  ) { }
 }

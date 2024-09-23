@@ -3,6 +3,8 @@ import { CatalogRepository } from "../services/catalog/catalogRepository";
 import { Subscription } from "rxjs";
 import { PaginatedList } from "../models/catalog/paginatedList.model";
 import { Product } from "../models/catalog/product.model";
+import { CartService } from "../services/cart/cart.service";
+import { ProductSelection } from "../models/cart/productSelection.model";
 @Component({
   selector: "product-list",
   templateUrl: "productList.component.html"
@@ -16,7 +18,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   loadingSubscription!: Subscription;
   isLoading = true;
 
-  constructor(public repo: CatalogRepository) {
+  constructor(public repo: CatalogRepository, public cartService: CartService) {
     this.repo.loadProducts();
   }
 
@@ -96,5 +98,13 @@ export class ProductListComponent implements OnInit, OnDestroy {
     }
 
     return pages;
+  }
+
+  addProductToCart(productId?: string) {
+    if (!productId) {
+      console.warn('Product ID is undefined');
+      return;
+    }
+    this.cartService.addProductToCart(new ProductSelection(productId));
   }
 }
