@@ -21,6 +21,10 @@ export class CartService {
   }
 
   addProductToCart(productSelection: ProductSelection): void {
+    if (!this.cart.selections) {
+      this.cart.selections = [];
+    }
+
     const existingProduct = this.cart.selections
       .find(selection => selection.productId === productSelection.productId);
 
@@ -36,7 +40,7 @@ export class CartService {
   private updateCart(): void {
     //this.cart.totalPrice = this.cart.selections.reduce((sum, selection) =>
     //  sum + (selection.price * selection.quantity), 0);
-    this.repository.storeCart(this.cart);
+    this.repository.storeCart(this.cart.selections);
     this.cart = this.repository.cart;
   }
 

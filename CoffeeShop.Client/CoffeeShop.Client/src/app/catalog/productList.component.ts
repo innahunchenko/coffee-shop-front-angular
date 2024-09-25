@@ -105,6 +105,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
       console.warn('Product ID is undefined');
       return;
     }
+
     this.cartService.addProductToCart(new ProductSelection(productId));
   }
 }

@@ -6,7 +6,7 @@ import { PaginatedList } from "../../models/catalog/paginatedList.model";
 import { Product } from "../../models/catalog/product.model";
 import { Category } from "../../models/catalog/category.model";
 
-const API_BASE_URL = 'https://localhost:7070';
+const API_BASE_URL = 'http://localhost:7005/catalog';
 const productsUrl = `${API_BASE_URL}/products`;
 const categoriesUrl = `${API_BASE_URL}/categories`;
 const byCategory = 'category';

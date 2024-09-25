@@ -2,8 +2,9 @@ import { HttpClient } from "@angular/common/http";
 import { Cart } from "../../models/cart/cart.model";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
+import { ProductSelection } from "../../models/cart/productSelection.model";
 
-const API_BASE_URL = 'https://localhost:7070';
+const API_BASE_URL = 'http://localhost:7005/cart';
 const cartUrl = `${API_BASE_URL}/shopping-cart`;
 
 @Injectable()
@@ -15,7 +16,7 @@ export class CartRepository {
     return this.http.get<Cart>(cartUrl, { });
   }
 
-  storeCart(cart: Cart) {
-    this.http.post<Cart>(cartUrl, cart).subscribe(response => this.cart = response)
+  storeCart(selections: ProductSelection[]) {
+    this.http.post<Cart>(cartUrl, selections).subscribe(response => this.cart = response)
   }
 }
