@@ -40,8 +40,10 @@ export class CartService {
   private updateCart(): void {
     //this.cart.totalPrice = this.cart.selections.reduce((sum, selection) =>
     //  sum + (selection.price * selection.quantity), 0);
-    this.repository.storeCart(this.cart.selections);
-    this.cart = this.repository.cart;
+    this.repository.storeCart(this.cart.selections).subscribe(response => {
+      this.cart = response;
+      console.log('total price: ' + this.cart.totalPrice);
+    });
   }
 
   removeProductFromCart(productId: string): void {
