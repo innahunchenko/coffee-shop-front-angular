@@ -2,22 +2,34 @@ import { Injectable } from "@angular/core";
 import { Cart } from "../../models/cart/cart.model";
 import { CartRepository } from "./cartRepository";
 import { ProductSelection } from "../../models/cart/productSelection.model";
+import { BehaviorSubject, Observable, catchError, of, tap } from "rxjs";
 
 @Injectable()
 export class CartService {
-  cart: Cart = new Cart(); 
+  cart: Cart = new Cart();
+  private cartSubject = new BehaviorSubject<Cart | null>(null);
+  cart$ = this.cartSubject.asObservable();
 
   constructor(private repository: CartRepository) {
-    this.loadCart();
   }
-
-  private loadCart(): void {
-    this.repository.getCart().subscribe(cartData => {
-      if (cartData) {
-        this.cart.selections = cartData.selections;
-        this.cart.totalPrice = cartData.totalPrice;
-      }
-    });
+  
+  public loadCart(): Observable<Cart> {
+    return this.repository.getCart().pipe(
+      tap(cartData => {
+        if (cartData) {
+          this.cart.selections = cartData.selections;
+          this.cart.totalPrice = cartData.totalPrice;
+          this.cartSubject.next(cartData);
+        } else {
+          this.cartSubject.next(null);
+        }
+      }),
+      catchError(error => {
+        console.error('Error loading cart:', error);
+        this.cartSubject.next(null);
+        return of(new Cart());  
+      })
+    );
   }
 
   addProductToCart(productSelection: ProductSelection): void {
@@ -38,8 +50,6 @@ export class CartService {
   }
 
   private updateCart(): void {
-    //this.cart.totalPrice = this.cart.selections.reduce((sum, selection) =>
-    //  sum + (selection.price * selection.quantity), 0);
     this.repository.storeCart(this.cart.selections).subscribe(response => {
       this.cart = response;
       console.log('total price: ' + this.cart.totalPrice);

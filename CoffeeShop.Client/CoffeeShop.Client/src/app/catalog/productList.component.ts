@@ -18,9 +18,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
   loadingSubscription!: Subscription;
   isLoading = true;
 
-  constructor(public repo: CatalogRepository, public cartService: CartService) {
-    this.repo.loadProducts();
-  }
+  constructor(public repo: CatalogRepository, public cartService: CartService) { }
 
   ngOnInit() {
     this.loadingSubscription = this.repo.loading$.subscribe(loading => {
@@ -28,23 +26,8 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
 
     this.productsSubscription = this.repo.products$.subscribe(products => {
-      if (products && products.items.length > 0) {
-        this.products = products;
-        this.isLoading = false;
-
-        if (this.repo.pageNumber === 1) {
-          this.currentRangeStart = 1;
-        }
-
-        this.totalPages = products.totalPages;
-
-      } else {
-        this.products.items = [];
-        this.totalPages = 0;
-        this.repo.pageNumber = 1;
-        this.currentRangeStart = 1;
-        this.isLoading = false;
-      }
+      console.log('products loaded in list');
+      this.updateProductList(products);
     });
   }
 
@@ -57,10 +40,28 @@ export class ProductListComponent implements OnInit, OnDestroy {
     }
   }
 
+  loadProducts(): void {
+    this.isLoading = true;
+    this.repo.loadProducts().subscribe(products => {
+      console.log('products updated in list');
+      this.updateProductList(products);
+    });
+  }
+
+  private updateProductList(products: PaginatedList<Product>): void {
+    this.products = products;
+    this.isLoading = false; 
+    this.totalPages = products.totalPages;
+
+    if (this.repo.pageNumber === 1) {
+      this.currentRangeStart = 1;
+    }
+  }
+
   goToPage(page: number) {
     if (page >= 1 && page <= this.products.totalPages) {
       this.repo.pageNumber = page;
-      this.repo.loadProducts();
+      this.loadProducts();
     }
   }
 
@@ -68,7 +69,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
     if (this.currentRangeStart > 1) {
       this.currentRangeStart = Math.max(this.currentRangeStart - this.maxPagesToShow, 1);
       this.repo.pageNumber = this.currentRangeStart + this.maxPagesToShow - 1;
-      this.repo.loadProducts();
+      this.loadProducts();
     }
   }
 
@@ -84,7 +85,7 @@ export class ProductListComponent implements OnInit, OnDestroy {
       }
 
       this.repo.pageNumber = this.currentRangeStart;
-      this.repo.loadProducts();
+      this.loadProducts();
     }
   }
 

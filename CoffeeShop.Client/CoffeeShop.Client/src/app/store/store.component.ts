@@ -1,9 +1,42 @@
-import { Component } from "@angular/core";
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { CartService } from '../services/cart/cart.service';
+import { CatalogRepository } from '../services/catalog/catalogRepository';
+
 @Component({
-  selector: "store-body",
-  templateUrl: "store.component.html"
+  selector: 'app-store',
+  templateUrl: './store.component.html'
 })
-export class StoreComponent {
-  constructor() {
+export class StoreComponent implements OnInit {
+  isLoading = true;
+
+  constructor(
+    public cartService: CartService,
+    private catalogRepository: CatalogRepository,
+   // private cdr: ChangeDetectorRef  
+  ) { }
+
+  ngOnInit(): void {
+    this.loadData();
+  }
+
+  private loadData(): void {
+    this.isLoading = true;
+
+    const cart$ = this.cartService.loadCart();
+    const products$ = this.catalogRepository.loadProducts();
+
+    forkJoin([cart$, products$]).subscribe(
+      () => {
+        this.isLoading = false;
+        console.log('Data loaded in store');
+     //   this.cdr.detectChanges();
+      },
+      (error) => {
+        console.error('Data loading error:', error);
+        this.isLoading = false;  
+       // this.cdr.detectChanges();
+      }
+    );
   }
 }

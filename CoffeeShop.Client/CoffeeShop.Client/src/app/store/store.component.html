@@ -1,4 +1,9 @@
-<app-header [totalPrice]="cart.getTotalPrice()"></app-header>
-<cart #cart></cart>
-<app-menu></app-menu>
-<product-list></product-list>
+<div *ngIf="isLoading" class="preloader-wrapper">
+  <div class="preloader"></div>
+</div>
+<div *ngIf="!isLoading">
+  <app-header [totalPrice]="cart.getTotalPrice()"></app-header>
+  <cart #cart></cart>
+  <app-menu></app-menu>
+  <product-list></product-list>
+</div>
