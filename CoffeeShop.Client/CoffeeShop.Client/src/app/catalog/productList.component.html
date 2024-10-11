@@ -27,16 +27,18 @@
               <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
                 <div class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-4">
                   <div *ngFor="let product of products.items" class="col mb-4">
-                    <div class="product-item align-items-center justify-content-between">
+                    
+                    <div class="product-item d-flex align-items-center justify-content-between">
                       <figure>
                         <img src="/assets/images/unknown.png" class="tab-image">
                       </figure>
-                      <div>
+                      <div class="product-info">
                         <h5>{{ product.name }}</h5>
                         <span class="price">${{ product.price }}</span>
-                        <a href="#" class="nav-link" (click)="addProductToCart(product.id); $event.preventDefault()">Add to Cart</a>
+                        <a href="#" class="nav-link add-to-cart" (click)="addProductToCart(product.id); $event.preventDefault()">Add to Cart</a>
                       </div>
                     </div>
+
                   </div>
                 </div>
               </div>

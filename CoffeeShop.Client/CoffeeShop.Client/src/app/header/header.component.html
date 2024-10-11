@@ -2,44 +2,41 @@
   <div class="container-fluid">
     <div class="row py-3 border-bottom">
 
-        <div class="row justify-content-center justify-content-lg-between align-items-center">
-          <div class="col-12 col-md-4 col-lg-3 text-center text-md-start mb-3 mb-md-0">
-            <div class="main-logo">
-              <a href="index.html">
-                <img src="/assets/images/logo.png" alt="logo" class="img-fluid">
-              </a>
-            </div>
+      <div class="row justify-content-center justify-content-lg-between align-items-center">
+        <div class="col-12 col-md-4 col-lg-3 text-center text-md-start mb-3 mb-md-0">
+          <div class="main-logo">
+            <a href="index.html">
+              <img src="/assets/images/logo.png" alt="logo" class="img-fluid">
+            </a>
           </div>
-          <div class="col-12 col-md-4 col-lg-5 mb-3 mb-md-0">
-            <search></search>
-          </div>
-          <div class="col-12 col-md-4 col-lg-4 d-flex justify-content-center justify-content-md-end gap-5 mt-4 mt-md-0">
-            <ul class="d-flex justify-content-end list-unstyled m-0">
-              <li>
-                <!--<a href="#" class="nav-link">Register</a>-->
-                <button class="btn btn-with-border">Sign up</button>
-              </li>
-              <li>
-                <!--<a href="#" class="nav-link">Log in</a>-->
-
-                <button class="btn btn-with-border">Sign in</button>
-              </li>
-              <li>
-                <button class="btn btn-with-border" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" aria-controls="offcanvasCart">
-                  <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href="#cart"></use></svg>
-                  <span class="cart-total fw-bold">
-                    {{ totalPrice | currency:'USD' }}
-                  </span>
-                </button>
-              </li>
-              <li class="d-lg-none">
-                <button class="btn btn-with-border" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSearch" aria-controls="offcanvasSearch">
-                  <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href="#search"></use></svg>
-                </button>
-              </li>
-            </ul>
-          </div>
+        </div>
+        <div class="col-12 col-md-4 col-lg-5 mb-3 mb-md-0">
+          <search></search>
+        </div>
+        <div class="col-12 col-md-4 col-lg-4 d-flex justify-content-center justify-content-md-end gap-5 mt-4 mt-md-0">
+          <ul class="d-flex justify-content-end list-unstyled m-0">
+            <li>
+              <button class="btn btn-with-border">Sign up</button>
+            </li>
+            <li>
+              <button class="btn btn-with-border">Sign in</button>
+            </li>
+            <li>
+              <button class="btn btn-with-border" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" aria-controls="offcanvasCart">
+                <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href="#cart"></use></svg>
+                <span class="fw-bold">
+                  {{ totalPrice | currency:'USD' }}
+                </span>
+              </button>
+            </li>
+            <li class="d-lg-none">
+              <button class="btn btn-with-border" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSearch" aria-controls="offcanvasSearch">
+                <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href="#search"></use></svg>
+              </button>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
+  </div>
 </header>

@@ -63,6 +63,24 @@ export class CartService {
   }
 
   clearCart(): void {
-    this.cart = new Cart(); 
+    this.cart.selections = [];
+    this.updateCart(); 
   }
+
+  increaseQuantity(productId: string): void {
+    const selection = this.cart.selections.find(s => s.productId === productId);
+    if (selection) {
+      selection.quantity += 1; 
+      this.updateCart(); 
+    }
+  }
+
+  decreaseQuantity(productId: string): void {
+    const selection = this.cart.selections.find(s => s.productId === productId);
+    if (selection && selection.quantity > 1) {
+      selection.quantity -= 1;
+      this.updateCart(); 
+    }
+  }
+
 }
