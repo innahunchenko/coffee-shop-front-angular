@@ -13,7 +13,6 @@ export class StoreComponent implements OnInit {
   constructor(
     public cartService: CartService,
     private catalogRepository: CatalogRepository,
-   // private cdr: ChangeDetectorRef  
   ) { }
 
   ngOnInit(): void {
@@ -30,12 +29,10 @@ export class StoreComponent implements OnInit {
       () => {
         this.isLoading = false;
         console.log('Data loaded in store');
-     //   this.cdr.detectChanges();
       },
       (error) => {
         console.error('Data loading error:', error);
         this.isLoading = false;  
-       // this.cdr.detectChanges();
       }
     );
   }

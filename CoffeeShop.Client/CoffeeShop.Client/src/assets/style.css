@@ -659,13 +659,34 @@ h1,h2,h3,h4,h5,h6 {
   padding: 0;
 }
 
-.product-item .nav-link {
+  .product-item div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .product-item .nav-link {
     font-size: 0.9rem;
-}
+    margin-left: auto;
+  }
+
+  .product-item .input-group-btn {
+    margin: 0 10px; 
+  }
 
 /* cart */
 .cart .product-qty {
   min-width: 130px;
+}
+
+.cart .price {
+  display: block;
+  width: 100%;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 30px;
+  text-transform: capitalize;
+  color: rgb(120, 75, 0);
 }
 
 /* floating image */

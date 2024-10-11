@@ -52,6 +52,7 @@ export class CartService {
   private updateCart(): void {
     this.repository.storeCart(this.cart.selections).subscribe(response => {
       this.cart = response;
+      this.cartSubject.next(response);
       console.log('total price: ' + this.cart.totalPrice);
     });
   }
