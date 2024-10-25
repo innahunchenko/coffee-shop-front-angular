@@ -1,0 +1,121 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  flex-direction: row;
+}
+
+form {
+  display: flex; /* Делаем форму flex-контейнером */
+  flex-direction: column; /* Элементы будут располагаться в колонку */
+  align-items: flex-start; /* Выравнивание элементов по левому краю */
+  max-width: 400px;
+  width: 100%;
+  padding: 20px;
+  margin: 10px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #aaaaaa;
+  border-radius: 8px;
+}
+
+input[type="text"] {
+  width: 100%;
+  height: 35px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-bottom: 10px;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  background-color: #fff;
+}
+
+  input[type="text"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+  }
+
+.error-message {
+  display: block;
+  color: red;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.continue-shopping-btn {
+  padding: 5px 10px;
+  font-size: 14px;
+  color: #007bff;
+  background-color: #fff;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+  .continue-shopping-btn:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+button[type="submit"] {
+  padding: 5px 10px;
+  font-size: 14px;
+  color: #088318; /* Зелёный цвет текста и обводки */
+  background-color: #fff;
+  border: 1px solid #088318;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+  button[type="submit"]:hover {
+    background-color: #088318; /* Заполняется зелёным при наведении */
+    color: #fff; /* Текст становится белым */
+  }
+
+.total-price {
+  font-size: 1.2em; /* Увеличиваем размер шрифта */
+  font-weight: bold; /* Делаем текст жирным */
+  margin-bottom: 3px; /* Добавляем отступ снизу, чтобы отделить от корзины */
+  border-radius: 5px; /* Закругляем углы (по желанию) */
+  color: rgb(120, 75, 0);
+}
+
+.summary {
+  display: flex;
+  flex-direction: column; /* Элементы располагаются в столбик */
+  padding: 10px; /* Уменьшенный внутренний отступ */
+  background-color: #f8f8f8;
+  border-radius: 10px;
+  border: 1px solid #aaaaaa;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 300px;
+  margin: 10px;
+}
+
+.summary-item {
+  display: flex; /* Для выравнивания лейблов и значений по одной линии */
+  justify-content: space-between; /* Распределение пространства между лейблом и значением */
+}
+
+span {
+  text-align: right; /* Выравнивание значений по правому краю */
+}

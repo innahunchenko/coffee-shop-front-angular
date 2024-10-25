@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { Cart } from "../../models/cart/cart.model";
-import { CartRepository } from "./cartRepository";
+import { CartRepository } from "./cart.repository";
 import { ProductSelection } from "../../models/cart/productSelection.model";
 import { BehaviorSubject, Observable, catchError, of, tap } from "rxjs";
+import { CartCheckout } from "../../models/cart/cart-checkout.model";
 
 @Injectable()
 export class CartService {
@@ -79,8 +80,19 @@ export class CartService {
     const selection = this.cart.selections.find(s => s.productId === productId);
     if (selection && selection.quantity > 1) {
       selection.quantity -= 1;
-      this.updateCart(); 
+      this.updateCart();
     }
   }
 
+  checkoutCart(checkoutData: CartCheckout): Observable<any> {
+    return this.repository.checkoutCart(checkoutData);
+  }
+
+  storeCheckoutSessionData<T>(dataType: string, data: T): void {
+    this.repository.storeSessionData(dataType, data);
+  }
+
+  getCheckoutSessionData<T>(dataType: string): Observable<T> {
+    return this.repository.getSessionData<T>(dataType);
+  }
 }

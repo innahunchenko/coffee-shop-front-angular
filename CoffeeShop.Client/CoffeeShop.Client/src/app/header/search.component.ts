@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
-import { CatalogRepository } from '../services/catalog/catalogRepository';
+import { CatalogRepository } from '../services/catalog/catalog.repository';
 import { SearchStateService } from '../services/searchState.service';
 
 @Component({

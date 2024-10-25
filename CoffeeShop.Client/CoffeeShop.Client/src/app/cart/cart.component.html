@@ -6,37 +6,39 @@
     <h4 class="d-flex justify-content-between align-items-center mb-3">
       <span class="badge bg-primary rounded-pill">Your products</span><span class="badge bg-primary rounded-pill">{{ getCartItemsCount() }}</span>
     </h4>
-    <div class="cart">
-      <div class="product-item d-flex align-items-center justify-content-between" *ngFor="let selection of cart?.selections">
-        <div class="product-info">
-          <h5>{{ selection.productName }}</h5>
-          <span class="price">{{ selection.price | currency:"USD":"symbol" }}</span>
+    <div>
+      <div class="cart">
+        <div class="product-item d-flex align-items-center justify-content-between" *ngFor="let selection of cart?.selections">
+          <div class="product-info">
+            <h5>{{ selection.productName }}</h5>
+            <span class="price">{{ selection.price | currency:"USD":"symbol" }}</span>
+          </div>
+          <div class="quantity-controls">
+            <button type="button" class="btn btn-danger btn-number" data-type="minus"
+                    (click)="decreaseQuantity(selection.productId)" [disabled]="selection.quantity <= 1">
+              <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
+            </button>
+            <span class="qty">{{ selection.quantity }}</span>
+            <button type="button" class="btn btn-success btn-number" data-type="plus"
+                    (click)="increaseQuantity(selection.productId)">
+              <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
+            </button>
+            <button type="button" class="btn btn-warning btn-remove" (click)="removeProductFromCart(selection.productId)">
+              <svg width="16" height="16"><use xlink:href="#trash"></use></svg>
+            </button>
+          </div>
         </div>
-        <div class="quantity-controls">
-          <button type="button" class="btn btn-danger btn-number" data-type="minus"
-                  (click)="decreaseQuantity(selection.productId)" [disabled]="selection.quantity <= 1">
-            <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
-          </button>
-          <span class="qty">{{ selection.quantity }}</span>
-          <button type="button" class="btn btn-success btn-number" data-type="plus"
-                  (click)="increaseQuantity(selection.productId)">
-            <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
-          </button>
-          <button type="button" class="btn btn-warning btn-remove" (click)="removeProductFromCart(selection.productId)">
-            <svg width="16" height="16"><use xlink:href="#trash"></use></svg>
-          </button>
+        <div class="d-flex justify-content-between price">
+          <span>Total: </span>
+          <span class="total-price">{{ getTotalPrice() | currency:"USD":"symbol" }}</span>
         </div>
-      </div>
-      <div class="d-flex justify-content-between">
-        <span>Total (USD)</span>
-        <strong>{{ getTotalPrice() | currency:"USD":"symbol" }}</strong>
       </div>
     </div>
     <div class="d-flex justify-content-between mt-3">
       <button type="button" class="btn btn-danger" (click)="clearCart()" [disabled]="getCartItemsCount() === 0">
         Clear All
       </button>
-      <button class="btn btn-success" type="submit" [disabled]="getCartItemsCount() === 0">Continue to checkout</button>
+      <button class="btn btn-success" [routerLink]="['/checkout']" [disabled]="getCartItemsCount() === 0">Continue to checkout</button>
     </div>
   </div>
 </div>

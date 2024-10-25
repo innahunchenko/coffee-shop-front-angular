@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
 import { Category } from "../models/catalog/category.model";
-import { CatalogRepository } from "../services/catalog/catalogRepository";
+import { CatalogRepository } from "../services/catalog/catalog.repository";
 
 @Component({
   selector: 'app-menu',

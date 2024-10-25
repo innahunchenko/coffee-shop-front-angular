@@ -1,8 +1,8 @@
 import { NgModule } from "@angular/core";
 import { HttpClientModule } from '@angular/common/http';
-import { CatalogRepository } from "../services/catalog/catalogRepository";
+import { CatalogRepository } from "../services/catalog/catalog.repository";
 import { SearchStateService } from "../services/searchState.service";
-import { CartRepository } from "../services/cart/cartRepository";
+import { CartRepository } from "../services/cart/cart.repository";
 import { CartService } from "../services/cart/cart.service";
 
 @NgModule({

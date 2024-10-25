@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
-import { CatalogRepository } from "../services/catalog/catalogRepository";
+import { CatalogRepository } from "../services/catalog/catalog.repository";
 import { Subscription } from "rxjs";
 import { PaginatedList } from "../models/catalog/paginatedList.model";
 import { Product } from "../models/catalog/product.model";

@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { CartService } from '../services/cart/cart.service';
-import { CatalogRepository } from '../services/catalog/catalogRepository';
+import { CatalogRepository } from '../services/catalog/catalog.repository';
 
 @Component({
   selector: 'app-store',

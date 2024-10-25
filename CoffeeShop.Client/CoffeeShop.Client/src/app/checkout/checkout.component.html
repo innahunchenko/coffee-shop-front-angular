@@ -1,0 +1,75 @@
+<div class="container">
+
+  <form [formGroup]="checkoutForm" (ngSubmit)="submitOrder()">
+    <input type="text" formControlName="firstName" placeholder="First Name">
+    <div class="error-message">
+      {{ checkoutForm.get('firstName')?.getError('serverError') }}
+    </div>
+
+    <input type="text" formControlName="lastName" placeholder="Last Name">
+    <div class="error-message">
+      {{ checkoutForm.get('lastName')?.getError('serverError') }}
+    </div>
+
+    <input type="text" formControlName="emailAddress" placeholder="Email">
+    <div class="error-message">
+      {{ checkoutForm.get('emailAddress')?.getError('serverError') }}
+    </div>
+
+    <input type="text" formControlName="addressLine" placeholder="Address">
+    <div class="error-message">
+      {{ checkoutForm.get('addressLine')?.getError('serverError') }}
+    </div>
+
+    <input type="text" formControlName="country" placeholder="Country">
+    <div class="error-message">
+      {{ checkoutForm.get('country')?.getError('serverError') }}
+    </div>
+
+    <input type="text" formControlName="state" placeholder="State">
+    <div class="error-message">
+      {{ checkoutForm.get('state')?.getError('serverError') }}
+    </div>
+
+    <input type="text" formControlName="zipCode" placeholder="Zip Code">
+    <div class="error-message">
+      {{ checkoutForm.get('zipCode')?.getError('serverError') }}
+    </div>
+
+    <input type="text" formControlName="cardName" placeholder="Card Name">
+    <div class="error-message">
+      {{ checkoutForm.get('cardName')?.getError('serverError') }}
+    </div>
+
+    <input type="text" formControlName="cardNumber" placeholder="Card Number">
+    <div class="error-message">
+      {{ checkoutForm.get('cardNumber')?.getError('serverError') }}
+    </div>
+
+    <input type="text" formControlName="expiration" placeholder="Expiration Date">
+    <div class="error-message">
+      {{ checkoutForm.get('expiration')?.getError('serverError') }}
+    </div>
+
+    <input type="text" formControlName="cvv" placeholder="CVV">
+    <div class="error-message">
+      {{ checkoutForm.get('cvv')?.getError('serverError') }}
+    </div>
+
+    <div class="form-buttons">
+      <button type="button" (click)="goToStore()" class="continue-shopping-btn">Continue shopping</button>
+      <button type="submit">Submit order</button>
+    </div>
+  </form>
+
+  <div class="summary">
+    <div class="summary-item">
+      <label>Total price:</label>
+      <span class="total-price">{{ getTotalPrice() | currency: 'USD':'symbol' }}</span>
+    </div>
+    <div class="summary-item">
+      <label>Product count:</label>
+      <span class="total-price">{{ getCartItemsCount() }}</span>
+    </div>
+  </div>
+</div>
