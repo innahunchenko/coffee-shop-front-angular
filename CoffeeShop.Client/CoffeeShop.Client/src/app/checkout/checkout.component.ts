@@ -22,6 +22,7 @@ export class CheckoutComponent implements OnInit {
     this.checkoutForm = this.fb.group({
       firstName: [''],
       lastName: [''],
+      phoneNumber: [''],
       emailAddress: [''],
       addressLine: [''],
       country: [''],
@@ -72,6 +73,7 @@ export class CheckoutComponent implements OnInit {
     this.checkoutForm.patchValue({
       firstName: this.checkoutData.firstName,
       lastName: this.checkoutData.lastName,
+      phoneNumber: this.checkoutData.phoneNumber,
       emailAddress: this.checkoutData.emailAddress,
       addressLine: this.checkoutData.addressLine,
       country: this.checkoutData.country,

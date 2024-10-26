@@ -11,6 +11,11 @@
       {{ checkoutForm.get('lastName')?.getError('serverError') }}
     </div>
 
+    <input type="text" formControlName="phoneNumber" placeholder="Phone Number">
+    <div class="error-message">
+      {{ checkoutForm.get('phoneNumber')?.getError('serverError') }}
+    </div>
+
     <input type="text" formControlName="emailAddress" placeholder="Email">
     <div class="error-message">
       {{ checkoutForm.get('emailAddress')?.getError('serverError') }}
