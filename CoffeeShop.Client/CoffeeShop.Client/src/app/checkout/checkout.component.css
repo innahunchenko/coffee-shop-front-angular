@@ -14,7 +14,7 @@ form {
   display: flex; /* Делаем форму flex-контейнером */
   flex-direction: column; /* Элементы будут располагаться в колонку */
   align-items: flex-start; /* Выравнивание элементов по левому краю */
-  max-width: 400px;
+  max-width: 500px;
   width: 100%;
   padding: 15px;
   margin: 10px;
@@ -92,7 +92,7 @@ button[type="submit"] {
   }
 
 .total-price {
-  font-size: 1.2em; /* Увеличиваем размер шрифта */
+  font-size: 1em; /* Увеличиваем размер шрифта */
   font-weight: bold; /* Делаем текст жирным */
   margin-bottom: 3px; /* Добавляем отступ снизу, чтобы отделить от корзины */
   border-radius: 5px; /* Закругляем углы (по желанию) */
@@ -114,10 +114,12 @@ button[type="submit"] {
 }
 
 .summary-item {
-  display: flex; /* Для выравнивания лейблов и значений по одной линии */
-  justify-content: space-between; /* Распределение пространства между лейблом и значением */
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0; /* Минимальный отступ сверху и снизу */
+  line-height: 1.2; /* Уменьшенная высота строки для плотного размещения */
 }
 
 span {
-  text-align: right; /* Выравнивание значений по правому краю */
+  text-align: right; 
 }

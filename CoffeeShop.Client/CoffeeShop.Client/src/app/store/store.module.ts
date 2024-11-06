@@ -11,6 +11,8 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { CredentialsInterceptor } from "../services/credentials.interceptor";
 import { OrderConfirmationComponent } from "../checkout/order-confirmation.component";
+import { UserRegisterComponent } from "../auth/user-register.component";
+import { UserLoginComponent } from "../auth/user-login.component";
 
 @NgModule({
   declarations: [
@@ -19,7 +21,9 @@ import { OrderConfirmationComponent } from "../checkout/order-confirmation.compo
     MenuComponent,
     CheckoutComponent,
     OrderConfirmationComponent,
-    ProductListComponent
+    ProductListComponent,
+    UserRegisterComponent,
+    UserLoginComponent
   ],
   imports: [
     HeaderModule,

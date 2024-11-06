@@ -1,0 +1,56 @@
+.clear-all-btn {
+  padding: 5px 10px;
+  margin-right: 5px;
+  font-size: 14px;
+  color: #ff0000;
+  background-color: #fff;
+  border: 1px solid #ff0000;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+  .clear-all-btn:hover {
+    background-color: #ff0000;
+    color: #fff;
+  }
+
+button[type="submit"] {
+  padding: 5px 10px;
+  margin-left: 5px;
+  font-size: 14px;
+  color: #088318; /* цвет текста и обводки */
+  background-color: #fff;
+  border: 1px solid #088318;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+  button[type="submit"]:hover {
+    background-color: #088318; /* Заполняется при наведении */
+    color: #fff; /* Текст становится белым */
+    border: 1px solid #088318;
+  }
+.cart .product-qty {
+  min-width: 130px;
+  padding: 10px;
+  gap: 10px;
+}
+
+.cart .price {
+  display: block;
+  width: 100%;
+  font-weight: 600;
+  line-height: 30px;
+  text-transform: capitalize;
+  color: rgb(120, 75, 0);
+}
+
+.cart .total-price {
+  font-size: 1.2em;
+  margin-top: 20px;
+  margin-bottom: -10px;
+  font-weight: bold;
+  color: rgb(98, 60, 6);
+}

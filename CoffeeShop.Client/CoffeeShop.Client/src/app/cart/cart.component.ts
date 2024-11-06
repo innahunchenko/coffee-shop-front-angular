@@ -5,7 +5,8 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'cart',
-  templateUrl: './cart.component.html'
+  templateUrl: './cart.component.html',
+  styleUrls: ['./cart.component.css']
 })
 export class CartComponent implements OnInit {
   cart: Cart | null = null;

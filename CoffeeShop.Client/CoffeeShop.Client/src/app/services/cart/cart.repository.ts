@@ -3,7 +3,7 @@ import { Cart } from "../../models/cart/cart.model";
 import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 import { ProductSelection } from "../../models/cart/productSelection.model";
-import { CartCheckout } from "../../models/cart/cart-checkout.model";
+import { CartCheckout } from "../../models/cart/cart-checkout.interface";
 
 const API_BASE_URL = 'https://localhost:7075/cart';
 const cartUrl = `${API_BASE_URL}/shopping-cart`;

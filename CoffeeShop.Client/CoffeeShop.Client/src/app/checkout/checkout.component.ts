@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { CartCheckout } from '../models/cart/cart-checkout.model';
+import { CartCheckout } from '../models/cart/cart-checkout.interface';
 import { CartService } from '../services/cart/cart.service';
 import { Cart } from '../models/cart/cart.model';
 import { Subscription } from 'rxjs';
@@ -89,7 +89,7 @@ export class CheckoutComponent implements OnInit {
   submitOrder() {
     if (!this.cart || this.cart.totalPrice === 0) {
       console.log('Order cannot be submitted: Cart is empty or total price is 0.');
-      this.router.navigate(['/store']);
+      this.router.navigate(['/']);
       return;
     }
 
@@ -116,14 +116,6 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
-  setServerErrors(errors: any) {
-    for (const field in errors) {
-      if (this.checkoutForm.controls[field]) {
-        this.checkoutForm.controls[field].setErrors({ serverError: errors[field] });
-      }
-    }
-  }
-
   handleValidationErrors(validationErrors: any) {
     Object.keys(validationErrors).forEach(field => {
       if (this.checkoutForm.controls[field]) {
@@ -141,6 +133,6 @@ export class CheckoutComponent implements OnInit {
   }
 
   goToStore() {
-    this.router.navigate(['/store']);
+    this.router.navigate(['']);
   }
 }

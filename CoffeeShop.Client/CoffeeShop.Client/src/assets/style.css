@@ -135,7 +135,7 @@ body {
   --bs-link-hover-color-rgb: 0,0,0;
   /* --bs-link-color: #FFC43F;
   --bs-link-hover-color: #FFC43F; */
-
+ 
   --bs-light-rgb: 248, 248, 248;
   --bs-font-sans-serif: "Open Sans", sans-serif;
   --bs-body-font-family: var(--bs-font-sans-serif);
@@ -751,28 +751,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .product-item .input-group-btn {
   margin: 0 10px;
-}
-
-/* cart */
-.cart .product-qty {
-  min-width: 130px;
-  padding: 10px;
-  gap: 10px;
-}
-
-.cart .price {
-  display: block;
-  width: 100%;
-  font-weight: 600;
-  line-height: 30px;
-  text-transform: capitalize;
-  color: rgb(120, 75, 0);
-}
-
-.cart .total-price {
-  font-size: 1.2em;
-  font-weight: bold;
-  color: rgb(98, 60, 6);
 }
 
 /* floating image */

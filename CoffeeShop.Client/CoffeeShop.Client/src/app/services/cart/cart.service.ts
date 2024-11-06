@@ -3,7 +3,7 @@ import { Cart } from "../../models/cart/cart.model";
 import { CartRepository } from "./cart.repository";
 import { ProductSelection } from "../../models/cart/productSelection.model";
 import { BehaviorSubject, Observable, catchError, of, tap } from "rxjs";
-import { CartCheckout } from "../../models/cart/cart-checkout.model";
+import { CartCheckout } from "../../models/cart/cart-checkout.interface";
 
 @Injectable()
 export class CartService {
