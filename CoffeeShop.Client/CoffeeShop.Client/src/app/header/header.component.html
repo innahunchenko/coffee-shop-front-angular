@@ -1,7 +1,6 @@
 <header>
   <div class="container-fluid">
     <div class="row py-3 border-bottom">
-
       <div class="row justify-content-center justify-content-lg-between align-items-center">
         <div class="col-12 col-md-4 col-lg-3 text-center text-md-start mb-3 mb-md-0">
           <div class="main-logo">
@@ -10,27 +9,62 @@
             </a>
           </div>
         </div>
+
         <div class="col-12 col-md-4 col-lg-5 mb-3 mb-md-0">
           <search></search>
         </div>
+
         <div class="col-12 col-md-4 col-lg-4 d-flex justify-content-center justify-content-md-end gap-5 mt-4 mt-md-0">
           <ul class="d-flex justify-content-end list-unstyled m-0">
             <li class="d-lg-none">
               <button class="btn btn-with-border" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSearch" aria-controls="offcanvasSearch">
-                <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href="#search"></use></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                  <use xlink:href="#search"></use>
+                </svg>
               </button>
             </li>
-            <li>
+
+            <li *ngIf="!isLoggedIn">
               <button (click)="openModal()" class="btn btn-with-border">
-                <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href="#user"></use></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                  <use xlink:href="#user"></use>
+                </svg>
               </button>
             </li>
+
+            
+              <!--<nav class="main-menu d-flex navbar">
+                <button class="navbar-toggler" type="button">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+              </nav>-->
+              <!--<button (click)="toggleUserMenu()" class="btn btn-with-border">
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                  <use xlink:href="#menu"></use>
+                </svg>
+              </button>-->
+
+            <li *ngIf="isLoggedIn" class="nav-item dropdown header">
+              <button (click)="toggleUserMenu()" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <!--{{ userName }}-->
+                ihun
+
+              </button>
+
+              <!--<ul *ngIf="isUserMenuOpen" class="dropdown-menu">-->
+              <ul class="dropdown-menu">
+                <li *ngFor="let item of userMenuItems">
+                  <button class="dropdown-item btn btn-link">innahunchenko&#64;gmail.com</button>
+                </li>
+              </ul>
+            </li>
+
             <li>
               <button class="btn btn-with-border" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCart" aria-controls="offcanvasCart">
-                <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href="#cart"></use></svg>
-                <span class="fw-bold">
-                  {{ totalPrice | currency:'USD' }}
-                </span>
+                <svg width="24" height="24" viewBox="0 0 24 24">
+                  <use xlink:href="#cart"></use>
+                </svg>
+                <span class="fw-bold">{{ totalPrice | currency:'USD' }}</span>
               </button>
             </li>
           </ul>
@@ -38,5 +72,6 @@
       </div>
     </div>
   </div>
+
   <app-auth-modal *ngIf="isModalVisible" (close)="closeModal()"></app-auth-modal>
 </header>

@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
 import { User } from '../models/auth/user.interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-auth-modal',
@@ -81,11 +81,5 @@ export class AuthModalComponent {
 
   closeModal() {
     this.close.emit();
-  }
-
-  onRegisterClick() {
-    this.close.emit();
-
-    this.router.navigate(['/user/register']);
   }
 }

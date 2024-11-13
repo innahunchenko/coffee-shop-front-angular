@@ -806,8 +806,13 @@ h1, h2, h3, h4, h5, h6 {
   .dropdown-toggle::after {
     position: absolute;
     right: 0;
-    top: 10px;
   }
+
+  .header .dropdown-toggle::after {
+    position: relative;
+    right: 0;
+  }
+
 }
 
 /* single product */
