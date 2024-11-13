@@ -21,7 +21,7 @@
               </button>
             </li>
             <li>
-              <button (click)="goToLogin()" class="btn btn-with-border">
+              <button (click)="openModal()" class="btn btn-with-border">
                 <svg width="24" height="24" viewBox="0 0 24 24"><use xlink:href="#user"></use></svg>
               </button>
             </li>
@@ -38,4 +38,5 @@
       </div>
     </div>
   </div>
+  <app-auth-modal *ngIf="isModalVisible" (close)="closeModal()"></app-auth-modal>
 </header>

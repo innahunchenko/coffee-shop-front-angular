@@ -2,12 +2,18 @@
   <h3>Login</h3>
   <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form">
 
+    <div *ngIf="generalErrorMessages.length > 0" class="error-messages">
+      <ul>
+        <li *ngFor="let errorMessage of generalErrorMessages">{{ errorMessage }}</li>
+      </ul>
+    </div>
+
     <input formControlName="userName" placeholder="User Name" />
     <div class="error-message">
       {{ loginForm.get('userName')?.getError('serverError') }}
     </div>
 
-    <input formControlName="password" placeholder="Password" />
+    <input formControlName="password" placeholder="Password" type="password" />
     <div class="error-message">
       {{ loginForm.get('password')?.getError('serverError') }}
     </div>

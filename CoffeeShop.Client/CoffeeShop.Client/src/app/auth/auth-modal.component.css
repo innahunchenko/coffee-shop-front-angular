@@ -1,0 +1,146 @@
+.modal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+}
+
+.auth-container h3 {
+  margin-bottom: 0.5em;
+  font-size: 1.5em;
+  color: #747474;
+  font-weight: 600;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  scrollbar-width: thin; /* Для Firefox */
+  scrollbar-color: #8d8d8d #f0f0f0; /* Цвет трека и ползунка для Firefox */
+}
+
+  /* Стили для полосы прокрутки в Webkit-браузерах (Chrome, Safari) */
+  .modal-content::-webkit-scrollbar {
+    width: 7px; /* Ширина полосы прокрутки */
+  }
+
+  .modal-content::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Цвет трека полосы прокрутки */
+    border-radius: 4px; /* Закругления трека */
+  }
+
+  .modal-content::-webkit-scrollbar-thumb {
+    background-color: #c3e0ff; /* Цвет ползунка */
+    border-radius: 4px; /* Закругления ползунка */
+    border: 2px solid #f0f0f0; /* Обводка, создающая эффект отступа */
+  }
+
+    .modal-content::-webkit-scrollbar-thumb:hover {
+      background-color: #0056b3; /* Цвет ползунка при наведении */
+    }
+
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.5rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.auth-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-button {
+  padding: 0.1em;
+  font-size: 1em;
+  color: #007bff;
+  background-color: #fff;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+  .modal-button:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+.error-message {
+  color: red !important;
+  font-size: 12px !important;
+  margin-bottom: 8px !important;
+  margin-top: -12px !important;
+  text-align: left !important;
+}
+
+
+.error-messages ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+  color: red !important;
+  font-size: 14px !important;
+  margin-bottom: 6px !important;
+  margin-top: -8px !important;
+  text-align: left !important;
+}
+
+.error-messages li {
+  margin-bottom: 4px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.link {
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+  .link:hover {
+    color: #ff4d4d; 
+  }
+
+input {
+  width: 100%;
+  height: 35px;
+  padding: 8px 4px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+  margin-bottom: 12px;
+  background-color: #fff;
+}
+
+  input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+  }

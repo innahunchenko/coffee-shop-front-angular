@@ -2,16 +2,13 @@
   <div class="offcanvas-header justify-content-between align-items-center">
     <h4 class="mb-0 d-flex align-items-center">
       <svg width="24" height="24" class="me-2"><use xlink:href="#cart"></use></svg> 
-      <span class="text-primary"><b>Cart</b></span>
+      <span class="badge bg-primary rounded-pill ms-auto">{{ getCartItemsCount() }}</span>
     </h4>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <hr>
   <div class="offcanvas-body d-flex flex-column" style="height: 100%;">
     <ng-container *ngIf="getCartItemsCount() > 0; else emptyCart">
-      <h5 class="d-flex justify-content-between align-items-center mb-3">
-        <span><b>Your products</b></span><span class="badge bg-primary rounded-pill">{{ getCartItemsCount() }}</span>
-      </h5>
       <div>
         <div class="cart">
           <div class="product-item d-flex align-items-center justify-content-between" *ngFor="let selection of cart?.selections">

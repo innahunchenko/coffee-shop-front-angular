@@ -11,6 +11,7 @@ import { User } from "../models/auth/user.interface";
 })
 export class UserLoginComponent {
   loginForm: FormGroup;
+  generalErrorMessages: string[] = [];
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -26,21 +27,11 @@ export class UserLoginComponent {
     const userData: User = this.loginForm.value;
     this.authService.login(userData).subscribe({
       next: () => {
-        //this.router.navigate(['/']);
+        this.router.navigate(['']);
       },
       error: (errorResponse) => {
-        if (errorResponse.error.errors) {
-          const validationErrors = errorResponse.error.errors;
-          this.handleValidationErrors(validationErrors);
-        }
-      }
-    });
-  }
-
-  handleValidationErrors(validationErrors: any) {
-    Object.keys(validationErrors).forEach(field => {
-      if (this.loginForm.controls[field]) {
-        this.loginForm.controls[field].setErrors({ serverError: validationErrors[field] });
+        this.generalErrorMessages = [];
+        this.generalErrorMessages = errorResponse.error.map((err: any) => err.description);
       }
     });
   }

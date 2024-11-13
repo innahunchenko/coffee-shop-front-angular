@@ -2,16 +2,19 @@ import { CommonModule } from "@angular/common";
 import { HeaderComponent } from "./header.component";
 import { SearchComponent } from "./search.component";
 import { NgModule } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { AuthModalComponent } from "../auth/auth-modal.component";
 
 @NgModule({
   declarations: [
     HeaderComponent,
-    SearchComponent
+    SearchComponent,
+    AuthModalComponent
   ],
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   exports: [
     HeaderComponent
