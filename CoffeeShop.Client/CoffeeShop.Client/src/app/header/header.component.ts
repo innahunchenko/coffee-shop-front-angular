@@ -17,31 +17,38 @@ export class HeaderComponent implements OnInit {
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.checkLoginStatus();
-    console.log('Initial login status:', this.isLoggedIn);
-  }
-
-  checkLoginStatus() {
-    this.authService.isAuthenticated().subscribe(isAuthenticated => {
-      this.isLoggedIn = isAuthenticated;
-      if (isAuthenticated) {
+    this.authService.isAuthenticated().subscribe();
+    this.authService.isLoggedIn$.subscribe(isLoggedIn => {
+      this.isLoggedIn = isLoggedIn;
+      if (this.isLoggedIn) {
         this.loadUserName();
-        this.loadMenu();
       }
     });
   }
 
+  //checkLoginStatus() {
+  //  this.authService.isAuthenticated().subscribe(isAuthenticated => {
+  //    this.isLoggedIn = isAuthenticated;
+  //    if (isAuthenticated) {
+  //      this.loadUserName();
+  //     // this.loadMenu();
+  //    }
+  //  });
+  //}
+
   loadUserName() {
     this.authService.getUserName().subscribe(name => {
-      this.userName = name; 
+      this.userName = name || 'Unknown User';
+      console.log(this.userName);
     });
   }
 
 
+
   loadMenu() {
-    //this.authService.getMenu().subscribe(menuItems => {
-    //  this.userMenuItems = menuItems;
-    //});
+    this.authService.getMenu().subscribe(menuItems => {
+      this.userMenuItems = menuItems;
+    });
   }
 
   openModal() {
