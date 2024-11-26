@@ -1,12 +1,13 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { BehaviorSubject, Observable, map, tap } from "rxjs";
+import { BehaviorSubject, Observable, catchError, map, of, tap } from "rxjs";
 import { User } from "../../models/auth/user.interface";
 import { MenuItem } from "../../models/auth/menu-item.interface";
 
 const API_BASE_URL = 'https://localhost:7075/auth';
 const registerUrl = `${API_BASE_URL}/user/register`;
 const loginUrl = `${API_BASE_URL}/user/login`;
+const logoutUrl = `${API_BASE_URL}/user/logout`;
 const authStatusUrl = `${API_BASE_URL}/user/check-auth-status`;
 const userNameUrl = `${API_BASE_URL}/user/username`;
 const menuUrl = `${API_BASE_URL}/user/menu`;
@@ -14,7 +15,7 @@ const menuUrl = `${API_BASE_URL}/user/menu`;
 @Injectable()
 export class AuthService {
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
-  isLoggedIn$ = this.isLoggedInSubject.asObservable();
+  isLoggedIn$ = this.isLoggedInSubject.asObservable();  
   constructor(private http: HttpClient) { }
 
   register(userData: User): Observable<any> {
@@ -33,12 +34,20 @@ export class AuthService {
     return this.http.get<boolean>(authStatusUrl).pipe(
       tap((isAuthenticated: boolean) => {
         this.isLoggedInSubject.next(isAuthenticated);
+      }),
+      catchError(() => {
+        this.isLoggedInSubject.next(false);
+        return of(false);
       })
     );
   }
 
-  logout(): void {
-    this.isLoggedInSubject.next(false);
+  logout(): Observable<void> {
+    return this.http.post<void>(logoutUrl, {}).pipe(
+      tap(() => {
+        this.isLoggedInSubject.next(false);
+      })
+    );
   }
 
   getUserName(): Observable<string> {

@@ -37,10 +37,9 @@
                 {{ userName }}
               </button>
 
-              <!--<ul *ngIf="isUserMenuOpen" class="dropdown-menu">-->
               <ul class="dropdown-menu">
                 <li *ngFor="let item of userMenuItems">
-                  <button class="dropdown-item btn btn-link">innahunchenko&#64;gmail.com</button>
+                  <button class="dropdown-item btn btn-link" (click)="item.action ? item.action() : null">{{ item.name }}</button>
                 </li>
               </ul>
             </li>
@@ -50,11 +49,12 @@
                 <svg width="24" height="24" viewBox="0 0 24 24">
                   <use xlink:href="#cart"></use>
                 </svg>
-                <span class="fw-bold">{{ totalPrice | currency:'USD' }}</span>
+                <span class="fw-bold">{{ this.cartService.cart.totalPrice | currency:'USD' }}</span>
               </button>
             </li>
           </ul>
         </div>
+        <cart></cart>
       </div>
     </div>
   </div>

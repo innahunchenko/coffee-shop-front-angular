@@ -3,10 +3,10 @@ import { Category } from "../models/catalog/category.model";
 import { CatalogRepository } from "../services/catalog/catalog.repository";
 
 @Component({
-  selector: 'app-menu',
-  templateUrl: './menu.component.html'
+  selector: 'app-product-menu',
+  templateUrl: './product-menu.component.html'
 })
-export class MenuComponent {
+export class ProductMenuComponent {
   categories: Category[] = [];
   constructor(public repository: CatalogRepository) {
     this.repository.getCategories();

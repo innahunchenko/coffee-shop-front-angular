@@ -1,3 +1,5 @@
 export interface MenuItem {
-  label: string;
+  id: string;
+  name: string;
+  action?: () => void;
 }
