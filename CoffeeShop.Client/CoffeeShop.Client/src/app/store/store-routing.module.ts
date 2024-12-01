@@ -1,22 +1,42 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ProductListComponent } from '../catalog/productList.component';
-import { ManageCatalogComponent } from '../management/manage-catalog.component';
+import { ManageCatalogComponent } from '../menu/manage-catalog.component';
 import { StoreComponent } from './store.component';
+import { OrdersComponent } from '../menu/orders.component';
+import { ProfileComponent } from '../menu/profile.component';
+import { RoleGuard } from '../services/auth/role.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: StoreComponent,
     children: [
-      { path: '', component: ProductListComponent },  
-      { path: 'manage-catalog', component: ManageCatalogComponent }  
+      { path: '', component: ProductListComponent },
+      {
+        path: 'manage-catalog',
+        component: ManageCatalogComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['ADMIN'] } 
+      },
+      {
+        path: 'orders',
+        component: OrdersComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['USER', 'ADMIN'] } 
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent,
+        canActivate: [RoleGuard],
+        data: { roles: ['USER'] } 
+      }
     ]
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)], 
+  imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
 export class StoreRoutingModule { }

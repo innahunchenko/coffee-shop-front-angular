@@ -17,10 +17,8 @@ export class HeaderComponent implements OnInit {
   @Input() totalPrice: number = 0;
 
   private menuActions: { [key: string]: () => void } = {
-    'manageCatalog': () => this.router.navigate(['/manage-catalog']),
-    'manageUsers': () => this.router.navigate(['/manage-users']),
-    'manageUserOrders': () => this.router.navigate(['/manage-user-orders']),
-    'orderHistory': () => this.router.navigate(['/order-history']),
+    'catalog': () => this.router.navigate(['/manage-catalog']),
+    'orders': () => this.router.navigate(['/orders']),
     'profile': () => this.router.navigate(['/profile']),
     'returnToShop': () => this.router.navigate(['']),
     'signOut': () => this.logout()

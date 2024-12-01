@@ -5,6 +5,7 @@ import { CartService } from '../services/cart/cart.service';
 import { Cart } from '../models/cart/cart.model';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { AuthService } from '../services/auth/auth.service';
 
 @Component({
   selector: 'app-checkout',
@@ -17,13 +18,17 @@ export class CheckoutComponent implements OnInit {
   cartSubscription!: Subscription;
   checkoutData: CartCheckout = {} as CartCheckout;
   orderSubmitted: boolean = false;
+  isLoggedIn: boolean = false;
 
-  constructor(private fb: FormBuilder, public cartService: CartService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    public cartService: CartService,
+    private router: Router,
+    private authService: AuthService
+  ) {
     this.checkoutForm = this.fb.group({
-      firstName: [''],
-      lastName: [''],
-      phoneNumber: [''],
       emailAddress: [''],
+      phoneNumber: [''],
       addressLine: [''],
       country: [''],
       state: [''],
@@ -51,6 +56,10 @@ export class CheckoutComponent implements OnInit {
           this.populateForm();
         }
       });
+    this.authService.isAuthenticated().subscribe();
+    this.authService.isLoggedIn$.subscribe(isLoggedIn => {
+      this.isLoggedIn = isLoggedIn;
+    });
   }
 
   ngOnDestroy(): void {
@@ -71,8 +80,6 @@ export class CheckoutComponent implements OnInit {
 
   populateForm() {
     this.checkoutForm.patchValue({
-      firstName: this.checkoutData.firstName,
-      lastName: this.checkoutData.lastName,
       phoneNumber: this.checkoutData.phoneNumber,
       emailAddress: this.checkoutData.emailAddress,
       addressLine: this.checkoutData.addressLine,

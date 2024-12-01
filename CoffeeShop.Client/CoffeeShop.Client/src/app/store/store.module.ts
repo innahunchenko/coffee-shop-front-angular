@@ -9,13 +9,13 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { CredentialsInterceptor } from "../services/credentials.interceptor";
 import { OrderConfirmationComponent } from "../checkout/order-confirmation.component";
-import { UserRegisterComponent } from "../auth/user-register.component";
-import { UserLoginComponent } from "../auth/user-login.component";
-import { ManageCatalogComponent } from "../management/manage-catalog.component";
+import { ManageCatalogComponent } from "../menu/manage-catalog.component";
 import { ProductMenuComponent } from "../header/product-menu.component";
 import { HeaderComponent } from "../header/header.component";
 import { SearchComponent } from "../header/search.component";
 import { AuthModalComponent } from "../auth/auth-modal.component";
+import { OrdersComponent } from "../menu/orders.component";
+import { ProfileComponent } from "../menu/profile.component";
 
 @NgModule({
   declarations: [
@@ -26,11 +26,11 @@ import { AuthModalComponent } from "../auth/auth-modal.component";
     CheckoutComponent,
     OrderConfirmationComponent,
     ProductListComponent,
-    UserRegisterComponent,
-    UserLoginComponent,
     ManageCatalogComponent,
+    ProfileComponent,
     SearchComponent,
-    AuthModalComponent
+    AuthModalComponent,
+    OrdersComponent
   ],
   imports: [
     RouterModule,

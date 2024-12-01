@@ -42,7 +42,7 @@
           </ul>
         </div>
 
-        <input formControlName="firstName" placeholder="First Name" />
+        <!--<input formControlName="firstName" placeholder="First Name" />
         <div class="error-message">
           {{ registerForm.get('firstName')?.getError('serverError') }}
         </div>
@@ -50,16 +50,16 @@
         <input formControlName="lastName" placeholder="Last Name" />
         <div class="error-message">
           {{ registerForm.get('lastName')?.getError('serverError') }}
+        </div>-->
+
+        <input formControlName="userName" placeholder="Username" />
+        <div class="error-message">
+          {{ registerForm.get('userName')?.getError('serverError') }}
         </div>
 
         <input formControlName="email" placeholder="Email" />
         <div class="error-message">
           {{ registerForm.get('email')?.getError('serverError') }}
-        </div>
-
-        <input formControlName="userName" placeholder="Username" />
-        <div class="error-message">
-          {{ registerForm.get('userName')?.getError('serverError') }}
         </div>
 
         <input formControlName="phoneNumber" placeholder="Phone Number" />
@@ -71,7 +71,7 @@
         <div class="error-message">
           {{ registerForm.get('password')?.getError('serverError') }}
         </div>
-         
+
         <!--<label for="dateOfBirth">Date of Birth</label>
         <input formControlName="dateOfBirth" id="dateOfBirth" type="date" />
         <div class="error-message">

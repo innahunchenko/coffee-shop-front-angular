@@ -1,0 +1,38 @@
+<div class="orders-page">
+  <h1>Orders</h1>
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    Loading...
+  </div>
+  <div *ngIf="!isLoading && orders.length === 0">No orders found.</div>
+  <table *ngIf="!isLoading && orders.length > 0" class="orders-table">
+    <thead>
+      <tr>
+        <th>Order Name</th>
+        <th>Status</th>
+        <th>Total Price</th>
+        <th>Created At</th>
+        <th>Items</th>
+        <th *ngIf="isAdmin">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let order of orders">
+        <td class="order-name">{{ order.orderName }}</td>
+        <td class="order-status">{{ order.orderStatus }}</td>
+        <td class="total-price">{{ order.totalPrice | currency }}</td>
+        <td class="created-at">{{ order.createdAt | date }}</td>
+        <td>
+          <ul>
+            <li *ngFor="let item of order.orderItems">
+              {{ item.productName }} (x{{ item.quantity }}) - {{ item.price | currency }}
+            </li>
+          </ul>
+        </td>
+        <td *ngIf="isAdmin">
+          <button class="btn btn-outline-primary" (click)="editOrder(order)">Edit</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

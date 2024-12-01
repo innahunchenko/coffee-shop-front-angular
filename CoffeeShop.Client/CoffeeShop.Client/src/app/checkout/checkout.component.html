@@ -1,24 +1,15 @@
 <div class="container">
 
   <form [formGroup]="checkoutForm" (ngSubmit)="submitOrder()">
-    <input type="text" formControlName="firstName" placeholder="First Name">
-    <div class="error-message">
-      {{ checkoutForm.get('firstName')?.getError('serverError') }}
-    </div>
 
-    <input type="text" formControlName="lastName" placeholder="Last Name">
-    <div class="error-message">
-      {{ checkoutForm.get('lastName')?.getError('serverError') }}
-    </div>
-
-    <input type="text" formControlName="phoneNumber" placeholder="Phone Number">
-    <div class="error-message">
-      {{ checkoutForm.get('phoneNumber')?.getError('serverError') }}
-    </div>
-
-    <input type="text" formControlName="emailAddress" placeholder="Email">
+    <input *ngIf="!isLoggedIn" type="text" formControlName="emailAddress" placeholder="Email">
     <div class="error-message">
       {{ checkoutForm.get('emailAddress')?.getError('serverError') }}
+    </div>
+
+    <input *ngIf="!isLoggedIn" type="text" formControlName="phoneNumber" placeholder="Phone Number">
+    <div class="error-message">
+      {{ checkoutForm.get('phoneNumber')?.getError('serverError') }}
     </div>
 
     <input type="text" formControlName="addressLine" placeholder="Address">

@@ -1,6 +1,4 @@
 export interface CartCheckout {
-  firstName: string;
-  lastName: string;
   phoneNumber: string;
   emailAddress: string;
   addressLine: string;

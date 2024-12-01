@@ -1,0 +1,68 @@
+.orders-page {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #333;
+}
+
+.loading-indicator,
+.no-orders {
+  text-align: center;
+  font-size: 16px;
+  color: gray;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px; /* Уменьшенный шрифт */
+}
+
+  .orders-table th,
+  .orders-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+
+  .orders-table th {
+    background-color: #f4f4f4;
+    color: #333;
+    font-weight: bold;
+  }
+
+  .orders-table td {
+    color: #555;
+  }
+
+.order-name {
+  font-weight: bold;
+  color: #088318; /* Зеленый цвет для названия заказа */
+}
+
+.order-status {
+  color: #007bff; /* Синий цвет для статуса */
+}
+
+.total-price {
+  color: #d9534f; /* Красный цвет для общей цены */
+}
+
+.created-at {
+  color: #6c757d; /* Серый цвет для даты */
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+  .orders-table {
+    font-size: 12px; /* Ещё меньший шрифт на узких экранах */
+  }
+}

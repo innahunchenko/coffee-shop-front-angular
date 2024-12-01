@@ -11,6 +11,8 @@ const logoutUrl = `${API_BASE_URL}/user/logout`;
 const authStatusUrl = `${API_BASE_URL}/user/check-auth-status`;
 const userNameUrl = `${API_BASE_URL}/user/username`;
 const menuUrl = `${API_BASE_URL}/user/menu`;
+const isUserAdminUrl = `${API_BASE_URL}/user/is-user-admin`;
+const userRoleUrl = `${API_BASE_URL}/user/role`;
 
 @Injectable()
 export class AuthService {
@@ -58,5 +60,15 @@ export class AuthService {
 
   getMenu(): Observable<MenuItem[]> {
     return this.http.get<MenuItem[]>(menuUrl);
+  }
+
+  isUserAdmin(): Observable<boolean> {
+    return this.http.get<boolean>(isUserAdminUrl);
+  }
+
+  getUserRole(): Observable<string> {
+    return this.http.get<{ role: string }>(userRoleUrl).pipe(
+      map(response => response.role)
+    );
   }
 }
