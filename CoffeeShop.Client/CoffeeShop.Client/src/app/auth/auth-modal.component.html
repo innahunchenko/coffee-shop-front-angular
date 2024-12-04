@@ -1,89 +1,89 @@
+<!-- Весь модальный контейнер -->
 <div class="modal-container" (click)="closeModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="closeModal()">✖</button>
 
+    <!-- Login Mode -->
     <div *ngIf="isLoginMode" class="auth-container">
       <h3>Login</h3>
       <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="modal-form">
-
         <div *ngIf="generalErrorMessages.length > 0" class="error-messages">
           <ul>
             <li *ngFor="let errorMessage of generalErrorMessages">{{ errorMessage }}</li>
           </ul>
         </div>
-
         <input formControlName="userName" placeholder="User Name" />
         <div class="error-message">
           {{ loginForm.get('userName')?.getError('serverError') }}
         </div>
-
         <input formControlName="password" placeholder="Password" type="password" />
         <div class="error-message">
           {{ loginForm.get('password')?.getError('serverError') }}
         </div>
-
         <button type="submit" class="modal-button">Log In</button>
       </form>
-
       <div class="footer-links">
-        <a (click)="toggleMode()" class="link">Register</a>
-        <a href="/forgot-password" class="link">Forgot Password?</a>
+        <a (click)="toggleMode('register')" class="link">Register</a>
+        <a (click)="toggleMode('forgotPassword')" class="link">Forgot Password?</a>
       </div>
     </div>
 
-    <div *ngIf="!isLoginMode" class="auth-container">
-
-      <h3>Register</h3>
-      <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="modal-form">
-
+    <!-- Forgot Password Mode -->
+    <div *ngIf="isForgotPasswordMode" class="auth-container">
+      <h3>Reset Password</h3>
+      <form [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPassword()" class="modal-form">
         <div *ngIf="generalErrorMessages.length > 0" class="error-messages">
           <ul>
             <li *ngFor="let errorMessage of generalErrorMessages">{{ errorMessage }}</li>
           </ul>
         </div>
-
-        <!--<input formControlName="firstName" placeholder="First Name" />
+        <input formControlName="email" placeholder="Enter your email" />
         <div class="error-message">
-          {{ registerForm.get('firstName')?.getError('serverError') }}
+          {{ forgotPasswordForm.get('email')?.getError('serverError') }}
         </div>
+        <button type="submit" class="modal-button">Send Reset Link</button>
+      </form>
+      <div class="footer-links">
+        <a (click)="toggleMode('login')" class="link">Login</a>
+      </div>
+    </div>
 
-        <input formControlName="lastName" placeholder="Last Name" />
-        <div class="error-message">
-          {{ registerForm.get('lastName')?.getError('serverError') }}
-        </div>-->
-
+    <!-- Register Mode -->
+    <!-- Register Mode -->
+    <div *ngIf="isRegisterMode && !isSuccessRegister" class="auth-container">
+      <h3>Register</h3>
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="modal-form">
+        <div *ngIf="generalErrorMessages.length > 0" class="error-messages">
+          <ul>
+            <li *ngFor="let errorMessage of generalErrorMessages">{{ errorMessage }}</li>
+          </ul>
+        </div>
         <input formControlName="userName" placeholder="Username" />
         <div class="error-message">
           {{ registerForm.get('userName')?.getError('serverError') }}
         </div>
-
         <input formControlName="email" placeholder="Email" />
         <div class="error-message">
           {{ registerForm.get('email')?.getError('serverError') }}
         </div>
-
         <input formControlName="phoneNumber" placeholder="Phone Number" />
         <div class="error-message">
           {{ registerForm.get('phoneNumber')?.getError('serverError') }}
         </div>
-
         <input formControlName="password" placeholder="Password" type="password" />
         <div class="error-message">
           {{ registerForm.get('password')?.getError('serverError') }}
         </div>
-
-        <!--<label for="dateOfBirth">Date of Birth</label>
-        <input formControlName="dateOfBirth" id="dateOfBirth" type="date" />
-        <div class="error-message">
-          {{ registerForm.get('dateOfBirth')?.getError('serverError') }}
-        </div>-->
-
         <button type="submit" class="modal-button">Register</button>
       </form>
-
       <div class="footer-links">
-        <a (click)="toggleMode()" class="link">Login</a>
+        <a (click)="toggleMode('login')" class="link">Login</a>
       </div>
+    </div>
+
+    <div *ngIf="isRegisterMode && isSuccessRegister" class="auth-container">
+      <h3>Registration Successful</h3>
+      <p>Please check your email for a confirmation link. After confirming, you can log in.</p>
     </div>
   </div>
 </div>

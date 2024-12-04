@@ -71,4 +71,8 @@ export class AuthService {
       map(response => response.role)
     );
   }
+
+  sendPasswordResetEmail(email: string): Observable<any> {
+    return this.http.post(`${API_BASE_URL}/send-password-reset-email`, { email });
+  }
 }
