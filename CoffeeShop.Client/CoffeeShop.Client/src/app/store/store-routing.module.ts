@@ -4,7 +4,6 @@ import { ProductListComponent } from '../catalog/productList.component';
 import { ManageCatalogComponent } from '../menu/manage-catalog.component';
 import { StoreComponent } from './store.component';
 import { OrdersComponent } from '../menu/orders.component';
-import { ProfileComponent } from '../menu/profile.component';
 import { RoleGuard } from '../services/auth/role.guard';
 
 const routes: Routes = [
@@ -24,12 +23,6 @@ const routes: Routes = [
         component: OrdersComponent,
         canActivate: [RoleGuard],
         data: { roles: ['USER', 'ADMIN'] } 
-      },
-      {
-        path: 'profile',
-        component: ProfileComponent,
-        canActivate: [RoleGuard],
-        data: { roles: ['USER'] } 
       }
     ]
   }

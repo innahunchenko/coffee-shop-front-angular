@@ -19,7 +19,7 @@ export class HeaderComponent implements OnInit {
   private menuActions: { [key: string]: () => void } = {
     'catalog': () => this.router.navigate(['/manage-catalog']),
     'orders': () => this.router.navigate(['/orders']),
-    'profile': () => this.router.navigate(['/profile']),
+    'changePassword': () => this.router.navigate(['/change-password']),
     'returnToShop': () => this.router.navigate(['']),
     'signOut': () => this.logout()
   };

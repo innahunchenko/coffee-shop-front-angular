@@ -15,7 +15,6 @@ import { HeaderComponent } from "../header/header.component";
 import { SearchComponent } from "../header/search.component";
 import { AuthModalComponent } from "../auth/auth-modal.component";
 import { OrdersComponent } from "../menu/orders.component";
-import { ProfileComponent } from "../menu/profile.component";
 
 @NgModule({
   declarations: [
@@ -27,7 +26,6 @@ import { ProfileComponent } from "../menu/profile.component";
     OrderConfirmationComponent,
     ProductListComponent,
     ManageCatalogComponent,
-    ProfileComponent,
     SearchComponent,
     AuthModalComponent,
     OrdersComponent

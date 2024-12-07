@@ -13,11 +13,16 @@ export class AuthModalComponent {
   loginForm: FormGroup;
   registerForm: FormGroup;
   forgotPasswordForm: FormGroup;
+  resetPasswordForm: FormGroup;
   generalErrorMessages: string[] = [];
-  isSuccessRegister = false;
+  isSuccess = false;
+  successfulMessage: string = "";
   isLoginMode = true;
   isForgotPasswordMode = false;
   isRegisterMode = false;
+  isResetPasswordMode = false;
+  email: string;
+  token: string;
 
   @Output() close = new EventEmitter<void>();
 
@@ -39,14 +44,24 @@ export class AuthModalComponent {
     this.forgotPasswordForm = this.fb.group({
       email: ['']
     });
+
+    this.resetPasswordForm = this.fb.group({
+      password: [''],
+      confirmPassword: ['']
+    });
+
+    const navigation = this.router.getCurrentNavigation();
+    this.email = navigation?.extras?.state?.['email'] ?? '';
+    this.token = navigation?.extras?.state?.['token'] ?? '';
   }
 
-  toggleMode(mode: 'login' | 'register' | 'forgotPassword') {
+  toggleMode(mode: string, isSuccess: boolean) {
     this.isLoginMode = mode === 'login';
     this.isForgotPasswordMode = mode === 'forgotPassword';
     this.isRegisterMode = mode === 'register';
+    this.isResetPasswordMode = mode === 'resetPassword';
     this.generalErrorMessages = [];
-    this.isSuccessRegister = false;
+    this.isSuccess = isSuccess;
   }
 
   onLogin() {
@@ -54,7 +69,7 @@ export class AuthModalComponent {
     this.authService.login(userData).subscribe({
       next: () => {
         this.router.navigate(['']);
-        this.closeModal();  
+        this.closeModal();
       },
       error: (errorResponse) => {
         this.generalErrorMessages = errorResponse.error.map((err: any) => err.description);
@@ -66,44 +81,66 @@ export class AuthModalComponent {
     const userData: User = this.registerForm.value;
     this.authService.register(userData).subscribe({
       next: () => {
-        this.isSuccessRegister = true;
-       // setTimeout(() => this.toggleMode('login'), 5000);
-        //this.toggleMode('login');
+        this.successfulMessage = 'Registration successful';
+        this.toggleMode('', true);
       },
       error: (errorResponse) => {
-        this.generalErrorMessages = [];
-        const problemDetails = errorResponse.error;
-
-        if (problemDetails.errors) {
-          this.handleValidationErrors(problemDetails.errors);
-        } else if (problemDetails.title || problemDetails.detail) {
-          this.generalErrorMessages = [problemDetails.detail || problemDetails.title];
-        } else if (Array.isArray(problemDetails)) {
-          this.generalErrorMessages = problemDetails.map((err: any) => err.description);
-        } else {
-          this.generalErrorMessages = ['An unexpected error occurred. Please try again later.'];
-        }
+        this.handleValidationErrors(errorResponse.error, this.registerForm);
       }
     });
   }
 
-  handleValidationErrors(validationErrors: any) {
-    Object.keys(validationErrors).forEach(field => {
-      if (this.registerForm.controls[field]) {
-        this.registerForm.controls[field].setErrors({ serverError: validationErrors[field] });
+  handleValidationErrors(problemDetails: any, formGroup: FormGroup) {
+    this.generalErrorMessages = [];
+    if (problemDetails.errors) {
+      let hasFieldMatch = false;
+
+      Object.keys(problemDetails.errors).forEach(field => {
+        if (formGroup.controls[field]) {
+          formGroup.controls[field].setErrors({ serverError: problemDetails.errors[field] });
+          hasFieldMatch = true;
+        }
+      });
+
+      if (!hasFieldMatch) {
+        this.generalErrorMessages = Object.values(problemDetails.errors).map((value: any) =>
+          Array.isArray(value) ? value.join(', ') : String(value)
+        );
       }
-    });
+    } else if (problemDetails.title || problemDetails.detail) {
+      this.generalErrorMessages = [problemDetails.detail || problemDetails.title];
+    } else if (Array.isArray(problemDetails)) {
+      this.generalErrorMessages = problemDetails.map((err: any) => err.description);
+    } else {
+      this.generalErrorMessages = ['An unexpected error occurred. Please try again later.'];
+    }
   }
 
   onForgotPassword() {
     const email = this.forgotPasswordForm.value.email;
-    this.authService.sendPasswordResetEmail(email).subscribe({
-      next: () => {
-        alert('Password reset link sent to your email.');
-        this.toggleMode('login');
+
+    this.authService.forgotPassword(email).subscribe({
+      next: (token) => {
+        this.email = email;
+        this.token = token;
+        this.toggleMode('resetPassword', false);
       },
       error: (errorResponse) => {
-        this.generalErrorMessages = errorResponse.error.map((err: any) => err.description);
+        this.generalErrorMessages = errorResponse.error.errors || ['Failed email.'];
+      }
+    });
+  }
+
+  onResetPassword() {
+    const { password, confirmPassword } = this.resetPasswordForm.value;
+
+    this.authService.resetPassword(this.email, this.token, password, confirmPassword).subscribe({
+      next: () => {
+        this.successfulMessage = 'Password reset successfully';
+        this.toggleMode('', true);
+      },
+      error: (errorResponse) => {
+        this.handleValidationErrors(errorResponse.error, this.resetPasswordForm);
       }
     });
   }

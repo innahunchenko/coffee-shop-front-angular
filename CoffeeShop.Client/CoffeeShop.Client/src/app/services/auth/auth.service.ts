@@ -13,12 +13,23 @@ const userNameUrl = `${API_BASE_URL}/user/username`;
 const menuUrl = `${API_BASE_URL}/user/menu`;
 const isUserAdminUrl = `${API_BASE_URL}/user/is-user-admin`;
 const userRoleUrl = `${API_BASE_URL}/user/role`;
+const resetPasswordUrl = `${API_BASE_URL}/user/reset-password`;
+const forgotPasswordUrl = `${API_BASE_URL}/user/forgot-password`;
 
 @Injectable()
 export class AuthService {
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
-  isLoggedIn$ = this.isLoggedInSubject.asObservable();  
+  isLoggedIn$ = this.isLoggedInSubject.asObservable();
+  resetToken: string = "";
   constructor(private http: HttpClient) { }
+
+  forgotPassword(email: string): Observable<string> {
+    return this.http.post<string>(forgotPasswordUrl, { email });
+  }
+
+  resetPassword(email: string, token: string, password: string, confirmPassword: string): Observable<void> {
+    return this.http.post<void>(resetPasswordUrl, { email, token, password, confirmPassword });
+  }
 
   register(userData: User): Observable<any> {
     return this.http.post(registerUrl, userData);
@@ -70,9 +81,5 @@ export class AuthService {
     return this.http.get<{ role: string }>(userRoleUrl).pipe(
       map(response => response.role)
     );
-  }
-
-  sendPasswordResetEmail(email: string): Observable<any> {
-    return this.http.post(`${API_BASE_URL}/send-password-reset-email`, { email });
   }
 }
