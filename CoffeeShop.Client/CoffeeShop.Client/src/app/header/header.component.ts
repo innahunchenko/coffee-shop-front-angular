@@ -17,9 +17,8 @@ export class HeaderComponent implements OnInit {
   @Input() totalPrice: number = 0;
 
   private menuActions: { [key: string]: () => void } = {
-    'catalog': () => this.router.navigate(['/manage-catalog']),
+    'categories': () => this.router.navigate(['/manage-categories']),
     'orders': () => this.router.navigate(['/orders']),
-    'changePassword': () => this.router.navigate(['/change-password']),
     'returnToShop': () => this.router.navigate(['']),
     'signOut': () => this.logout()
   };
@@ -29,6 +28,10 @@ export class HeaderComponent implements OnInit {
     public cartService: CartService,
     private router: Router
   ) { }
+
+  getCartItemsCount() {
+    return this.cartService.cart.selections.length;
+  }
 
   ngOnInit(): void {
     this.authService.isAuthenticated().subscribe();

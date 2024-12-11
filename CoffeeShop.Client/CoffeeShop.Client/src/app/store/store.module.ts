@@ -9,7 +9,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { CredentialsInterceptor } from "../services/credentials.interceptor";
 import { OrderConfirmationComponent } from "../checkout/order-confirmation.component";
-import { ManageCatalogComponent } from "../menu/manage-catalog.component";
+import { ManageCategoriesComponent } from "../menu/manage-categories.component";
 import { ProductMenuComponent } from "../header/product-menu.component";
 import { HeaderComponent } from "../header/header.component";
 import { SearchComponent } from "../header/search.component";
@@ -25,7 +25,7 @@ import { OrdersComponent } from "../menu/orders.component";
     CheckoutComponent,
     OrderConfirmationComponent,
     ProductListComponent,
-    ManageCatalogComponent,
+    ManageCategoriesComponent,
     SearchComponent,
     AuthModalComponent,
     OrdersComponent

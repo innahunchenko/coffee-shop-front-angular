@@ -1,11 +1,28 @@
 <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasCart" aria-labelledby="My Cart">
-  <div class="offcanvas-header justify-content-between align-items-center">
-    <h4 class="mb-0 d-flex align-items-center">
-      <svg width="24" height="24" class="me-2"><use xlink:href="#cart"></use></svg> 
-      <span class="badge bg-primary rounded-pill ms-auto">{{ getCartItemsCount() }}</span>
-    </h4>
+  <div class="offcanvas-header" style="display: flex; justify-content: space-between; align-items: unset;">
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+
+    <h4 class="mb-0 d-flex align-items-center">
+      <svg width="24" height="24" class="me-2"><use xlink:href="#cart"></use></svg>
+      <span class="badge bg-primary rounded-pill">{{ getTotalPrice() | currency:"USD":"symbol" }}</span>
+    </h4>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+      <a href="#" class="nav-link" (click)="clearCart()" style="margin-right: auto;">
+        Clear cart
+      </a>
+      <a href="#"
+         class="nav-link continue-to-checkout"
+         [routerLink]="['/checkout']"
+         [attr.tabindex]="getCartItemsCount() === 0 ? -1 : null"
+         [ngClass]="{'disabled-link': getCartItemsCount() === 0}"
+         style="margin-left: auto;">
+        Continue to checkout
+      </a>
+    </div>
   </div>
+
+
   <hr>
   <div class="offcanvas-body d-flex flex-column" style="height: 100%;">
     <ng-container *ngIf="getCartItemsCount() > 0; else emptyCart">
@@ -31,18 +48,7 @@
               </button>
             </div>
           </div>
-          <div class="d-flex justify-content-between">
-            <span class="total-price ms-auto">{{ getTotalPrice() | currency:"USD":"symbol" }}</span>
-          </div>
         </div>
-      </div>
-      <div class="d-flex justify-content-between mt-3">
-        <button type="button" class="btn clear-all-btn btn-with-border" (click)="clearCart()">
-          Clear cart
-        </button>
-        <button type="submit" class="btn btn-with-border" [routerLink]="['/checkout']" [disabled]="getCartItemsCount() === 0">
-          Continue to checkout
-        </button>
       </div>
     </ng-container>
     <ng-template #emptyCart>

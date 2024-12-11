@@ -5,4 +5,5 @@ export class Cart {
     public selections: ProductSelection[] = [],
     public totalPrice: number = 0
   ) { }
+
 }

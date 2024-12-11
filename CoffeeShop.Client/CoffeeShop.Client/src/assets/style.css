@@ -129,13 +129,13 @@ CSS STRUCTURE:
 }
 
 body {
+  overflow: auto !important;
   --bs-link-color: #333;
-  --bs-link-hover-color: #333;
-  --bs-link-color-rgb: 40,40,40;
-  --bs-link-hover-color-rgb: 0,0,0;
-  /* --bs-link-color: #FFC43F;
-  --bs-link-hover-color: #FFC43F; */
- 
+  --bs-link-hover-color: #b33434;
+  --bs-link-color-rgb: #b33434;
+  --bs-link-hover-color-rgb: #b33434;
+  --bs-link-color: #b33434;
+  --bs-link-hover-color: #b33434;
   --bs-light-rgb: 248, 248, 248;
   --bs-font-sans-serif: "Open Sans", sans-serif;
   --bs-body-font-family: var(--bs-font-sans-serif);
@@ -641,17 +641,35 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0;
     text-align: left;
   }
-
+/*
   .product-item figure {
     background: #F9F9F9;
-    border-radius: 12px;
+    border-radius:6px;
     text-align: left;
-  }
+  }*/
 
-    .product-item figure img {
-      max-height: 310px;
+.product-item figure img {
+  width: 80%;
+  height: 80%;
+}
+
+@media (min-width: 768px) {
+  .product-item figure img {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .product-item figure img {
+    width: 70%; 
+  }
+}
+
+
+    /*.product-item figure img {
+      max-height: 510px;
       height: auto;
-    }
+    }*/
 
   .product-item .btn-wishlist {
     position: absolute;
@@ -697,12 +715,13 @@ h1, h2, h3, h4, h5, h6 {
   .product-item .price {
     display: block;
     width: 100%;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 15px;
     line-height: 30px;
     text-transform: capitalize;
     color: rgb(120, 75, 0);
     margin-top: 5px;
+    text-align: left;
   }
 
   .product-item .btn-link {
@@ -732,13 +751,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .product-info {
   flex-grow: 1;
-  text-align: left;
+  text-align: right;
   padding: 2px;
 }
-
+/*
 .product-image {
   width: 100px;
-}
+}*/
 
 .quantity-controls {
   display: flex;
@@ -784,13 +803,14 @@ h1, h2, h3, h4, h5, h6 {
     border-bottom: 1px solid #d1d1d1;
   }
 
-  .offcanvas-body .filter-categories {
-    width: 100%;
-    margin-bottom: 20px !important;
-    border: 1px solid #d1d1d1 !important;
-    padding: 0px;
-    border-radius: 5px;
-  }
+    .offcanvas-body .filter-categories {
+      width: 100%;
+      margin-bottom: 20px !important;
+      border: 1px solid #d1d1d1 !important;
+      padding: 0px;
+      border-radius: 5px;
+    }
+
   /* dropdown-menu */
   .dropdown-menu {
     padding: 0;

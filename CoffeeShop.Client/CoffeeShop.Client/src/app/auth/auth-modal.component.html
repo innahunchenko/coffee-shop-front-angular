@@ -35,7 +35,7 @@
         <div class="error-message">
           {{ forgotPasswordForm.get('email')?.getError('serverError') }}
         </div>
-        <button type="submit" class="modal-button">Send Reset Link</button>
+        <button type="submit" class="modal-button">Reset Password</button>
       </form>
       <div class="footer-links">
         <a (click)="toggleMode('login', false)" class="link">Login</a>
@@ -59,7 +59,7 @@
         <div class="error-message">
           {{ resetPasswordForm.get('confirmPassword')?.getError('serverError') }}
         </div>
-        <button type="submit" class="modal-button">Reset Password</button>
+        <button type="submit" class="modal-button">Save</button>
       </form>
       <div class="footer-links">
         <a (click)="toggleMode('login', false)" class="link">Login</a>

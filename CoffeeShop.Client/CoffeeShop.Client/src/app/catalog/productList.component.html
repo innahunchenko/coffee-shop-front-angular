@@ -3,7 +3,7 @@
 </div>
 
 <!--<div *ngIf="!isLoading">-->
-<section *ngIf="!isLoading" class="py-5">
+<section *ngIf="!isLoading">
 
   <app-product-menu></app-product-menu>
 
@@ -33,7 +33,7 @@
 
                   <div class="product-item d-flex justify-content-between align-items-center">
                     <figure>
-                      <img src="/assets/images/unknown.png" class="product-image">
+                      <img [src]="'/assets/images/' + product.imagePath" onerror="this.src='/assets/images/unknown.png'" class="product-image">
                     </figure>
                     <div class="product-info">
                       <h5>{{ product.name }}</h5>

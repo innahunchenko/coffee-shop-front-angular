@@ -39,7 +39,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css",
+             // "src/styles.css",
               "src/assets/style.css",
              // "src/assets/css/vendor.css",
               //"src/assets/css/normalize.css",
