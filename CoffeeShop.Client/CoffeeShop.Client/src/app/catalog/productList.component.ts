@@ -26,7 +26,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
     });
 
     this.productsSubscription = this.repo.products$.subscribe(products => {
-      console.log('products loaded in list');
       this.updateProductList(products);
     });
   }
@@ -43,7 +42,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
   loadProducts(): void {
     this.isLoading = true;
     this.repo.loadProducts().subscribe(products => {
-      console.log('products updated in list');
       this.updateProductList(products);
     });
   }
@@ -103,7 +101,6 @@ export class ProductListComponent implements OnInit, OnDestroy {
 
   addProductToCart(productId?: string) {
     if (!productId) {
-      console.warn('Product ID is undefined');
       return;
     }
 

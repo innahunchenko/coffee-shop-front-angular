@@ -28,7 +28,6 @@ export class StoreComponent implements OnInit {
     forkJoin([cart$, products$]).subscribe(
       () => {
         this.isLoading = false;
-        console.log('Data loaded in store');
       },
       (error) => {
         console.error('Data loading error:', error);

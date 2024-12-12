@@ -50,7 +50,6 @@ export class CheckoutComponent implements OnInit {
 
     this.cartService.getCheckoutSessionData<CartCheckout>('checkout')
       .subscribe(sessionData => {
-        console.log("session data: ", sessionData);
         if (sessionData) {
           this.checkoutData = sessionData;
           this.populateForm();
@@ -70,7 +69,6 @@ export class CheckoutComponent implements OnInit {
     this.cartService.loadCart().subscribe({
       next: (cart) => {
         this.cart = cart;
-        console.log('Cart loaded:', cart);
       },
       error: (error) => {
         console.error('Error loading cart:', error);
@@ -95,7 +93,6 @@ export class CheckoutComponent implements OnInit {
 
   submitOrder() {
     if (!this.cart || this.cart.totalPrice === 0) {
-      console.log('Order cannot be submitted: Cart is empty or total price is 0.');
       this.router.navigate(['/']);
       return;
     }
@@ -105,7 +102,6 @@ export class CheckoutComponent implements OnInit {
 
     this.cartService.checkoutCart(checkoutData).subscribe({
       next: (response) => {
-        console.log('Checkout successful!', response);
         this.orderSubmitted = true;
         this.loadCart();
         this.checkoutForm.reset();

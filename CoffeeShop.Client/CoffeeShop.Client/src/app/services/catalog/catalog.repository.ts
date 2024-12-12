@@ -49,10 +49,8 @@ export class CatalogRepository {
       tap(products => {
         this.productsSubject.next(products);
         this.loadingSubject.next(false);
-        console.log(`Products loaded by ${this.filterType || 'all'}:`, products);
       }),
       catchError(error => {
-        console.error(`Error loading products by ${this.filterType || 'all'}:`, error);
         this.productsSubject.next(new PaginatedList<Product>([], 0));
         this.loadingSubject.next(false);
         return of(new PaginatedList<Product>());
@@ -67,9 +65,7 @@ export class CatalogRepository {
   set pageNumber(value: number) {
     if (value >= 1) { 
       this._pageNumber = value;
-    } else {
-      console.error("Page number must be greater than or equal to 1.");
-    }
+    } 
   }
 
   getProductsByCategory(category: string): void {
@@ -101,7 +97,6 @@ export class CatalogRepository {
   }
 
   getCategories() {
-    console.log(`${categoriesUrl}`);
     this.http.get<Category[]>(`${categoriesUrl}`).subscribe(categories => this.categories = categories);
   }
 }

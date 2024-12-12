@@ -30,8 +30,6 @@ export class CartRepository {
   }
 
   getSessionData<T>(dataType: string): Observable<T> {
-    console.log(dataType);
-    console.log(`${cartUrl}/session/${dataType}`);
     return this.http.get<T>(`${cartUrl}/session/${dataType}`);
   }
 

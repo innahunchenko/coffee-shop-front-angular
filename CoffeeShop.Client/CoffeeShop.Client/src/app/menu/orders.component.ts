@@ -24,7 +24,6 @@ export class OrdersComponent {
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('Failed to load orders', err);
         this.isLoading = false;
       }
     });
@@ -34,7 +33,6 @@ export class OrdersComponent {
     this.authService.isUserAdmin().subscribe({
       next: (isAdmin) => {
         this.isAdmin = isAdmin;
-        console.log('User is admin:', isAdmin);
       },
       error: (err) => {
         console.error('Failed to determine if user is admin', err);

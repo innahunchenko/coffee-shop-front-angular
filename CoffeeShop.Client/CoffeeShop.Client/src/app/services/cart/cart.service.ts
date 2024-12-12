@@ -26,7 +26,6 @@ export class CartService {
         }
       }),
       catchError(error => {
-        console.error('Error loading cart:', error);
         this.cartSubject.next(null);
         return of(new Cart());  
       })
@@ -54,7 +53,6 @@ export class CartService {
     this.repository.storeCart(this.cart.selections).subscribe(response => {
       this.cart = response;
       this.cartSubject.next(response);
-      console.log('total price: ' + this.cart.totalPrice);
     });
   }
 
