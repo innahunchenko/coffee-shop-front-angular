@@ -23,7 +23,7 @@ h1 {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  font-size: 14px; /* Уменьшенный шрифт */
+  font-size: 14px; /* Стандартный размер шрифта */
 }
 
   .orders-table th,
@@ -64,5 +64,50 @@ h1 {
 @media (max-width: 768px) {
   .orders-table {
     font-size: 12px; /* Ещё меньший шрифт на узких экранах */
+  }
+
+    .orders-table th,
+    .orders-table td {
+      padding: 8px; /* Уменьшение отступов для более компактного отображения */
+    }
+
+    .orders-table td {
+      word-wrap: break-word; /* Перенос длинных слов (например, названия товаров) */
+    }
+
+  h1 {
+    font-size: 20px; /* Уменьшение размера заголовка */
+  }
+}
+
+/* Адаптация для экранов от 768px до 1024px */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .orders-table {
+    font-size: 13px; /* Немного больший шрифт для планшетов */
+  }
+
+    .orders-table th,
+    .orders-table td {
+      padding: 9px; /* Немного большее пространство на экранах планшетов */
+    }
+
+  h1 {
+    font-size: 22px; /* Уменьшение заголовка на средних экранах */
+  }
+}
+
+/* Адаптация для больших экранов (больше 1024px) */
+@media (min-width: 1024px) {
+  .orders-table {
+    font-size: 14px; /* Стандартный размер шрифта для больших экранов */
+  }
+
+    .orders-table th,
+    .orders-table td {
+      padding: 10px; /* Стандартные отступы */
+    }
+
+  h1 {
+    font-size: 24px; /* Стандартный размер заголовка */
   }
 }
