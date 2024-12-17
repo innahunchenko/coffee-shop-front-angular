@@ -15,9 +15,12 @@ COPY --from=build /app/dist/coffee-shop/browser /usr/share/nginx/html
 # Copy SSL certificates
 COPY localhost.crt /etc/ssl/certs/localhost.crt
 COPY localhost-key.pem /etc/ssl/private/localhost-key.pem
+COPY localhost.crt /etc/ssl/certs/ngrok-free.app.crt
+COPY localhost-key.pem /etc/ssl/private/ngrok-free.app-key.pem
 
 # Add SSL certificate to trusted certificates
 RUN cp /etc/ssl/certs/localhost.crt /usr/local/share/ca-certificates/localhost.crt && \
+cp /etc/ssl/certs/ngrok-free.app.crt /usr/local/share/ca-certificates/ngrok-free.app.crt && \
     update-ca-certificates
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf

@@ -4,9 +4,11 @@ import { Observable } from "rxjs";
 import { Injectable } from "@angular/core";
 import { ProductSelection } from "../../models/cart/productSelection.model";
 import { CartCheckout } from "../../models/cart/cart-checkout.interface";
+import { ENVIRONMENT } from "../../../environments/environment";
 
-const API_BASE_URL = 'https://localhost:7075/cart';
-const cartUrl = `${API_BASE_URL}/shopping-cart`;
+const apiGatewayUrl = ENVIRONMENT.apiGatewayUrl;
+const baseUrl = `${apiGatewayUrl}/cart`;
+const shippingCartUrl = `${baseUrl}/shopping-cart`;
 
 @Injectable()
 export class CartRepository {
@@ -14,23 +16,23 @@ export class CartRepository {
   constructor(private http: HttpClient) { }
 
   getCart(): Observable<Cart> {
-    return this.http.get<Cart>(cartUrl);
+    return this.http.get<Cart>(shippingCartUrl);
   }
 
   storeCart(selections: ProductSelection[]): Observable<Cart> {
-    return this.http.post<Cart>(`${cartUrl}/add`, selections);
+    return this.http.post<Cart>(`${shippingCartUrl}/add`, selections);
   }
 
   checkoutCart(checkoutData: CartCheckout): Observable<any> {
-    return this.http.post(`${cartUrl}/checkout`, checkoutData);
+    return this.http.post(`${shippingCartUrl}/checkout`, checkoutData);
   }
 
   storeSessionData<T>(dataType: string, data: T) {
-    return this.http.post(`${cartUrl}/session/${dataType}`, data).subscribe();
+    return this.http.post(`${shippingCartUrl}/session/${dataType}`, data).subscribe();
   }
 
   getSessionData<T>(dataType: string): Observable<T> {
-    return this.http.get<T>(`${cartUrl}/session/${dataType}`);
+    return this.http.get<T>(`${shippingCartUrl}/session/${dataType}`);
   }
 
 

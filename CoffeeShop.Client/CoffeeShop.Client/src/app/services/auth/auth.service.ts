@@ -3,18 +3,20 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, catchError, map, of, tap } from "rxjs";
 import { User } from "../../models/auth/user.interface";
 import { MenuItem } from "../../models/auth/menu-item.interface";
+import { ENVIRONMENT } from "../../../environments/environment";
 
-const API_BASE_URL = 'https://localhost:7075/auth';
-const registerUrl = `${API_BASE_URL}/user/register`;
-const loginUrl = `${API_BASE_URL}/user/login`;
-const logoutUrl = `${API_BASE_URL}/user/logout`;
-const authStatusUrl = `${API_BASE_URL}/user/check-auth-status`;
-const userNameUrl = `${API_BASE_URL}/user/username`;
-const menuUrl = `${API_BASE_URL}/user/menu`;
-const isUserAdminUrl = `${API_BASE_URL}/user/is-user-admin`;
-const userRoleUrl = `${API_BASE_URL}/user/role`;
-const resetPasswordUrl = `${API_BASE_URL}/user/reset-password`;
-const forgotPasswordUrl = `${API_BASE_URL}/user/forgot-password`;
+const apiGatewayUrl = ENVIRONMENT.apiGatewayUrl;
+const baseUrl = `${apiGatewayUrl}/auth`;
+const registerUrl = `${baseUrl}/user/register`;
+const loginUrl = `${baseUrl}/user/login`;
+const logoutUrl = `${baseUrl}/user/logout`;
+const authStatusUrl = `${baseUrl}/user/check-auth-status`;
+const userNameUrl = `${baseUrl}/user/username`;
+const menuUrl = `${baseUrl}/user/menu`;
+const isUserAdminUrl = `${baseUrl}/user/is-user-admin`;
+const userRoleUrl = `${baseUrl}/user/role`;
+const resetPasswordUrl = `${baseUrl}/user/reset-password`;
+const forgotPasswordUrl = `${baseUrl}/user/forgot-password`;
 
 @Injectable()
 export class AuthService {

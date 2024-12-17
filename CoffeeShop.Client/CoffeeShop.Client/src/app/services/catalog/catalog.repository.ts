@@ -5,10 +5,12 @@ import { catchError, tap } from "rxjs/operators";
 import { PaginatedList } from "../../models/catalog/paginatedList.model";
 import { Product } from "../../models/catalog/product.model";
 import { Category } from "../../models/catalog/category.model";
+import { ENVIRONMENT } from "../../../environments/environment";
 
-const API_BASE_URL = 'https://localhost:7075/catalog';
-const productsUrl = `${API_BASE_URL}/products`;
-const categoriesUrl = `${API_BASE_URL}/categories`;
+const apiGatewayUrl = ENVIRONMENT.apiGatewayUrl;
+const baseURL = `${apiGatewayUrl}/catalog`;
+const productsUrl = `${baseURL}/products`;
+const categoriesUrl = `${baseURL}/categories`;
 const byCategory = 'category';
 const bySubcategory = 'subcategory';
 const byName = 'name';

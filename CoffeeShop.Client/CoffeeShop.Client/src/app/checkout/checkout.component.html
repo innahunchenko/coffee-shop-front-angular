@@ -1,7 +1,15 @@
 <div class="container">
-
   <form [formGroup]="checkoutForm" (ngSubmit)="submitOrder()">
-
+    <div class="summary">
+      <div class="summary-item">
+        <label>Total price:</label>
+        <span class="total-price">{{ getTotalPrice() | currency: 'USD':'symbol' }}</span>
+      </div>
+      <div class="summary-item">
+        <label>Product count:</label>
+        <span class="total-price">{{ getCartItemsCount() }}</span>
+      </div>
+    </div>
     <input *ngIf="!isLoggedIn" type="text" formControlName="emailAddress" placeholder="Email">
     <div class="error-message">
       {{ checkoutForm.get('emailAddress')?.getError('serverError') }}
@@ -57,15 +65,4 @@
       <button type="submit" class="btn btn-with-border">Submit order</button>
     </div>
   </form>
-
-  <div class="summary">
-    <div class="summary-item">
-      <label>Total price:</label>
-      <span class="total-price">{{ getTotalPrice() | currency: 'USD':'symbol' }}</span>
-    </div>
-    <div class="summary-item">
-      <label>Product count:</label>
-      <span class="total-price">{{ getCartItemsCount() }}</span>
-    </div>
-  </div>
 </div>

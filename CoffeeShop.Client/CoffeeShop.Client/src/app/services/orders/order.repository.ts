@@ -2,9 +2,11 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, map } from "rxjs";
 import { Order } from "../../models/orders/order.interface";
+import { ENVIRONMENT } from "../../../environments/environment";
 
-const API_BASE_URL = 'https://localhost:7075/ordering';
-const ordersUrl = `${API_BASE_URL}/orders`;
+const apiGatewayUrl = ENVIRONMENT.apiGatewayUrl;
+const baseUrl = `${apiGatewayUrl}/ordering`;
+const ordersUrl = `${baseUrl}/orders`;
 
 @Injectable()
 export class OrderRepository {

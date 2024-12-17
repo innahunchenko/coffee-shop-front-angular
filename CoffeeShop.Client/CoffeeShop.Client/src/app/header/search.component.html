@@ -11,7 +11,7 @@
     <div class="order-md-last">
       <form (ngSubmit)="onSubmit()" class="d-flex mt-3 gap-0">
         <input class="form-control rounded-start rounded-0 bg-light" type="text" placeholder="What are you looking for?" aria-label="What are you looking for?" #textInputOffcanvas (input)="onInputChange('offcanvas')">
-        <button class="btn btn-dark rounded-end rounded-0" type="submit">Search</button>
+        <button class="btn btn-dark rounded-end rounded-0" data-bs-dismiss="offcanvas" type="submit">Search</button>
       </form>
     </div>
   </div>

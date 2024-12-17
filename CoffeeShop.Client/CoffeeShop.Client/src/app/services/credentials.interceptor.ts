@@ -6,7 +6,8 @@ import { Observable } from 'rxjs';
 export class CredentialsInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const clonedRequest = req.clone({
-      withCredentials: true
+      withCredentials: true,
+      headers: req.headers.set('Content-Type', 'application/json')
     });
 
     return next.handle(clonedRequest);
