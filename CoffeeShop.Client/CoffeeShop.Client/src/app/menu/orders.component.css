@@ -19,11 +19,18 @@ h1 {
   color: gray;
 }
 
+/* Таблица для широких экранов */
+.orders-table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
 .orders-table {
+  min-width: 600px;
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  font-size: 14px; /* Стандартный размер шрифта */
+  font-size: 14px;
 }
 
   .orders-table th,
@@ -45,69 +52,79 @@ h1 {
 
 .order-name {
   font-weight: bold;
-  color: #088318; /* Зеленый цвет для названия заказа */
+  color: #088318;
 }
 
 .order-status {
-  color: #007bff; /* Синий цвет для статуса */
+  color: #007bff;
 }
 
 .total-price {
-  color: #d9534f; /* Красный цвет для общей цены */
+  color: #d9534f;
 }
 
 .created-at {
-  color: #6c757d; /* Серый цвет для даты */
+  color: #6c757d;
+}
+
+/* Карточки для мобильных экранов */
+.order-cards {
+  display: none; /* Скрываем карточки на широких экранах */
+}
+
+.order-card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.order-card-header {
+  font-weight: bold;
+  color: #088318;
+  margin-bottom: 10px;
+}
+
+.order-card-details p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.order-card-items {
+  margin-top: 10px;
+}
+
+  .order-card-items ul {
+    padding-left: 20px;
+    list-style: disc;
+  }
+
+  .order-card-items li {
+    margin-bottom: 5px;
+  }
+
+.order-actions {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.btn {
+  font-size: 12px;
 }
 
 /* Адаптация для мобильных устройств */
 @media (max-width: 768px) {
-  .orders-table {
-    font-size: 12px; /* Ещё меньший шрифт на узких экранах */
+  .orders-table-wrapper {
+    display: none; /* Скрываем таблицу на узких экранах */
   }
 
-    .orders-table th,
-    .orders-table td {
-      padding: 8px; /* Уменьшение отступов для более компактного отображения */
-    }
-
-    .orders-table td {
-      word-wrap: break-word; /* Перенос длинных слов (например, названия товаров) */
-    }
-
-  h1 {
-    font-size: 20px; /* Уменьшение размера заголовка */
-  }
-}
-
-/* Адаптация для экранов от 768px до 1024px */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .orders-table {
-    font-size: 13px; /* Немного больший шрифт для планшетов */
+  .order-cards {
+    display: block; /* Отображаем карточки на узких экранах */
   }
 
-    .orders-table th,
-    .orders-table td {
-      padding: 9px; /* Немного большее пространство на экранах планшетов */
-    }
-
-  h1 {
-    font-size: 22px; /* Уменьшение заголовка на средних экранах */
-  }
-}
-
-/* Адаптация для больших экранов (больше 1024px) */
-@media (min-width: 1024px) {
-  .orders-table {
-    font-size: 14px; /* Стандартный размер шрифта для больших экранов */
-  }
-
-    .orders-table th,
-    .orders-table td {
-      padding: 10px; /* Стандартные отступы */
-    }
-
-  h1 {
-    font-size: 24px; /* Стандартный размер заголовка */
+  .order-card {
+    font-size: 14px;
   }
 }

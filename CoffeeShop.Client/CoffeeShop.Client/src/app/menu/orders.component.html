@@ -5,34 +5,61 @@
     Loading...
   </div>
   <div *ngIf="!isLoading && orders.length === 0">No orders found.</div>
-  <table *ngIf="!isLoading && orders.length > 0" class="orders-table">
-    <thead>
-      <tr>
-        <th>Order Name</th>
-        <th>Status</th>
-        <th>Total Price</th>
-        <th>Created At</th>
-        <th>Items</th>
-        <th *ngIf="isAdmin">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let order of orders">
-        <td class="order-name">{{ order.orderName }}</td>
-        <td class="order-status">{{ order.orderStatus }}</td>
-        <td class="total-price">{{ order.totalPrice | currency }}</td>
-        <td class="created-at">{{ order.createdAt | date }}</td>
-        <td>
-          <ul>
-            <li *ngFor="let item of order.orderItems">
-              {{ item.productName }} (x{{ item.quantity }}) - {{ item.price | currency }}
-            </li>
-          </ul>
-        </td>
-        <td *ngIf="isAdmin">
-          <button class="btn btn-outline-primary" (click)="editOrder(order)">Edit</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+
+  <!-- Таблица для широких экранов -->
+  <div class="orders-table-wrapper" *ngIf="!isLoading && orders.length > 0">
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>Order Name</th>
+          <th>Status</th>
+          <th>Total Price</th>
+          <th>Created At</th>
+          <th>Items</th>
+          <th *ngIf="isAdmin">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders">
+          <td class="order-name">{{ order.orderName }}</td>
+          <td class="order-status">{{ order.orderStatus }}</td>
+          <td class="total-price">{{ order.totalPrice | currency }}</td>
+          <td class="created-at">{{ order.createdAt | date }}</td>
+          <td>
+            <ul>
+              <li *ngFor="let item of order.orderItems">
+                {{ item.productName }} (x{{ item.quantity }}) - {{ item.price | currency }}
+              </li>
+            </ul>
+          </td>
+          <td *ngIf="isAdmin">
+            <button class="btn btn-outline-primary" (click)="editOrder(order)">Edit</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Карточки для мобильных экранов -->
+  <div *ngIf="!isLoading && orders.length > 0" class="order-cards">
+    <div *ngFor="let order of orders" class="order-card">
+      <div class="order-card-header">{{ order.orderName }}</div>
+      <div class="order-card-details">
+        <p><strong>Status:</strong> {{ order.orderStatus }}</p>
+        <p><strong>Total Price:</strong> {{ order.totalPrice | currency }}</p>
+        <p><strong>Created At:</strong> {{ order.createdAt | date }}</p>
+      </div>
+      <div class="order-card-items">
+        <strong>Items:</strong>
+        <ul>
+          <li *ngFor="let item of order.orderItems">
+            {{ item.productName }} (x{{ item.quantity }}) - {{ item.price | currency }}
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="isAdmin" class="order-actions">
+        <button class="btn btn-outline-primary" (click)="editOrder(order)">Edit</button>
+      </div>
+    </div>
+  </div>
 </div>

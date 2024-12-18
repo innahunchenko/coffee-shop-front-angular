@@ -8,17 +8,19 @@
     </h4>
 
     <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
-      <a href="#" class="nav-link" (click)="clearCart()" style="margin-right: auto;">
+      <button class="btn"
+              (click)="clearCart()"
+              style="margin-right: auto;">
         Clear cart
-      </a>
-      <a href="#"
-         class="nav-link continue-to-checkout"
-         [routerLink]="['/checkout']"
-         [attr.tabindex]="getCartItemsCount() === 0 ? -1 : null"
-         [ngClass]="{'disabled-link': getCartItemsCount() === 0}"
-         style="margin-left: auto;">
+      </button>
+      <button class="btn continue-to-checkout"
+              [routerLink]="['/checkout']"
+              [attr.tabindex]="getCartItemsCount() === 0 ? -1 : null"
+              [ngClass]="{'disabled-link': getCartItemsCount() === 0}"
+              [disabled]="getCartItemsCount() === 0"
+              style="margin-left: auto;">
         Continue to checkout
-      </a>
+      </button>
     </div>
   </div>
 
