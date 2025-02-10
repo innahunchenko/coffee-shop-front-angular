@@ -7,8 +7,8 @@ RUN npm install
 COPY ./CoffeeShop.Client/CoffeeShop.Client ./
 RUN ng build --configuration production
 FROM nginx:alpine
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY ./CoffeeShop.Client/CoffeeShop.Client/nginx.conf /etc/nginx/nginx.conf
 #RUN rm /usr/share/nginx/html/index.html
 COPY --from=build /app/dist/coffee-shop/browser /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./CoffeeShop.Client/CoffeeShop.Client/nginx.conf /etc/nginx/conf.d/default.conf
