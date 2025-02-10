@@ -1,10 +1,10 @@
 FROM node:18 AS build
 WORKDIR /app
-COPY ./package.json ./package-lock.json ./
+COPY ./CoffeeShop.Client/CoffeeShop.Client/package*.json ./
 RUN npm install -g @angular/cli
 #RUN npm install --legacy-peer-deps
 RUN npm install
-COPY . .
+COPY ./CoffeeShop.Client/CoffeeShop.Client ./
 RUN ng build --configuration production
 FROM nginx:alpine
 COPY nginx.conf /etc/nginx/nginx.conf
