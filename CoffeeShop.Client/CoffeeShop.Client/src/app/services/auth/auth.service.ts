@@ -23,7 +23,7 @@ export class AuthService {
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
   resetToken: string = "";
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { }  
 
   forgotPassword(email: string): Observable<string> {
     return this.http.post<string>(forgotPasswordUrl, { email });
