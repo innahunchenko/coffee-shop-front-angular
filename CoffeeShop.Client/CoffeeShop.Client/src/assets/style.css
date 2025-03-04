@@ -915,9 +915,6 @@ h1, h2, h3, h4, h5, h6 {
 }*/
 
 .footer {
-  background-color: #333;
-  color: #fff;
-  text-align: center;
-  padding: 5px;
-  margin-top:10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #d8d8d8;
 }
