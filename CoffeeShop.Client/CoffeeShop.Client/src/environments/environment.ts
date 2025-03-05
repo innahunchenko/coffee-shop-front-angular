@@ -5,6 +5,6 @@
 
 export const ENVIRONMENT = {
   production: true,
-  apiGatewayUrl: 'http://20.215.40.177'
+  apiGatewayUrl: 'https://apigateway.polandcentral.cloudapp.azure.com'
 };
 
