@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://20.215.40.177/",
+    "target": "http://localhost:7005",
     "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
