@@ -1,6 +1,6 @@
 {
   "/api": {
-    "target": "http://localhost:7005",
+    "target": "http://apigateway.polandcentral.cloudapp.azure.com",
     "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
