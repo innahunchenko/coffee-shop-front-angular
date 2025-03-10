@@ -1,10 +1,10 @@
 {
   "/api": {
-    "target": "http://apigateway.polandcentral.cloudapp.azure.com",
+    "target": "http://20.215.32.139",
     "secure": false,
     "changeOrigin": true,
     "pathRewrite": {
-      "^/api": ""
+      "^/api/": "/"
     }
   }
 }
