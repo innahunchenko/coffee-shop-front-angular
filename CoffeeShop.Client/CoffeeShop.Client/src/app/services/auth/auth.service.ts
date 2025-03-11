@@ -22,6 +22,7 @@ const forgotPasswordUrl = `${baseUrl}/user/forgot-password`;
 export class AuthService {
   private isLoggedInSubject = new BehaviorSubject<boolean>(false);
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
+  isLoggedIn: boolean = false;
   resetToken: string = "";
   constructor(private http: HttpClient) { }  
 
@@ -39,7 +40,8 @@ export class AuthService {
 
   login(credentials: User): Observable<any> {
     return this.http.post(loginUrl, credentials).pipe(
-      tap(() => { 
+      tap(() => {
+        this.isLoggedIn = true;
         this.isLoggedInSubject.next(true);
       })
     );
@@ -48,9 +50,11 @@ export class AuthService {
   isAuthenticated(): Observable<boolean> {
     return this.http.get<boolean>(authStatusUrl).pipe(
       tap((isAuthenticated: boolean) => {
+        this.isLoggedIn = isAuthenticated;
         this.isLoggedInSubject.next(isAuthenticated);
       }),
       catchError(() => {
+        this.isLoggedIn = false;
         this.isLoggedInSubject.next(false);
         return of(false);
       })
@@ -60,6 +64,7 @@ export class AuthService {
   logout(): Observable<void> {
     return this.http.post<void>(logoutUrl, {}).pipe(
       tap(() => {
+        this.isLoggedIn = false;
         this.isLoggedInSubject.next(false);
       })
     );

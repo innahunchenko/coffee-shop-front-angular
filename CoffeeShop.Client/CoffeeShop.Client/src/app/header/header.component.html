@@ -24,7 +24,7 @@
               </button>
             </li>
 
-            <li *ngIf="!isLoggedIn">
+            <li *ngIf="!authService.isLoggedIn">
               <button (click)="openModal()" class="btn btn-with-border">
                 <svg width="24" height="24" viewBox="0 0 24 24">
                   <use xlink:href="#user"></use>
@@ -32,7 +32,7 @@
               </button>
             </li>
 
-            <li *ngIf="isLoggedIn" class="nav-item dropdown header">
+            <li *ngIf="authService.isLoggedIn" class="nav-item dropdown header">
               <button (click)="toggleUserMenu()" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                 {{ userName }}
               </button>

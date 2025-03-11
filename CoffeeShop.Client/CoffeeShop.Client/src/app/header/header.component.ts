@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
   templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit {
-  isLoggedIn = false;
   isUserMenuOpen = false;
   isModalVisible = false;
   userMenuItems: MenuItem[] = [];
@@ -24,7 +23,7 @@ export class HeaderComponent implements OnInit {
   };
 
   constructor(
-    private authService: AuthService,
+    public authService: AuthService,
     public cartService: CartService,
     private router: Router
   ) { }
@@ -34,10 +33,10 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log("check auth");
     this.authService.isAuthenticated().subscribe();
     this.authService.isLoggedIn$.subscribe(isLoggedIn => {
-      this.isLoggedIn = isLoggedIn;
-      if (this.isLoggedIn) {
+      if (isLoggedIn) {
         this.loadUserName();
         this.loadMenu();
       }
@@ -77,7 +76,6 @@ export class HeaderComponent implements OnInit {
 
   logout(): void {
     this.authService.logout().subscribe(() => {
-      this.isLoggedIn = false;
       this.router.navigate(['']);
     });
   }
