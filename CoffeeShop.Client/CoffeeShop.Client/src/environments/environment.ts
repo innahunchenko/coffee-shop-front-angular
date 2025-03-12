@@ -5,7 +5,7 @@
 
 export const ENVIRONMENT = {
   production: true,
-  apiGatewayUrl: 'https://apigateway.polandcentral.cloudapp.azure.com'
+  apiGatewayUrl: 'https://coffeesshop.org'
   //apiGatewayUrl: 'http://localhost:7005'
 };
 
