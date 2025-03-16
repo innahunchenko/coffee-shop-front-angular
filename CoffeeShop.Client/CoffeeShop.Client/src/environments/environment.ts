@@ -5,7 +5,7 @@
 
 export const ENVIRONMENT = {
   production: true,
-  apiGatewayUrl: 'https://coffeesshop.org'
-  //apiGatewayUrl: 'http://localhost:7005'
+ // apiGatewayUrl: 'https://coffeesshop.org'
+  apiGatewayUrl: 'http://localhost:7005'
 };
 

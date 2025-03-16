@@ -91,15 +91,21 @@
         <div class="error-message">
           {{ registerForm.get('password')?.getError('serverError') }}
         </div>
-        <button type="submit" class="modal-button">Register</button>
+
+        <button type="submit" class="modal-button" [disabled]="isLoading">
+          <span *ngIf="isLoading">Loading...</span>
+          <span *ngIf="!isLoading">Register</span>
+        </button>
+
       </form>
       <div class="footer-links">
         <a (click)="toggleMode('login', false)" class="link">Login</a>
       </div>
     </div>
 
+    <!-- Success Mode -->
     <div *ngIf="isSuccess" class="auth-container">
-      <h3>{{successfulMessage}}</h3>
+      <h3>{{ successfulMessage }}</h3>
       <a (click)="toggleMode('login', false)" class="link">Login</a>
     </div>
   </div>

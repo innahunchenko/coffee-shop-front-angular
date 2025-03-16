@@ -19,6 +19,7 @@ export class CheckoutComponent implements OnInit {
   checkoutData: CartCheckout = {} as CartCheckout;
   orderSubmitted: boolean = false;
   isLoggedIn: boolean = false;
+  isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -55,7 +56,10 @@ export class CheckoutComponent implements OnInit {
           this.populateForm();
         }
       });
-    this.isLoggedIn = this.authService.isLoggedIn;
+    //this.isLoggedIn = this.authService.isLoggedIn;
+    this.authService.isLoggedIn$.subscribe(isLoggedIn => {
+      this.isLoggedIn = isLoggedIn;
+    });
   }
 
   ngOnDestroy(): void {
@@ -97,6 +101,8 @@ export class CheckoutComponent implements OnInit {
     const checkoutData: CartCheckout = this.checkoutForm.value;
     this.cartService.storeCheckoutSessionData('checkout', checkoutData);
 
+    this.isLoading = true;
+
     this.cartService.checkoutCart(checkoutData).subscribe({
       next: (response) => {
         this.orderSubmitted = true;
@@ -106,12 +112,16 @@ export class CheckoutComponent implements OnInit {
         if (this.orderSubmitted) {
           this.router.navigate(['/order-confirmation']);
         }
+
+        this.isLoading = false;
       },
       error: (errorResponse) => {
         if (errorResponse.error.errors) {
           const validationErrors = errorResponse.error.errors;
           this.handleValidationErrors(validationErrors);
         }
+
+        this.isLoading = false;
       }
     });
   }

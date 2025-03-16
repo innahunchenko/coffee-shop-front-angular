@@ -10,6 +10,13 @@
         <span class="total-price">{{ getCartItemsCount() }}</span>
       </div>
     </div>
+
+    <!-- Лоадер -->
+    <!--<div *ngIf="isLoading" class="loader">
+      <p>Loading...</p>
+    </div>-->
+
+    <!-- Поля формы -->
     <input *ngIf="!isLoggedIn" type="text" formControlName="emailAddress" placeholder="Email">
     <div class="error-message">
       {{ checkoutForm.get('emailAddress')?.getError('serverError') }}
@@ -61,8 +68,13 @@
     </div>
 
     <div class="form-buttons">
-      <button type="button" (click)="goToStore()" class="btn continue-shopping-btn btn-with-border">Continue shopping</button>
-      <button type="submit" class="btn btn-with-border">Submit order</button>
+      <button type="button" (click)="goToStore()" class="btn continue-shopping-btn btn-with-border" [disabled]="isLoading">Continue shopping</button>
+      <button type="submit" class="btn btn-with-border" [disabled]="isLoading">
+        <span *ngIf="isLoading">Loading...</span>
+        <span *ngIf="!isLoading">Submit order</span>
+      </button>
+
+      <!--<button type="submit" class="btn btn-with-border" [disabled]="isLoading">Submit order</button>-->
     </div>
   </form>
 </div>

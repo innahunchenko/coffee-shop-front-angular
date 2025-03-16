@@ -23,6 +23,7 @@ export class AuthModalComponent {
   isResetPasswordMode = false;
   email: string;
   token: string;
+  isLoading = false;
 
   @Output() close = new EventEmitter<void>();
 
@@ -79,6 +80,8 @@ export class AuthModalComponent {
 
   onRegister() {
     const userData: User = this.registerForm.value;
+    this.isLoading = true;
+
     this.authService.register(userData).subscribe({
       next: () => {
         this.successfulMessage = 'Registration successful';
@@ -86,9 +89,14 @@ export class AuthModalComponent {
       },
       error: (errorResponse) => {
         this.handleValidationErrors(errorResponse.error, this.registerForm);
+        this.isLoading = false;
+      },
+      complete: () => {
+        this.isLoading = false;
       }
     });
   }
+
 
   handleValidationErrors(problemDetails: any, formGroup: FormGroup) {
     this.generalErrorMessages = [];
