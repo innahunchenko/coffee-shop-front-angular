@@ -56,7 +56,7 @@ export class CheckoutComponent implements OnInit {
           this.populateForm();
         }
       });
-    //this.isLoggedIn = this.authService.isLoggedIn;
+    this.authService.isAuthenticated().subscribe();
     this.authService.isLoggedIn$.subscribe(isLoggedIn => {
       this.isLoggedIn = isLoggedIn;
     });
