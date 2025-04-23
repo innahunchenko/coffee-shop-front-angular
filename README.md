@@ -1,2 +1,1 @@
-# coffee-shop-aws
-Coffee Shop Project: A full-stack application.  Built with .NET for the backend and Angular for the frontend, this project demonstrates the integration of various AWS services
+This is the frontend application for the Coffee Shop app, built with Angular. It serves as the user interface for customers to browse products, manage their cart, and place orders. The frontend communicates with backend microservices https://github.com/innahunchenko/coffee-shop-microservices
